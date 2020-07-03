@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
 } from 'typeorm';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 @Entity()
 @Unique(['username'])
