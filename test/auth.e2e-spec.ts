@@ -20,6 +20,10 @@ describe('AuthController (e2e)', () => {
     await app.init();
   });
 
+  afterEach(async () => {
+    await app.close();
+  });
+
   it('/auth/signin (POST)', async () => {
     const signInDto: SignInDto = { username: 'test', password: 'Test1234' };
 
@@ -32,5 +36,10 @@ describe('AuthController (e2e)', () => {
       .post('/auth/signin')
       .send(signInDto)
       .expect(200);
+  });
+
+  it('another', async () => {
+    const res = await empRepo.findAndCount();
+    console.log(res);
   });
 });
