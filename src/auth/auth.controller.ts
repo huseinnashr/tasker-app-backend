@@ -1,5 +1,5 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { SignInDto } from './dto/sign-in.dto';
+import { Controller, Post, Body, HttpCode } from '@nestjs/common';
+import { SignInDTO } from './auth.dto';
 import { Employee } from '../employee/employee.entity';
 import { AuthService } from './auth.service';
 
@@ -8,7 +8,8 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('/signin')
-  signIn(@Body() signInDto: SignInDto): Promise<Employee> {
+  @HttpCode(200)
+  signIn(@Body() signInDto: SignInDTO): Promise<Employee> {
     return this.authService.signIn(signInDto);
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmployeeRepository } from '../employee/employee.repository';
-import { SignInDto } from './dto/sign-in.dto';
+import { SignInDTO } from './auth.dto';
 import { Employee } from '../employee/employee.entity';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class AuthService {
     private employeeRepository: EmployeeRepository,
   ) {}
 
-  async signIn(signInDto: SignInDto): Promise<Employee> {
+  async signIn(signInDto: SignInDTO): Promise<Employee> {
     const { username, password } = signInDto;
     const employee = await this.employeeRepository.findOne({ username });
 

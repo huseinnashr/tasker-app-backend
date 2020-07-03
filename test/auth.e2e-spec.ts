@@ -1,7 +1,7 @@
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SignInDto } from '../src/auth/dto/sign-in.dto';
+import { SignInDTO } from '../src/auth/auth.dto';
 import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/employee/employee.repository';
 import { Employee } from '../src/employee/employee.entity';
@@ -25,7 +25,7 @@ describe('AuthController (e2e)', () => {
   });
 
   it('/auth/signin (POST)', async () => {
-    const signInDto: SignInDto = { username: 'test', password: 'Test1234' };
+    const signInDto: SignInDTO = { username: 'test', password: 'Test1234' };
 
     const employee = new Employee();
     employee.username = signInDto.username;
