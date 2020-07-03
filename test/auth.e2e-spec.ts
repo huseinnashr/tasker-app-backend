@@ -27,14 +27,22 @@ describe('AuthController (e2e)', () => {
     const signInDto: SignInDTO = { username: 'test', password: 'Test1234' };
 
     await empRepo.createAndSave(signInDto);
-    await request(app.getHttpServer())
+    const loginRes = await request(app.getHttpServer())
       .post('/auth/signin')
       .send(signInDto)
       .expect(200);
+
+    expect(loginRes.body.accessToken).toBeDefined();
+
+    await request(app.getHttpServer())
+      .get('/auth/current')
+      .set('Authorization', `Bearer ${loginRes.body.accessToken}`)
+      .expect(200);
   });
 
-  it('another', async () => {
-    const res = await empRepo.findAndCount();
-    console.log(res);
+  it('/auth/current (GET)', async () => {
+    await request(app.getHttpServer())
+      .get('/auth/current')
+      .expect(401);
   });
 });
