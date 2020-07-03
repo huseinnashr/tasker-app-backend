@@ -20,7 +20,7 @@ export class Employee extends BaseEntity {
   private password: string;
 
   @Column()
-  salt: string;
+  private salt: string;
 
   async setPassword(password: string): Promise<void> {
     this.salt = await bcrypt.genSalt();
