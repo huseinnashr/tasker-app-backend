@@ -30,7 +30,7 @@ describe('EmployeeController (e2e)', () => {
   it('/employee (GET)', async () => {
     const [auth] = await signUp(empRepo, jwtService, {
       username: 'test',
-      role: Role.STAFF,
+      role: Role.ADMIN,
     });
 
     await request(app.getHttpServer())
