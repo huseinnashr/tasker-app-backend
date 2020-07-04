@@ -11,61 +11,60 @@ interface signUpDto {
   role: Role;
 }
 
-const signUp = async (
-  empRepo: EmployeeRepository,
-  jwtService: JwtService,
-  data: signUpDto,
-) => {
-  const employee = await empRepo.createAndSave({
-    ...data,
-    password: 'SecretPassword1234',
-  });
-  const accessToken = jwtService.sign({ username: data.username });
+class AuthHelper {
+  private supertest: SupertestHelper;
 
-  return [`Bearer ${accessToken}`, employee];
-};
-
-const testUnauthorized = async (
-  app: INestApplication,
-  method: HTTPMethod,
-  url: string,
-) => {
-  await getSupertestReq(app, method, url).expect(401);
-};
-
-const signUpTestForbidden = async (
-  empRepo: EmployeeRepository,
-  jwtService: JwtService,
-  app: INestApplication,
-  method: HTTPMethod,
-  url: string,
-) => {
-  const signUpDTO = { username: 'testforbidden', role: Role.STAFF };
-  const [auth] = await signUp(empRepo, jwtService, signUpDTO);
-
-  await getSupertestReq(app, method, url)
-    .set({ Authorization: auth })
-    .expect(403);
-};
-
-const getSupertestReq = (
-  app: INestApplication,
-  method: HTTPMethod,
-  url: string,
-) => {
-  const agent = request(app.getHttpServer());
-  switch (method) {
-    case 'GET':
-      return agent.get(url);
-    case 'POST':
-      return agent.post(url);
-    case 'PATCH':
-      return agent.patch(url);
-    case 'PUT':
-      return agent.put(url);
-    case 'DELETE':
-      return agent.delete(url);
+  constructor(
+    private empRepo: EmployeeRepository,
+    private jwtService: JwtService,
+    private app: INestApplication,
+  ) {
+    this.supertest = new SupertestHelper(app);
   }
-};
 
-export { signUp, testUnauthorized, signUpTestForbidden };
+  signUp = async (data: signUpDto) => {
+    const employee = await this.empRepo.createAndSave({
+      ...data,
+      password: 'SecretPassword1234',
+    });
+    const accessToken = this.jwtService.sign({ username: data.username });
+
+    return [`Bearer ${accessToken}`, employee];
+  };
+
+  testUnauthorized = async (method: HTTPMethod, url: string) => {
+    await this.supertest.request(method, url).expect(401);
+  };
+
+  signUpTestForbidden = async (method: HTTPMethod, url: string) => {
+    const signUpDTO = { username: 'testforbidden', role: Role.STAFF };
+    const [auth] = await this.signUp(signUpDTO);
+
+    await this.supertest
+      .request(method, url)
+      .set({ Authorization: auth })
+      .expect(403);
+  };
+}
+
+class SupertestHelper {
+  constructor(private app: INestApplication) {}
+
+  request = (method: HTTPMethod, url: string) => {
+    const agent = request(this.app.getHttpServer());
+    switch (method) {
+      case 'GET':
+        return agent.get(url);
+      case 'POST':
+        return agent.post(url);
+      case 'PATCH':
+        return agent.patch(url);
+      case 'PUT':
+        return agent.put(url);
+      case 'DELETE':
+        return agent.delete(url);
+    }
+  };
+}
+
+export { AuthHelper };
