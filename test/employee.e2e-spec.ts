@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/employee/employee.repository';
 import { JwtService } from '@nestjs/jwt';
-import { signUp } from './helper';
+import { signUp, signUpTestForbidden, testUnauthorized } from './helper';
 import { Role } from '../src/employee/role.enum';
 import { CreateEmployeeDTO } from '../src/employee/employee.dto';
 
@@ -28,33 +28,46 @@ describe('EmployeeController (e2e)', () => {
     await app.close();
   });
 
-  it('/employee (GET)', async () => {
-    const signUpDTO = { username: 'test', role: Role.ADMIN };
-    const [auth] = await signUp(empRepo, jwtService, signUpDTO);
+  it('returns 401 Unauthorized when not logged in', async () =>
+    testUnauthorized(app, 'GET', '/employee'));
 
-    await request(app.getHttpServer())
-      .get('/employee')
-      .set({ Authorization: auth })
-      .expect(200);
+  describe('/employee (GET)', () => {
+    it('returns list of employee', async () => {
+      const signUpDTO = { username: 'test', role: Role.ADMIN };
+      const [auth] = await signUp(empRepo, jwtService, signUpDTO);
+
+      await request(app.getHttpServer())
+        .get('/employee')
+        .set({ Authorization: auth })
+        .expect(200);
+    });
+
+    it('returns 403 Forbidden when not admin', async () =>
+      signUpTestForbidden(empRepo, jwtService, app, 'GET', '/employee'));
   });
 
-  it('/employee (POST)', async () => {
-    const signUpDTO = { username: 'test', role: Role.ADMIN };
-    const [auth] = await signUp(empRepo, jwtService, signUpDTO);
+  describe('/employee (POST)', () => {
+    it('create new employee', async () => {
+      const signUpDTO = { username: 'test', role: Role.ADMIN };
+      const [auth] = await signUp(empRepo, jwtService, signUpDTO);
 
-    const createDTO: CreateEmployeeDTO = {
-      username: 'John',
-      password: 'Test1234',
-      role: Role.STAFF,
-    };
-    await request(app.getHttpServer())
-      .post('/employee')
-      .send(createDTO)
-      .set({ Authorization: auth })
-      .expect(201);
+      const createDTO: CreateEmployeeDTO = {
+        username: 'John',
+        password: 'Test1234',
+        role: Role.STAFF,
+      };
+      await request(app.getHttpServer())
+        .post('/employee')
+        .send(createDTO)
+        .set({ Authorization: auth })
+        .expect(201);
 
-    const [employees, count] = await empRepo.findAndCount();
-    expect(employees[count - 1].username).toBe(createDTO.username);
-    expect(count).toBe(2);
+      const [employees, count] = await empRepo.findAndCount();
+      expect(employees[count - 1].username).toBe(createDTO.username);
+      expect(count).toBe(2);
+    });
+
+    it('returns 403 Forbidden when not admin', async () =>
+      signUpTestForbidden(empRepo, jwtService, app, 'POST', '/employee'));
   });
 });

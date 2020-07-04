@@ -9,16 +9,17 @@ import { CreateEmployeeDTO } from './employee.dto';
 
 @Controller('employee')
 @UseGuards(AuthGuard(), RolesGuard)
-@Roles(Role.STAFF)
 export class EmployeeController {
   constructor(private empService: EmployeeService) {}
 
   @Get('/')
+  @Roles(Role.ADMIN)
   async getAll(): Promise<Employee[]> {
     return this.empService.getAll();
   }
 
   @Post('/')
+  @Roles(Role.ADMIN)
   async create(@Body() createDto: CreateEmployeeDTO): Promise<Employee> {
     return this.empService.create(createDto);
   }
