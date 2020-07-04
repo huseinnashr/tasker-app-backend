@@ -5,6 +5,7 @@ import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/employee/employee.repository';
 import { JwtService } from '@nestjs/jwt';
 import { signUp } from './helper';
+import { Role } from '../src/employee/role.enum';
 
 describe('EmployeeController (e2e)', () => {
   let app: INestApplication;
@@ -29,6 +30,7 @@ describe('EmployeeController (e2e)', () => {
   it('/employee (GET)', async () => {
     const [auth] = await signUp(empRepo, jwtService, {
       username: 'test',
+      role: Role.STAFF,
     });
 
     await request(app.getHttpServer())

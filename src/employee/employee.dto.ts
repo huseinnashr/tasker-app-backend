@@ -1,4 +1,11 @@
-import { IsString, MinLength, MaxLength, Matches } from 'class-validator';
+import {
+  IsString,
+  MinLength,
+  MaxLength,
+  Matches,
+  IsEnum,
+} from 'class-validator';
+import { Role } from './role.enum';
 
 export class CreateEmployeeDTO {
   @IsString()
@@ -13,4 +20,7 @@ export class CreateEmployeeDTO {
     message: 'password is too weak',
   })
   password: string;
+
+  @IsEnum(Role)
+  role: Role;
 }

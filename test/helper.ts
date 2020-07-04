@@ -1,8 +1,10 @@
 import { EmployeeRepository } from '../src/employee/employee.repository';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from '../src/employee/role.enum';
 
 interface signUpDto {
   username: string;
+  role: Role;
 }
 
 const signUp = async (
@@ -11,7 +13,7 @@ const signUp = async (
   data: signUpDto,
 ) => {
   const employee = await empRepo.createAndSave({
-    username: data.username,
+    ...data,
     password: 'SecretPassword1234',
   });
   const accessToken = jwtService.sign({ username: data.username });

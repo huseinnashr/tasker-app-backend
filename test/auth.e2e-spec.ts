@@ -4,6 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SignInDTO } from '../src/auth/auth.dto';
 import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/employee/employee.repository';
+import { CreateEmployeeDTO } from '../src/employee/employee.dto';
+import { Role } from '../src/employee/role.enum';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -25,8 +27,12 @@ describe('AuthController (e2e)', () => {
 
   it('/auth/signin (POST)', async () => {
     const signInDto: SignInDTO = { username: 'test', password: 'Test1234' };
+    const createEmployeeDto: CreateEmployeeDTO = {
+      ...signInDto,
+      role: Role.STAFF,
+    };
 
-    await empRepo.createAndSave(signInDto);
+    await empRepo.createAndSave(createEmployeeDto);
     const loginRes = await request(app.getHttpServer())
       .post('/auth/signin')
       .send(signInDto)

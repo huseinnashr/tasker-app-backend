@@ -1,6 +1,7 @@
 import { Entity, Unique, PrimaryGeneratedColumn, Column } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
+import { Role } from './role.enum';
 
 @Entity()
 @Unique(['username'])
@@ -10,6 +11,9 @@ export class Employee {
 
   @Column()
   username: string;
+
+  @Column()
+  role: Role;
 
   @Column()
   @Exclude()
