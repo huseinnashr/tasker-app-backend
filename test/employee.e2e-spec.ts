@@ -3,10 +3,13 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/employee/employee.repository';
+import { JwtService } from '@nestjs/jwt';
+import { signUp } from './helper';
 
 describe('EmployeeController (e2e)', () => {
   let app: INestApplication;
   let empRepo: EmployeeRepository;
+  let jwtService: JwtService;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -14,6 +17,7 @@ describe('EmployeeController (e2e)', () => {
     }).compile();
 
     empRepo = moduleRef.get<EmployeeRepository>(EmployeeRepository);
+    jwtService = moduleRef.get<JwtService>(JwtService);
     app = moduleRef.createNestApplication();
     await app.init();
   });
@@ -23,10 +27,13 @@ describe('EmployeeController (e2e)', () => {
   });
 
   it('/employee (GET)', async () => {
-    await empRepo.createAndSave({ username: 'test1', password: 'Test1234' });
+    const [auth] = await signUp(empRepo, jwtService, {
+      username: 'test',
+    });
 
     await request(app.getHttpServer())
       .get('/employee')
-      .expect(401);
+      .set({ Authorization: auth })
+      .expect(200);
   });
 });
