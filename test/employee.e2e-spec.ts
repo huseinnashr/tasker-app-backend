@@ -6,6 +6,7 @@ import { EmployeeRepository } from '../src/employee/employee.repository';
 import { JwtService } from '@nestjs/jwt';
 import { signUp } from './helper';
 import { Role } from '../src/employee/role.enum';
+import { CreateEmployeeDTO } from '../src/employee/employee.dto';
 
 describe('EmployeeController (e2e)', () => {
   let app: INestApplication;
@@ -28,14 +29,32 @@ describe('EmployeeController (e2e)', () => {
   });
 
   it('/employee (GET)', async () => {
-    const [auth] = await signUp(empRepo, jwtService, {
-      username: 'test',
-      role: Role.ADMIN,
-    });
+    const signUpDTO = { username: 'test', role: Role.ADMIN };
+    const [auth] = await signUp(empRepo, jwtService, signUpDTO);
 
     await request(app.getHttpServer())
       .get('/employee')
       .set({ Authorization: auth })
       .expect(200);
+  });
+
+  it('/employee (POST)', async () => {
+    const signUpDTO = { username: 'test', role: Role.ADMIN };
+    const [auth] = await signUp(empRepo, jwtService, signUpDTO);
+
+    const createDTO: CreateEmployeeDTO = {
+      username: 'John',
+      password: 'Test1234',
+      role: Role.STAFF,
+    };
+    await request(app.getHttpServer())
+      .post('/employee')
+      .send(createDTO)
+      .set({ Authorization: auth })
+      .expect(201);
+
+    const [employees, count] = await empRepo.findAndCount();
+    expect(employees[count - 1].username).toBe(createDTO.username);
+    expect(count).toBe(2);
   });
 });
