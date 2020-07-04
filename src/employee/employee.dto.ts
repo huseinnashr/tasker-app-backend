@@ -24,3 +24,5 @@ export class CreateEmployeeDTO {
   @IsEnum(Role)
   role: Role;
 }
+
+export class UpdateEmployeeDTO extends CreateEmployeeDTO {}

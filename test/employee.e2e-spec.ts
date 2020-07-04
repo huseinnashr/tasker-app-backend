@@ -6,7 +6,10 @@ import { EmployeeRepository } from '../src/employee/employee.repository';
 import { JwtService } from '@nestjs/jwt';
 import { AuthHelper } from './helper';
 import { Role } from '../src/employee/role.enum';
-import { CreateEmployeeDTO } from '../src/employee/employee.dto';
+import {
+  CreateEmployeeDTO,
+  UpdateEmployeeDTO,
+} from '../src/employee/employee.dto';
 
 describe('EmployeeController (e2e)', () => {
   let app: INestApplication;
@@ -72,5 +75,47 @@ describe('EmployeeController (e2e)', () => {
 
     it('returns 403 Forbidden when not admin', async () =>
       auth.signUpTestForbidden('POST', '/employee'));
+  });
+
+  describe('/employee/:id (PATCH)', () => {
+    it('create new employee', async () => {
+      const signUpDTO = { username: 'test', role: Role.ADMIN };
+      const [token] = await auth.signUp(signUpDTO);
+
+      const createDTO: CreateEmployeeDTO = {
+        username: 'John',
+        password: 'Test1234',
+        role: Role.STAFF,
+      };
+      const employee = await empRepo.createAndSave(createDTO);
+      const updateDto: UpdateEmployeeDTO = { ...createDTO, username: 'Jane' };
+      await request(app.getHttpServer())
+        .put('/employee/' + employee.id)
+        .send(updateDto)
+        .set({ Authorization: token })
+        .expect(200);
+
+      const updatedEmployee = await empRepo.findOne(employee.id);
+      expect(updatedEmployee.username).toBe(updateDto.username);
+    });
+
+    it('return 404 NotFound when the employee does not exist', async () => {
+      const signUpDTO = { username: 'test', role: Role.ADMIN };
+      const [token] = await auth.signUp(signUpDTO);
+
+      const updateDto: UpdateEmployeeDTO = {
+        username: 'Jane',
+        role: Role.STAFF,
+        password: 'Test1234',
+      };
+      await request(app.getHttpServer())
+        .put('/employee/999999')
+        .send(updateDto)
+        .set({ Authorization: token })
+        .expect(404);
+    });
+
+    it('returns 403 Forbidden when not admin', async () =>
+      auth.signUpTestForbidden('PUT', '/employee/999999'));
   });
 });
