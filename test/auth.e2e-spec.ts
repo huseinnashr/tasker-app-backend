@@ -6,10 +6,14 @@ import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/employee/employee.repository';
 import { CreateEmployeeDTO } from '../src/employee/employee.dto';
 import { Role } from '../src/employee/role.enum';
+import { AuthHelper } from './helper';
+import { JwtService } from '@nestjs/jwt';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let empRepo: EmployeeRepository;
+  let jwtService: JwtService;
+  let auth: AuthHelper;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -17,38 +21,73 @@ describe('AuthController (e2e)', () => {
     }).compile();
 
     empRepo = moduleRef.get<EmployeeRepository>(EmployeeRepository);
+    jwtService = moduleRef.get<JwtService>(JwtService);
     app = moduleRef.createNestApplication();
     await app.init();
+
+    auth = new AuthHelper(empRepo, jwtService, app);
   });
 
   afterEach(async () => {
     await app.close();
   });
 
-  it('/auth/signin (POST)', async () => {
-    const signInDto: SignInDTO = { username: 'test', password: 'Test1234' };
-    const createEmployeeDto: CreateEmployeeDTO = {
-      ...signInDto,
-      role: Role.STAFF,
-    };
+  describe('/auth/signin (POST)', () => {
+    it('returns employee and access token', async () => {
+      const signInDto: SignInDTO = { username: 'test', password: 'Test1234' };
+      const createEmployeeDto: CreateEmployeeDTO = {
+        ...signInDto,
+        role: Role.STAFF,
+      };
 
-    await empRepo.createAndSave(createEmployeeDto);
-    const loginRes = await request(app.getHttpServer())
-      .post('/auth/signin')
-      .send(signInDto)
-      .expect(200);
+      await empRepo.createAndSave(createEmployeeDto);
+      const loginRes = await request(app.getHttpServer())
+        .post('/auth/signin')
+        .send(signInDto)
+        .expect(200);
 
-    expect(loginRes.body.accessToken).toBeDefined();
+      expect(loginRes.body.accessToken).toBeDefined();
+      expect(loginRes.body.employee).toBeDefined();
+    });
 
-    await request(app.getHttpServer())
-      .get('/auth/current')
-      .set('Authorization', `Bearer ${loginRes.body.accessToken}`)
-      .expect(200);
+    it('returns 401 Unauthorized when account was not found / wrong password', async () => {
+      const signInDto: SignInDTO = { username: 'test', password: 'Test1234' };
+
+      await request(app.getHttpServer())
+        .post('/auth/signin')
+        .send(signInDto)
+        .expect(401);
+
+      const createEmployeeDto: CreateEmployeeDTO = {
+        ...signInDto,
+        role: Role.STAFF,
+      };
+
+      await empRepo.createAndSave(createEmployeeDto);
+      await request(app.getHttpServer())
+        .post('/auth/signin')
+        .send({ ...signInDto, password: 'Wrong1234' })
+        .expect(401);
+    });
   });
 
-  it('/auth/current (GET)', async () => {
-    await request(app.getHttpServer())
-      .get('/auth/current')
-      .expect(401);
+  describe('/auth/current (GET)', () => {
+    it('returns current user', async () => {
+      const signUpDTO = { username: 'test', role: Role.ADMIN };
+      const [token] = await auth.signUp(signUpDTO);
+
+      const currentRes = await request(app.getHttpServer())
+        .get('/auth/current')
+        .set({ Authorization: token })
+        .expect(200);
+
+      expect(currentRes.body.username).toBe(signUpDTO.username);
+    });
+
+    it('returns 401 when not logged in', async () => {
+      await request(app.getHttpServer())
+        .get('/auth/current')
+        .expect(401);
+    });
   });
 });
