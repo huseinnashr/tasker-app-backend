@@ -1,5 +1,14 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import {
+  createParamDecorator,
+  ExecutionContext,
+  applyDecorators,
+  SetMetadata,
+  UseGuards,
+} from '@nestjs/common';
 import { Employee } from '../employee/employee.entity';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from './roles.guard';
+import { Role } from '../employee/role.enum';
 
 export const CurrentEmployee = createParamDecorator(
   (_, ctx: ExecutionContext): Employee => {
@@ -7,3 +16,10 @@ export const CurrentEmployee = createParamDecorator(
     return request.user;
   },
 );
+
+export function Auth(...roles: Role[]): any {
+  return applyDecorators(
+    SetMetadata('roles', roles),
+    UseGuards(AuthGuard(), RolesGuard),
+  );
+}

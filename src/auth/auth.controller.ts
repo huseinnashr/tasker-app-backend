@@ -1,16 +1,8 @@
-import {
-  Controller,
-  Post,
-  Body,
-  HttpCode,
-  Get,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, Get } from '@nestjs/common';
 import { SignInDTO, SignInResponseDTO } from './auth.dto';
 import { AuthService } from './auth.service';
-import { CurrentEmployee } from './auth.decorator';
+import { CurrentEmployee, Auth } from './auth.decorator';
 import { Employee } from '../employee/employee.entity';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -23,7 +15,7 @@ export class AuthController {
   }
 
   @Get('/current')
-  @UseGuards(AuthGuard())
+  @Auth()
   currentUser(@CurrentEmployee() employee: Employee): Employee {
     return employee;
   }
