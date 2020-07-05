@@ -11,9 +11,17 @@ import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ProjectModule } from './project/project.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(TypeOrmConfig), AuthModule, EmployeeModule, ProjectModule],
+  imports: [
+    TypeOrmModule.forRoot(TypeOrmConfig),
+    AuthModule,
+    EmployeeModule,
+    ProjectModule,
+  ],
   providers: [
-    { provide: APP_PIPE, useClass: ValidationPipe },
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({ whitelist: true }),
+    },
     { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
   ],
 })
