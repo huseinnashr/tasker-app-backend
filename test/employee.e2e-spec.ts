@@ -84,7 +84,10 @@ describe('EmployeeController (e2e)', () => {
         role: Role.STAFF,
       };
       const employee = await empRepo.save(empRepo.create(createDTO));
-      const updateDto: UpdateEmployeeDTO = { ...createDTO, username: 'Jane' };
+      const updateDto: UpdateEmployeeDTO = {
+        role: Role.MANAGER,
+        username: 'Jane',
+      };
       await request(app.getHttpServer())
         .put('/employee/' + employee.id)
         .send(updateDto)
@@ -92,7 +95,7 @@ describe('EmployeeController (e2e)', () => {
         .expect(200);
 
       const updatedEmployee = await empRepo.findOne(employee.id);
-      expect(updatedEmployee.username).toBe(updateDto.username);
+      expect(updatedEmployee).toMatchObject(updateDto);
     });
 
     it('return 404 NotFound when the employee does not exist', async () => {

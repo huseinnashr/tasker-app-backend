@@ -4,10 +4,11 @@ import {
   MaxLength,
   Matches,
   IsEnum,
+  IsOptional,
 } from 'class-validator';
 import { Role } from './role.enum';
 
-export class CreateEmployeeDTO {
+abstract class ManagemEmployeeDTO {
   @IsString()
   @MinLength(4)
   @MaxLength(20)
@@ -19,10 +20,17 @@ export class CreateEmployeeDTO {
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
     message: 'password is too weak',
   })
-  password: string;
+  password?: string;
 
   @IsEnum(Role)
   role: Role;
 }
 
-export class UpdateEmployeeDTO extends CreateEmployeeDTO {}
+export class CreateEmployeeDTO extends ManagemEmployeeDTO {
+  password: string;
+}
+
+export class UpdateEmployeeDTO extends ManagemEmployeeDTO {
+  @IsOptional()
+  password?: string;
+}

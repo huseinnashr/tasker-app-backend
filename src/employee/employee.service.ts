@@ -36,7 +36,10 @@ export class EmployeeService {
 
     employee.username = username;
     employee.role = role;
-    employee.password = password;
+
+    if (password) {
+      employee.password = password;
+    }
 
     await this.empRepo.save(employee);
 
