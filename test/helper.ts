@@ -22,6 +22,7 @@ class AuthHelper {
     this.supertest = new SupertestHelper(app);
   }
 
+  //TODO: Partial SignUpDTO
   signUp = async (data: signUpDto) => {
     const employee = await this.empRepo.createAndSave({
       ...data,
@@ -36,6 +37,7 @@ class AuthHelper {
     await this.supertest.request(method, url).expect(401);
   };
 
+  //TODO: add forbidden role
   signUpTestForbidden = async (method: HTTPMethod, url: string) => {
     const signUpDTO = { username: 'testforbidden', role: Role.STAFF };
     const [auth] = await this.signUp(signUpDTO);
