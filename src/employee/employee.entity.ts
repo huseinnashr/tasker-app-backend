@@ -17,16 +17,11 @@ export class Employee {
 
   @Column()
   @Exclude()
-  private password: string;
+  password: string;
 
   @Column()
   @Exclude()
-  private salt: string;
-
-  async setPassword(password: string): Promise<void> {
-    this.salt = await bcrypt.genSalt();
-    this.password = await bcrypt.hash(password, this.salt);
-  }
+  salt: string;
 
   async validatePassowrd(password: string): Promise<boolean> {
     const hash = await bcrypt.hash(password, this.salt);

@@ -22,14 +22,12 @@ class AuthHelper {
     this.supertest = new SupertestHelper(app);
   }
 
-  //TODO: Partial SignUpDTO
   /** Create new employee account */
   signUp = async (data: signUpDto) => {
-    const employee = await this.empRepo.createAndSave({
-      ...data,
-      password: 'SecretPassword1234',
-    });
-    const accessToken = this.jwtService.sign({ username: data.username });
+    const employee = this.empRepo.create(data);
+    employee.password = 'SecretPassword1234';
+    await this.empRepo.save(employee);
+    const accessToken = this.jwtService.sign({ username: employee.username });
 
     return [`Bearer ${accessToken}`, employee];
   };

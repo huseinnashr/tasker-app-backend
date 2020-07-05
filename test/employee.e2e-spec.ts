@@ -78,13 +78,12 @@ describe('EmployeeController (e2e)', () => {
     it('updates the employee', async () => {
       const signUpDTO = { username: 'test', role: Role.ADMIN };
       const [token] = await auth.signUp(signUpDTO);
-
       const createDTO: CreateEmployeeDTO = {
         username: 'John',
         password: 'Test1234',
         role: Role.STAFF,
       };
-      const employee = await empRepo.createAndSave(createDTO);
+      const employee = await empRepo.save(empRepo.create(createDTO));
       const updateDto: UpdateEmployeeDTO = { ...createDTO, username: 'Jane' };
       await request(app.getHttpServer())
         .put('/employee/' + employee.id)
@@ -126,7 +125,7 @@ describe('EmployeeController (e2e)', () => {
         password: 'Test1234',
         role: Role.STAFF,
       };
-      const employee = await empRepo.createAndSave(createDTO);
+      const employee = await empRepo.save(createDTO);
       await request(app.getHttpServer())
         .delete('/employee/' + employee.id)
         .set({ Authorization: token })

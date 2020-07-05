@@ -15,7 +15,8 @@ export class EmployeeService {
   }
 
   async create(createDto: CreateEmployeeDTO): Promise<Employee> {
-    return this.empRepo.createAndSave(createDto);
+    const employee = this.empRepo.create(createDto);
+    return this.empRepo.save(employee);
   }
 
   async get(id: number): Promise<Employee> {
@@ -35,7 +36,7 @@ export class EmployeeService {
 
     employee.username = username;
     employee.role = role;
-    employee.setPassword(password);
+    employee.password = password;
 
     await this.empRepo.save(employee);
 

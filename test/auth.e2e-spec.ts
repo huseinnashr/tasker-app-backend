@@ -37,7 +37,7 @@ describe('AuthController (e2e)', () => {
         role: Role.STAFF,
       };
 
-      await empRepo.createAndSave(createEmployeeDto);
+      await empRepo.save(empRepo.create(createEmployeeDto));
       const loginRes = await request(app.getHttpServer())
         .post('/auth/signin')
         .send(signInDto)
@@ -60,7 +60,7 @@ describe('AuthController (e2e)', () => {
         role: Role.STAFF,
       };
 
-      await empRepo.createAndSave(createEmployeeDto);
+      await empRepo.save(empRepo.create(createEmployeeDto));
       await request(app.getHttpServer())
         .post('/auth/signin')
         .send({ ...signInDto, password: 'Wrong1234' })
