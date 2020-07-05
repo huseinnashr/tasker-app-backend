@@ -8,9 +8,10 @@ import { EmployeeModule } from './employee/employee.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfig } from './config/typeorm.config';
 import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { ProjectModule } from './project/project.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(TypeOrmConfig), AuthModule, EmployeeModule],
+  imports: [TypeOrmModule.forRoot(TypeOrmConfig), AuthModule, EmployeeModule, ProjectModule],
   providers: [
     { provide: APP_PIPE, useClass: ValidationPipe },
     { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
