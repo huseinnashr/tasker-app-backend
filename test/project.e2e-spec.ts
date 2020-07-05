@@ -68,6 +68,6 @@ describe('ProjectController (e2e)', () => {
     });
 
     it('returns 403 Forbidden when not manager', async () =>
-      auth.signUpTestForbidden('POST', '/project'));
+      auth.testForbidden(Role.STAFF, 'POST', '/project'));
   });
 });

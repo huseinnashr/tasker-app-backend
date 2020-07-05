@@ -23,6 +23,7 @@ class AuthHelper {
   }
 
   //TODO: Partial SignUpDTO
+  /** Create new employee account */
   signUp = async (data: signUpDto) => {
     const employee = await this.empRepo.createAndSave({
       ...data,
@@ -37,9 +38,9 @@ class AuthHelper {
     await this.supertest.request(method, url).expect(401);
   };
 
-  //TODO: add forbidden role
-  signUpTestForbidden = async (method: HTTPMethod, url: string) => {
-    const signUpDTO = { username: 'testforbidden', role: Role.STAFF };
+  /** Create new employee with role R and test if endpoint forbid role R employee.*/
+  testForbidden = async (role: Role, method: HTTPMethod, url: string) => {
+    const signUpDTO = { username: 'testforbidden', role };
     const [auth] = await this.signUp(signUpDTO);
 
     await this.supertest

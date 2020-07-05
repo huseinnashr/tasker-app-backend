@@ -46,7 +46,7 @@ describe('EmployeeController (e2e)', () => {
     });
 
     it('returns 403 Forbidden when not admin', async () =>
-      auth.signUpTestForbidden('GET', '/employee'));
+      auth.testForbidden(Role.STAFF, 'GET', '/employee'));
   });
 
   describe('/employee (POST)', () => {
@@ -71,7 +71,7 @@ describe('EmployeeController (e2e)', () => {
     });
 
     it('returns 403 Forbidden when not admin', async () =>
-      auth.signUpTestForbidden('POST', '/employee'));
+      auth.testForbidden(Role.STAFF, 'POST', '/employee'));
   });
 
   describe('/employee/:id (PUT)', () => {
@@ -113,7 +113,7 @@ describe('EmployeeController (e2e)', () => {
     });
 
     it('returns 403 Forbidden when not admin', async () =>
-      auth.signUpTestForbidden('PUT', '/employee/999999'));
+      auth.testForbidden(Role.STAFF, 'PUT', '/employee/999999'));
   });
 
   describe('/employee/:id (DELETE)', () => {
@@ -147,6 +147,6 @@ describe('EmployeeController (e2e)', () => {
     });
 
     it('returns 403 Forbidden when not admin', async () =>
-      auth.signUpTestForbidden('DELETE', '/employee/999999'));
+      auth.testForbidden(Role.STAFF, 'DELETE', '/employee/999999'));
   });
 });
