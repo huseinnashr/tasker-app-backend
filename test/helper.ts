@@ -12,13 +12,13 @@ interface signUpDto {
 }
 
 class AuthHelper {
+  private empRepo: EmployeeRepository;
+  private jwtService: JwtService;
   private supertest: SupertestHelper;
 
-  constructor(
-    private empRepo: EmployeeRepository,
-    private jwtService: JwtService,
-    private app: INestApplication,
-  ) {
+  constructor(app: INestApplication) {
+    this.empRepo = app.get(EmployeeRepository);
+    this.jwtService = app.get(JwtService);
     this.supertest = new SupertestHelper(app);
   }
 

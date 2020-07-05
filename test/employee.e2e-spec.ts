@@ -3,7 +3,6 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/employee/employee.repository';
-import { JwtService } from '@nestjs/jwt';
 import { AuthHelper } from './helper';
 import { Role } from '../src/employee/role.enum';
 import {
@@ -14,7 +13,6 @@ import {
 describe('EmployeeController (e2e)', () => {
   let app: INestApplication;
   let empRepo: EmployeeRepository;
-  let jwtService: JwtService;
   let auth: AuthHelper;
 
   beforeEach(async () => {
@@ -23,11 +21,10 @@ describe('EmployeeController (e2e)', () => {
     }).compile();
 
     empRepo = moduleRef.get<EmployeeRepository>(EmployeeRepository);
-    jwtService = moduleRef.get<JwtService>(JwtService);
     app = moduleRef.createNestApplication();
-    await app.init();
+    auth = new AuthHelper(app);
 
-    auth = new AuthHelper(empRepo, jwtService, app);
+    await app.init();
   });
 
   afterEach(async () => {

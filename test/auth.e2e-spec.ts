@@ -7,12 +7,10 @@ import { EmployeeRepository } from '../src/employee/employee.repository';
 import { CreateEmployeeDTO } from '../src/employee/employee.dto';
 import { Role } from '../src/employee/role.enum';
 import { AuthHelper } from './helper';
-import { JwtService } from '@nestjs/jwt';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let empRepo: EmployeeRepository;
-  let jwtService: JwtService;
   let auth: AuthHelper;
 
   beforeEach(async () => {
@@ -21,11 +19,10 @@ describe('AuthController (e2e)', () => {
     }).compile();
 
     empRepo = moduleRef.get<EmployeeRepository>(EmployeeRepository);
-    jwtService = moduleRef.get<JwtService>(JwtService);
     app = moduleRef.createNestApplication();
-    await app.init();
+    auth = new AuthHelper(app);
 
-    auth = new AuthHelper(empRepo, jwtService, app);
+    await app.init();
   });
 
   afterEach(async () => {
