@@ -5,12 +5,13 @@ import {
   Body,
   Param,
   ParseIntPipe,
+  Put,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { Auth } from '../auth/auth.decorator';
 import { Project } from './project.entity';
 import { Role } from '../employee/role.enum';
-import { CreateProjectDTO } from './project.dto';
+import { CreateProjectDTO, UpdateProjectDTO } from './project.dto';
 
 @Controller('project')
 export class ProjectController {
@@ -32,5 +33,14 @@ export class ProjectController {
   @Auth()
   async get(@Param('id', ParseIntPipe) id: number): Promise<Project> {
     return this.projectService.get(id);
+  }
+
+  @Put('/:id')
+  @Auth(Role.MANAGER)
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDto: UpdateProjectDTO,
+  ): Promise<Project> {
+    return this.projectService.update(id, updateDto);
   }
 }

@@ -5,7 +5,7 @@ import { AppModule } from '../src/app.module';
 import { ProjectRepository } from '../src/project/project.repository';
 import { AuthHelper } from './helper';
 import { Role } from '../src/employee/role.enum';
-import { CreateProjectDTO } from '../src/project/project.dto';
+import { CreateProjectDTO, UpdateProjectDTO } from '../src/project/project.dto';
 import { Status } from '../src/project/status.enum';
 
 describe('ProjectController (e2e)', () => {
@@ -93,5 +93,34 @@ describe('ProjectController (e2e)', () => {
 
     it('returns 401 Unauthorized when not logged in', async () =>
       auth.testUnauthorized('GET', '/project/1'));
+  });
+
+  describe('/project/:id (PUT)', () => {
+    it('returns a project with given id', async () => {
+      const signUpDTO = { username: 'test', role: Role.MANAGER };
+      const [token] = await auth.signUp(signUpDTO);
+
+      const project = await proRepo.save(
+        proRepo.create({
+          title: 'New Project',
+          body: 'project body',
+          status: Status.IN_PROGRESS,
+        }),
+      );
+      const updateDto: UpdateProjectDTO = {
+        title: 'Project v2',
+        body: 'updated project body',
+      };
+      const res = await request(app.getHttpServer())
+        .put('/project/' + project.id)
+        .send(updateDto)
+        .set({ Authorization: token })
+        .expect(200);
+
+      expect(res.body).toMatchObject(updateDto);
+    });
+
+    it('returns 403 Forbidden when not manager', async () =>
+      auth.testForbidden(Role.STAFF, 'PUT', '/project/1'));
   });
 });

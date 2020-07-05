@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectRepository } from './project.repository';
 import { Project } from './project.entity';
-import { CreateProjectDTO } from './project.dto';
+import { CreateProjectDTO, UpdateProjectDTO } from './project.dto';
 import { Status } from './status.enum';
 
 @Injectable()
@@ -28,6 +28,17 @@ export class ProjectService {
     if (!project) {
       throw new NotFoundException(`Project with id:${id} was not found`);
     }
+
+    return project;
+  }
+
+  async update(id: number, updateDto: UpdateProjectDTO): Promise<Project> {
+    const project = await this.get(id);
+
+    project.title = updateDto.title;
+    project.body = updateDto.body;
+
+    await this.proRepo.save(project);
 
     return project;
   }
