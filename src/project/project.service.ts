@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectRepository } from './project.repository';
 import { Project } from './project.entity';
@@ -20,5 +20,15 @@ export class ProjectService {
     project.status = Status.IN_PROGRESS;
 
     return this.proRepo.save(project);
+  }
+
+  async get(id: number): Promise<Project> {
+    const project = await this.proRepo.findOne(id);
+
+    if (!project) {
+      throw new NotFoundException(`Project with id:${id} was not found`);
+    }
+
+    return project;
   }
 }

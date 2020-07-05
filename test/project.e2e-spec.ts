@@ -70,4 +70,28 @@ describe('ProjectController (e2e)', () => {
     it('returns 403 Forbidden when not manager', async () =>
       auth.testForbidden(Role.STAFF, 'POST', '/project'));
   });
+
+  describe('/project/:id (GET)', () => {
+    it('returns a project with given id', async () => {
+      const signUpDTO = { username: 'test', role: Role.STAFF };
+      const [token] = await auth.signUp(signUpDTO);
+
+      const project = await proRepo.save(
+        proRepo.create({
+          title: 'New Project',
+          body: 'project body',
+          status: Status.IN_PROGRESS,
+        }),
+      );
+      const res = await request(app.getHttpServer())
+        .get('/project/' + project.id)
+        .set({ Authorization: token })
+        .expect(200);
+
+      expect(res.body).toMatchObject(project);
+    });
+
+    it('returns 401 Unauthorized when not logged in', async () =>
+      auth.testUnauthorized('GET', '/project/1'));
+  });
 });

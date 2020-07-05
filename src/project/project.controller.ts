@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { Auth } from '../auth/auth.decorator';
 import { Project } from './project.entity';
@@ -19,5 +26,11 @@ export class ProjectController {
   @Auth(Role.MANAGER)
   async create(@Body() createDto: CreateProjectDTO): Promise<Project> {
     return this.projectService.create(createDto);
+  }
+
+  @Get('/:id')
+  @Auth()
+  async get(@Param('id', ParseIntPipe) id: number): Promise<Project> {
+    return this.projectService.get(id);
   }
 }
