@@ -41,4 +41,10 @@ export class EmployeeService {
 
     return employee;
   }
+
+  async delete(id: number): Promise<void> {
+    const employee = await this.get(id);
+
+    await this.empRepo.remove(employee);
+  }
 }

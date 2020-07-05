@@ -77,8 +77,8 @@ describe('EmployeeController (e2e)', () => {
       auth.signUpTestForbidden('POST', '/employee'));
   });
 
-  describe('/employee/:id (PATCH)', () => {
-    it('create new employee', async () => {
+  describe('/employee/:id (PUT)', () => {
+    it('updates the employee', async () => {
       const signUpDTO = { username: 'test', role: Role.ADMIN };
       const [token] = await auth.signUp(signUpDTO);
 
@@ -117,5 +117,39 @@ describe('EmployeeController (e2e)', () => {
 
     it('returns 403 Forbidden when not admin', async () =>
       auth.signUpTestForbidden('PUT', '/employee/999999'));
+  });
+
+  describe('/employee/:id (DELETE)', () => {
+    it('deletes the employee', async () => {
+      const signUpDTO = { username: 'test', role: Role.ADMIN };
+      const [token] = await auth.signUp(signUpDTO);
+
+      const createDTO: CreateEmployeeDTO = {
+        username: 'John',
+        password: 'Test1234',
+        role: Role.STAFF,
+      };
+      const employee = await empRepo.createAndSave(createDTO);
+      await request(app.getHttpServer())
+        .delete('/employee/' + employee.id)
+        .set({ Authorization: token })
+        .expect(200);
+
+      const deletedEmployee = await empRepo.findOne(employee.id);
+      expect(deletedEmployee).toBeUndefined();
+    });
+
+    it('return 404 NotFound when the employee does not exist', async () => {
+      const signUpDTO = { username: 'test', role: Role.ADMIN };
+      const [token] = await auth.signUp(signUpDTO);
+
+      await request(app.getHttpServer())
+        .delete('/employee/999999')
+        .set({ Authorization: token })
+        .expect(404);
+    });
+
+    it('returns 403 Forbidden when not admin', async () =>
+      auth.signUpTestForbidden('DELETE', '/employee/999999'));
   });
 });

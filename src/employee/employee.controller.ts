@@ -6,6 +6,7 @@ import {
   Param,
   Put,
   HttpCode,
+  Delete,
 } from '@nestjs/common';
 import { Employee } from './employee.entity';
 import { EmployeeService } from './employee.service';
@@ -37,5 +38,11 @@ export class EmployeeController {
     @Body() employee: UpdateEmployeeDTO,
   ): Promise<Employee> {
     return this.empService.update(id, employee);
+  }
+
+  @Delete('/:id')
+  @Auth(Role.ADMIN)
+  async delete(@Param('id') id: number): Promise<void> {
+    return this.empService.delete(id);
   }
 }
