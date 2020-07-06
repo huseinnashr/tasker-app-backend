@@ -44,4 +44,10 @@ export class ProjectService {
 
     return project;
   }
+
+  async delete(id: number): Promise<Project> {
+    const project = await this.get(id);
+
+    return this.proRepo.remove(project);
+  }
 }

@@ -123,4 +123,37 @@ describe('ProjectController (e2e)', () => {
     it('returns 403 Forbidden when not manager', async () =>
       auth.testForbidden(Role.STAFF, 'PUT', '/project/1'));
   });
+
+  describe('/project/:id (DELETE)', () => {
+    it('deletes the project', async () => {
+      const signUpDTO = { username: 'test', role: Role.MANAGER };
+      const [token] = await auth.signUp(signUpDTO);
+
+      const project = await proRepo.save({
+        title: 'New Project',
+        body: 'project body',
+        status: Status.IN_PROGRESS,
+      });
+      await request(app.getHttpServer())
+        .delete('/project/' + project.id)
+        .set({ Authorization: token })
+        .expect(200);
+
+      const deletedProject = await proRepo.findOne(project.id);
+      expect(deletedProject).toBeUndefined();
+    });
+
+    it('return 404 NotFound when the project does not exist', async () => {
+      const signUpDTO = { username: 'test', role: Role.MANAGER };
+      const [token] = await auth.signUp(signUpDTO);
+
+      await request(app.getHttpServer())
+        .delete('/project/999999')
+        .set({ Authorization: token })
+        .expect(404);
+    });
+
+    it('returns 403 Forbidden when not admin', async () =>
+      auth.testForbidden(Role.STAFF, 'DELETE', '/project/1'));
+  });
 });

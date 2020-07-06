@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Put,
+  Delete,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { Auth } from '../auth/auth.decorator';
@@ -42,5 +43,11 @@ export class ProjectController {
     @Body() updateDto: UpdateProjectDTO,
   ): Promise<Project> {
     return this.projectService.update(id, updateDto);
+  }
+
+  @Delete('/:id')
+  @Auth(Role.MANAGER)
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<Project> {
+    return this.projectService.delete(id);
   }
 }
