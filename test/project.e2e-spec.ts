@@ -5,7 +5,11 @@ import { AppModule } from '../src/app.module';
 import { ProjectRepository } from '../src/project/project.repository';
 import { AuthHelper } from './helper';
 import { Role } from '../src/employee/role.enum';
-import { CreateProjectDTO, UpdateProjectDTO } from '../src/project/project.dto';
+import {
+  CreateProjectDTO,
+  UpdateProjectDTO,
+  ProjectStatusDTO,
+} from '../src/project/project.dto';
 import { Status } from '../src/project/status.enum';
 
 describe('ProjectController (e2e)', () => {
@@ -96,7 +100,7 @@ describe('ProjectController (e2e)', () => {
   });
 
   describe('/project/:id (PUT)', () => {
-    it('returns a project with given id', async () => {
+    it('update the project with given id', async () => {
       const signUpDTO = { username: 'test', role: Role.MANAGER };
       const [token] = await auth.signUp(signUpDTO);
 
@@ -118,6 +122,34 @@ describe('ProjectController (e2e)', () => {
         .expect(200);
 
       expect(res.body).toMatchObject(updateDto);
+    });
+
+    it('returns 403 Forbidden when not manager', async () =>
+      auth.testForbidden(Role.STAFF, 'PUT', '/project/1'));
+  });
+
+  describe('/project/:id/status (PUT)', () => {
+    it('update the project status and returns updated project', async () => {
+      const signUpDTO = { username: 'test', role: Role.MANAGER };
+      const [token] = await auth.signUp(signUpDTO);
+
+      const project = await proRepo.save(
+        proRepo.create({
+          title: 'New Project',
+          body: 'project body',
+          status: Status.IN_PROGRESS,
+        }),
+      );
+      const statusDto: ProjectStatusDTO = {
+        status: Status.DONE,
+      };
+      const res = await request(app.getHttpServer())
+        .put('/project/' + project.id + '/status')
+        .send(statusDto)
+        .set({ Authorization: token })
+        .expect(200);
+
+      expect(res.body).toMatchObject(statusDto);
     });
 
     it('returns 403 Forbidden when not manager', async () =>

@@ -12,7 +12,11 @@ import { ProjectService } from './project.service';
 import { Auth } from '../auth/auth.decorator';
 import { Project } from './project.entity';
 import { Role } from '../employee/role.enum';
-import { CreateProjectDTO, UpdateProjectDTO } from './project.dto';
+import {
+  CreateProjectDTO,
+  UpdateProjectDTO,
+  ProjectStatusDTO,
+} from './project.dto';
 
 @Controller('project')
 export class ProjectController {
@@ -43,6 +47,15 @@ export class ProjectController {
     @Body() updateDto: UpdateProjectDTO,
   ): Promise<Project> {
     return this.projectService.update(id, updateDto);
+  }
+
+  @Put('/:id/status')
+  @Auth(Role.MANAGER)
+  async updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() statusDto: ProjectStatusDTO,
+  ): Promise<Project> {
+    return this.projectService.updateStatus(id, statusDto);
   }
 
   @Delete('/:id')
