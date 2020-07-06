@@ -6,12 +6,12 @@ import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/employee/employee.repository';
 import { CreateEmployeeDTO } from '../src/employee/employee.dto';
 import { Role } from '../src/employee/role.enum';
-import { AuthHelper } from './helper';
+import { TestHelper } from './helper/test.helper';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let empRepo: EmployeeRepository;
-  let auth: AuthHelper;
+  let test: TestHelper;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -20,7 +20,7 @@ describe('AuthController (e2e)', () => {
 
     empRepo = moduleRef.get<EmployeeRepository>(EmployeeRepository);
     app = moduleRef.createNestApplication();
-    auth = new AuthHelper(app);
+    test = new TestHelper(app);
 
     await app.init();
   });
@@ -71,7 +71,7 @@ describe('AuthController (e2e)', () => {
   describe('/auth/current (GET)', () => {
     it('returns current user', async () => {
       const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token] = await auth.signUp(signUpDTO);
+      const [token] = await test.signUp(signUpDTO);
 
       const currentRes = await request(app.getHttpServer())
         .get('/auth/current')

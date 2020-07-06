@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/employee/employee.repository';
-import { AuthHelper } from './helper';
+import { TestHelper } from './helper/test.helper';
 import { Role } from '../src/employee/role.enum';
 import {
   CreateEmployeeDTO,
@@ -13,7 +13,7 @@ import {
 describe('EmployeeController (e2e)', () => {
   let app: INestApplication;
   let empRepo: EmployeeRepository;
-  let auth: AuthHelper;
+  let test: TestHelper;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -22,7 +22,7 @@ describe('EmployeeController (e2e)', () => {
 
     empRepo = moduleRef.get<EmployeeRepository>(EmployeeRepository);
     app = moduleRef.createNestApplication();
-    auth = new AuthHelper(app);
+    test = new TestHelper(app);
 
     await app.init();
   });
@@ -32,12 +32,12 @@ describe('EmployeeController (e2e)', () => {
   });
 
   it('returns 401 Unauthorized when not logged in', async () =>
-    auth.testUnauthorized('GET', '/employee'));
+    test.unauthorized('GET', '/employee'));
 
   describe('/employee (GET)', () => {
     it('returns list of employee', async () => {
       const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token] = await auth.signUp(signUpDTO);
+      const [token] = await test.signUp(signUpDTO);
 
       await request(app.getHttpServer())
         .get('/employee')
@@ -46,13 +46,13 @@ describe('EmployeeController (e2e)', () => {
     });
 
     it('returns 403 Forbidden when not admin', async () =>
-      auth.testForbidden(Role.STAFF, 'GET', '/employee'));
+      test.forbidden(Role.STAFF, 'GET', '/employee'));
   });
 
   describe('/employee (POST)', () => {
     it('create new employee', async () => {
       const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token] = await auth.signUp(signUpDTO);
+      const [token] = await test.signUp(signUpDTO);
 
       const createDTO: CreateEmployeeDTO = {
         username: 'John',
@@ -71,13 +71,13 @@ describe('EmployeeController (e2e)', () => {
     });
 
     it('returns 403 Forbidden when not admin', async () =>
-      auth.testForbidden(Role.STAFF, 'POST', '/employee'));
+      test.forbidden(Role.STAFF, 'POST', '/employee'));
   });
 
   describe('/employee/:id (PUT)', () => {
     it('updates the employee', async () => {
       const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token] = await auth.signUp(signUpDTO);
+      const [token] = await test.signUp(signUpDTO);
       const createDTO: CreateEmployeeDTO = {
         username: 'John',
         password: 'Test1234',
@@ -100,7 +100,7 @@ describe('EmployeeController (e2e)', () => {
 
     it('return 404 NotFound when the employee does not exist', async () => {
       const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token] = await auth.signUp(signUpDTO);
+      const [token] = await test.signUp(signUpDTO);
 
       const updateDto: UpdateEmployeeDTO = {
         username: 'Jane',
@@ -115,13 +115,13 @@ describe('EmployeeController (e2e)', () => {
     });
 
     it('returns 403 Forbidden when not admin', async () =>
-      auth.testForbidden(Role.STAFF, 'PUT', '/employee/999999'));
+      test.forbidden(Role.STAFF, 'PUT', '/employee/999999'));
   });
 
   describe('/employee/:id (DELETE)', () => {
     it('deletes the employee', async () => {
       const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token] = await auth.signUp(signUpDTO);
+      const [token] = await test.signUp(signUpDTO);
 
       const createDTO: CreateEmployeeDTO = {
         username: 'John',
@@ -140,7 +140,7 @@ describe('EmployeeController (e2e)', () => {
 
     it('return 404 NotFound when the employee does not exist', async () => {
       const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token] = await auth.signUp(signUpDTO);
+      const [token] = await test.signUp(signUpDTO);
 
       await request(app.getHttpServer())
         .delete('/employee/999999')
@@ -149,6 +149,6 @@ describe('EmployeeController (e2e)', () => {
     });
 
     it('returns 403 Forbidden when not admin', async () =>
-      auth.testForbidden(Role.STAFF, 'DELETE', '/employee/999999'));
+      test.forbidden(Role.STAFF, 'DELETE', '/employee/999999'));
   });
 });

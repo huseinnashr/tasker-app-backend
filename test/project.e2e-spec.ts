@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { ProjectRepository } from '../src/project/project.repository';
-import { AuthHelper } from './helper';
+import { TestHelper } from './helper/test.helper';
 import { Role } from '../src/employee/role.enum';
 import {
   CreateProjectDTO,
@@ -15,7 +15,7 @@ import { Status } from '../src/project/status.enum';
 describe('ProjectController (e2e)', () => {
   let app: INestApplication;
   let proRepo: ProjectRepository;
-  let auth: AuthHelper;
+  let test: TestHelper;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -24,7 +24,7 @@ describe('ProjectController (e2e)', () => {
 
     proRepo = moduleRef.get<ProjectRepository>(ProjectRepository);
     app = moduleRef.createNestApplication();
-    auth = new AuthHelper(app);
+    test = new TestHelper(app);
 
     await app.init();
   });
@@ -36,7 +36,7 @@ describe('ProjectController (e2e)', () => {
   describe('/project (GET)', () => {
     it('returns list of project', async () => {
       const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token] = await auth.signUp(signUpDTO);
+      const [token] = await test.signUp(signUpDTO);
 
       await request(app.getHttpServer())
         .get('/project')
@@ -45,13 +45,13 @@ describe('ProjectController (e2e)', () => {
     });
 
     it('returns 401 Unauthorized when not logged in', async () =>
-      auth.testUnauthorized('GET', '/project'));
+      test.unauthorized('GET', '/project'));
   });
 
   describe('/project (POST)', () => {
     it('creates new project & returns it', async () => {
       const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token] = await auth.signUp(signUpDTO);
+      const [token] = await test.signUp(signUpDTO);
 
       const createDto: CreateProjectDTO = {
         title: 'New Project',
@@ -72,13 +72,13 @@ describe('ProjectController (e2e)', () => {
     });
 
     it('returns 403 Forbidden when not manager', async () =>
-      auth.testForbidden(Role.STAFF, 'POST', '/project'));
+      test.forbidden(Role.STAFF, 'POST', '/project'));
   });
 
   describe('/project/:id (GET)', () => {
     it('returns a project with given id', async () => {
       const signUpDTO = { username: 'test', role: Role.STAFF };
-      const [token] = await auth.signUp(signUpDTO);
+      const [token] = await test.signUp(signUpDTO);
 
       const project = await proRepo.save(
         proRepo.create({
@@ -96,13 +96,13 @@ describe('ProjectController (e2e)', () => {
     });
 
     it('returns 401 Unauthorized when not logged in', async () =>
-      auth.testUnauthorized('GET', '/project/1'));
+      test.unauthorized('GET', '/project/1'));
   });
 
   describe('/project/:id (PUT)', () => {
     it('update the project with given id', async () => {
       const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token] = await auth.signUp(signUpDTO);
+      const [token] = await test.signUp(signUpDTO);
 
       const project = await proRepo.save(
         proRepo.create({
@@ -125,13 +125,13 @@ describe('ProjectController (e2e)', () => {
     });
 
     it('returns 403 Forbidden when not manager', async () =>
-      auth.testForbidden(Role.STAFF, 'PUT', '/project/1'));
+      test.forbidden(Role.STAFF, 'PUT', '/project/1'));
   });
 
   describe('/project/:id/status (PUT)', () => {
     it('update the project status and returns updated project', async () => {
       const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token] = await auth.signUp(signUpDTO);
+      const [token] = await test.signUp(signUpDTO);
 
       const project = await proRepo.save(
         proRepo.create({
@@ -153,13 +153,13 @@ describe('ProjectController (e2e)', () => {
     });
 
     it('returns 403 Forbidden when not manager', async () =>
-      auth.testForbidden(Role.STAFF, 'PUT', '/project/1'));
+      test.forbidden(Role.STAFF, 'PUT', '/project/1'));
   });
 
   describe('/project/:id (DELETE)', () => {
     it('deletes the project', async () => {
       const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token] = await auth.signUp(signUpDTO);
+      const [token] = await test.signUp(signUpDTO);
 
       const project = await proRepo.save({
         title: 'New Project',
@@ -177,7 +177,7 @@ describe('ProjectController (e2e)', () => {
 
     it('return 404 NotFound when the project does not exist', async () => {
       const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token] = await auth.signUp(signUpDTO);
+      const [token] = await test.signUp(signUpDTO);
 
       await request(app.getHttpServer())
         .delete('/project/999999')
@@ -186,6 +186,6 @@ describe('ProjectController (e2e)', () => {
     });
 
     it('returns 403 Forbidden when not admin', async () =>
-      auth.testForbidden(Role.STAFF, 'DELETE', '/project/1'));
+      test.forbidden(Role.STAFF, 'DELETE', '/project/1'));
   });
 });
