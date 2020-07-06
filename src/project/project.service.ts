@@ -16,7 +16,9 @@ export class ProjectService {
   }
 
   async create(createDto: CreateProjectDTO): Promise<Project> {
-    const project = this.proRepo.create(createDto);
+    const project = new Project();
+    project.title = createDto.title;
+    project.body = createDto.body;
     project.status = Status.IN_PROGRESS;
 
     return this.proRepo.save(project);
