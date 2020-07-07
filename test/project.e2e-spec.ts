@@ -11,6 +11,7 @@ import {
   ProjectStatusDTO,
 } from '../src/project/project.dto';
 import { Status } from '../src/project/status.enum';
+import { ProjectMemberRole } from '../src/project/project-member-role.enum';
 
 describe('ProjectController (e2e)', () => {
   let app: INestApplication;
@@ -51,7 +52,7 @@ describe('ProjectController (e2e)', () => {
   describe('/project (POST)', () => {
     it('creates new project & returns it', async () => {
       const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token] = await test.signUp(signUpDTO);
+      const [token, employee] = await test.signUp(signUpDTO);
 
       const createDto: CreateProjectDTO = {
         title: 'New Project',
@@ -63,10 +64,15 @@ describe('ProjectController (e2e)', () => {
         .set({ Authorization: token })
         .expect(201);
 
-      const [projects, count] = await proRepo.findAndCount();
+      const [projects, count] = await proRepo.findAndCount({
+        relations: ['projectMember'],
+      });
       expect(projects[0]).toMatchObject({
         ...createDto,
         status: Status.IN_PROGRESS,
+        projectMember: [
+          { employeeId: employee.id, role: ProjectMemberRole.MANAGER },
+        ],
       });
       expect(count).toBe(1);
     });

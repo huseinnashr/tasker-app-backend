@@ -8,23 +8,39 @@ import {
   ProjectStatusDTO,
 } from './project.dto';
 import { Status } from './status.enum';
+import { Employee } from '../employee/employee.entity';
+import { ProjectMember } from './project-member.entity';
+import { ProjectMemberRole } from './project-member-role.enum';
+import { getRepository } from 'typeorm';
 
 @Injectable()
 export class ProjectService {
   constructor(
-    @InjectRepository(ProjectRepository) private proRepo: ProjectRepository,
+    @InjectRepository(ProjectRepository)
+    private proRepo: ProjectRepository,
   ) {}
 
   async getAll(): Promise<Project[]> {
     return this.proRepo.find();
   }
 
-  async create(createDto: CreateProjectDTO): Promise<Project> {
+  async create(
+    createDto: CreateProjectDTO,
+    employe: Employee,
+  ): Promise<Project> {
     const project = new Project();
     project.title = createDto.title;
     project.body = createDto.body;
     project.status = Status.IN_PROGRESS;
+    await this.proRepo.save(project);
 
+    const projectMember = new ProjectMember();
+    projectMember.projectId = project.id;
+    projectMember.employeeId = employe.id;
+    projectMember.role = ProjectMemberRole.MANAGER;
+    await getRepository(ProjectMember).save(projectMember);
+
+    project.projectMember = [projectMember];
     return this.proRepo.save(project);
   }
 

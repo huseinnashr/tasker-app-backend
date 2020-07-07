@@ -2,6 +2,7 @@ import { JwtService } from '@nestjs/jwt';
 import { INestApplication } from '@nestjs/common';
 import { EmployeeRepository } from '../../src/employee/employee.repository';
 import { Role } from '../../src/employee/role.enum';
+import { Employee } from '../../src/employee/employee.entity';
 
 interface SignUpDTO {
   username: string;
@@ -17,7 +18,7 @@ class AuthHelper {
     this.jwtService = app.get(JwtService);
   }
 
-  signUp = async (data: SignUpDTO) => {
+  signUp = async (data: SignUpDTO): Promise<[string, Employee]> => {
     const employee = this.empRepo.create(data);
     employee.password = 'SecretPassword1234';
     await this.empRepo.save(employee);

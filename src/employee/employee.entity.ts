@@ -1,7 +1,14 @@
-import { Entity, Unique, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  Unique,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+} from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
 import { Role } from './role.enum';
+import { ProjectMember } from '../project/project-member.entity';
 
 @Entity()
 @Unique(['username'])
@@ -14,6 +21,12 @@ export class Employee {
 
   @Column()
   role: Role;
+
+  @OneToMany(
+    () => ProjectMember,
+    projectMember => projectMember.employee,
+  )
+  projectMember: ProjectMember[];
 
   @Column()
   @Exclude()

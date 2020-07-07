@@ -2,6 +2,7 @@ import { Role } from '../../src/employee/role.enum';
 import { INestApplication } from '@nestjs/common';
 import { SupertestHelper, HTTPMethod } from './supertest.helper';
 import { AuthHelper, SignUpDTO } from './auth.helper';
+import { Employee } from '../../src/employee/employee.entity';
 
 class TestHelper {
   private auth: AuthHelper;
@@ -13,8 +14,8 @@ class TestHelper {
   }
 
   /** Create new employee account */
-  signUp = async (data: SignUpDTO) => {
-    return this.auth.signUp(data);
+  signUp = async (data: SignUpDTO): Promise<[string, Employee]> => {
+    return await this.auth.signUp(data);
   };
 
   unauthorized = async (method: HTTPMethod, url: string) => {

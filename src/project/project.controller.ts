@@ -9,7 +9,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
-import { Auth } from '../auth/auth.decorator';
+import { Auth, CurrentEmployee } from '../auth/auth.decorator';
 import { Project } from './project.entity';
 import { Role } from '../employee/role.enum';
 import {
@@ -17,6 +17,7 @@ import {
   UpdateProjectDTO,
   ProjectStatusDTO,
 } from './project.dto';
+import { Employee } from '../employee/employee.entity';
 
 @Controller('project')
 export class ProjectController {
@@ -30,8 +31,11 @@ export class ProjectController {
 
   @Post('/')
   @Auth(Role.MANAGER)
-  async create(@Body() createDto: CreateProjectDTO): Promise<Project> {
-    return this.projectService.create(createDto);
+  async create(
+    @Body() createDto: CreateProjectDTO,
+    @CurrentEmployee() employee: Employee,
+  ): Promise<Project> {
+    return this.projectService.create(createDto, employee);
   }
 
   @Get('/:id')
