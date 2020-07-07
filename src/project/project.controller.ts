@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Put,
   Delete,
+  SerializeOptions,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { Auth, CurrentEmployee } from '../auth/auth.decorator';
@@ -20,6 +21,7 @@ import {
 import { Employee } from '../employee/employee.entity';
 
 @Controller('project')
+@SerializeOptions({ groups: ['project'] })
 export class ProjectController {
   constructor(private projectService: ProjectService) {}
 

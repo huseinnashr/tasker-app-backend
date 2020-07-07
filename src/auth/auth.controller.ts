@@ -1,10 +1,18 @@
-import { Controller, Post, Body, HttpCode, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  Get,
+  SerializeOptions,
+} from '@nestjs/common';
 import { SignInDTO, SignInResponseDTO } from './auth.dto';
 import { AuthService } from './auth.service';
 import { CurrentEmployee, Auth } from './auth.decorator';
 import { Employee } from '../employee/employee.entity';
 
 @Controller('auth')
+@SerializeOptions({ groups: ['auth'] })
 export class AuthController {
   constructor(private authService: AuthService) {}
 

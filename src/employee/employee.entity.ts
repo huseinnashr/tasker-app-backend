@@ -6,7 +6,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { Role } from './role.enum';
 import { ProjectMember } from '../project/project-member.entity';
 
@@ -20,6 +20,7 @@ export class Employee {
   username: string;
 
   @Column()
+  @Expose({ groups: ['auth', 'employee'] })
   role: Role;
 
   @OneToMany(

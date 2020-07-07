@@ -7,6 +7,7 @@ import {
   Put,
   HttpCode,
   Delete,
+  SerializeOptions,
 } from '@nestjs/common';
 import { Employee } from './employee.entity';
 import { EmployeeService } from './employee.service';
@@ -15,6 +16,7 @@ import { CreateEmployeeDTO, UpdateEmployeeDTO } from './employee.dto';
 import { Auth } from '../auth/auth.decorator';
 
 @Controller('employee')
+@SerializeOptions({ groups: ['employee'] })
 export class EmployeeController {
   constructor(private empService: EmployeeService) {}
 
