@@ -1,6 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { Status } from './status.enum';
 import { Employee } from '../employee/employee.entity';
+import { Task } from '../task/task.entity';
 
 @Entity()
 export class Project {
@@ -22,4 +29,10 @@ export class Project {
     { eager: true },
   )
   manager: Employee;
+
+  @OneToMany(
+    () => Task,
+    task => task.project,
+  )
+  tasks: Task;
 }
