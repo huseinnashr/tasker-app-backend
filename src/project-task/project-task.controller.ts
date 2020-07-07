@@ -12,4 +12,13 @@ export class ProjectTaskController {
   async getAll(@Param('projectId') projectId: number): Promise<Task[]> {
     return this.proTaskService.getAll(projectId);
   }
+
+  @Get('/:taskId')
+  @Auth()
+  async get(
+    @Param('projectId') projectId: number,
+    @Param('taskId') taskId: number,
+  ): Promise<Task> {
+    return this.proTaskService.get(projectId, taskId);
+  }
 }

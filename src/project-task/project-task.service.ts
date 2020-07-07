@@ -12,4 +12,8 @@ export class ProjectTaskService {
   async getAll(projectId: number): Promise<Task[]> {
     return this.taskRepo.find({ where: { project: { id: projectId } } });
   }
+
+  async get(projectId: number, taskId: number): Promise<Task> {
+    return this.taskRepo.findOne({ id: taskId });
+  }
 }
