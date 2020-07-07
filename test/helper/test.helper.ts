@@ -33,21 +33,32 @@ class TestHelper {
       .expect(403);
   };
 
-  notfound = async (
-    role: Role,
+  /** Create new employee with role R and test if endpoint returns not found.*/
+  async notfound(role: Role, method: HTTPMethod, url: string, data?: any);
+
+  /** Use token to test if endpoint returns not found.*/
+  async notfound(token: string, method: HTTPMethod, url: string, data?: any);
+
+  async notfound(
+    arg1: Role | string,
     method: HTTPMethod,
     url: string,
     data?: any,
-  ) => {
-    const signUpDTO = { username: 'testnotfound', role };
-    const [token] = await this.signUp(signUpDTO);
+  ): Promise<void> {
+    let token: string;
+    if (Object.values(<any>Role).includes(arg1)) {
+      const signUpDTO = { username: 'testnotfound', role: <Role>arg1 };
+      token = (await this.signUp(signUpDTO))[0];
+    } else {
+      token = arg1;
+    }
 
     await this.supertest
       .request(method, url)
       .send(data)
       .set({ Authorization: token })
       .expect(404);
-  };
+  }
 }
 
 export { TestHelper };
