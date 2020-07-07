@@ -31,6 +31,22 @@ class TestHelper {
       .set({ Authorization: auth })
       .expect(403);
   };
+
+  notfound = async (
+    role: Role,
+    method: HTTPMethod,
+    url: string,
+    data?: any,
+  ) => {
+    const signUpDTO = { username: 'testnotfound', role };
+    const [token] = await this.signUp(signUpDTO);
+
+    await this.supertest
+      .request(method, url)
+      .send(data)
+      .set({ Authorization: token })
+      .expect(404);
+  };
 }
 
 export { TestHelper };

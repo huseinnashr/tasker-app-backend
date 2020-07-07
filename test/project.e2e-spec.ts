@@ -95,6 +95,9 @@ describe('ProjectController (e2e)', () => {
       expect(res.body).toMatchObject(project);
     });
 
+    it('returns 404 Not found when the project does not exist', async () =>
+      test.notfound(Role.STAFF, 'GET', '/project/999999'));
+
     it('returns 401 Unauthorized when not logged in', async () =>
       test.unauthorized('GET', '/project/1'));
   });
@@ -124,6 +127,12 @@ describe('ProjectController (e2e)', () => {
       expect(res.body).toMatchObject(updateDto);
     });
 
+    it('returns 404 Not found when the project does not exist', async () =>
+      test.notfound(Role.MANAGER, 'PUT', '/project/999999', {
+        title: 'Project v2',
+        body: 'updated project body',
+      }));
+
     it('returns 403 Forbidden when not manager', async () =>
       test.forbidden(Role.STAFF, 'PUT', '/project/1'));
   });
@@ -152,6 +161,11 @@ describe('ProjectController (e2e)', () => {
       expect(res.body).toMatchObject(statusDto);
     });
 
+    it('returns 404 Not found when the project does not exist', async () =>
+      test.notfound(Role.MANAGER, 'PUT', '/project/999999/status', {
+        status: Status.DONE,
+      }));
+
     it('returns 403 Forbidden when not manager', async () =>
       test.forbidden(Role.STAFF, 'PUT', '/project/1'));
   });
@@ -175,15 +189,8 @@ describe('ProjectController (e2e)', () => {
       expect(deletedProject).toBeUndefined();
     });
 
-    it('return 404 NotFound when the project does not exist', async () => {
-      const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token] = await test.signUp(signUpDTO);
-
-      await request(app.getHttpServer())
-        .delete('/project/999999')
-        .set({ Authorization: token })
-        .expect(404);
-    });
+    it('returns 404 Not found when the project does not exist', async () =>
+      test.notfound(Role.MANAGER, 'DELETE', '/project/999999'));
 
     it('returns 403 Forbidden when not admin', async () =>
       test.forbidden(Role.STAFF, 'DELETE', '/project/1'));

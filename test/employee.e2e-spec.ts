@@ -98,21 +98,12 @@ describe('EmployeeController (e2e)', () => {
       expect(updatedEmployee).toMatchObject(updateDto);
     });
 
-    it('return 404 NotFound when the employee does not exist', async () => {
-      const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token] = await test.signUp(signUpDTO);
-
-      const updateDto: UpdateEmployeeDTO = {
+    it('return 404 NotFound when the employee does not exist', async () =>
+      test.notfound(Role.ADMIN, 'PUT', '/employee/99999', {
         username: 'Jane',
         role: Role.STAFF,
         password: 'Test1234',
-      };
-      await request(app.getHttpServer())
-        .put('/employee/999999')
-        .send(updateDto)
-        .set({ Authorization: token })
-        .expect(404);
-    });
+      }));
 
     it('returns 403 Forbidden when not admin', async () =>
       test.forbidden(Role.STAFF, 'PUT', '/employee/999999'));
@@ -138,15 +129,8 @@ describe('EmployeeController (e2e)', () => {
       expect(deletedEmployee).toBeUndefined();
     });
 
-    it('return 404 NotFound when the employee does not exist', async () => {
-      const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token] = await test.signUp(signUpDTO);
-
-      await request(app.getHttpServer())
-        .delete('/employee/999999')
-        .set({ Authorization: token })
-        .expect(404);
-    });
+    it('return 404 NotFound when the employee does not exist', async () =>
+      test.notfound(Role.ADMIN, 'DELETE', '/employee/99999'));
 
     it('returns 403 Forbidden when not admin', async () =>
       test.forbidden(Role.STAFF, 'DELETE', '/employee/999999'));
