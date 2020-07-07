@@ -10,6 +10,7 @@ import { TypeOrmConfig } from './config/typeorm.config';
 import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ProjectModule } from './project/project.module';
 import { TaskModule } from './task/task.module';
+import { ProjectTaskModule } from './project-task/project-task.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { TaskModule } from './task/task.module';
     EmployeeModule,
     ProjectModule,
     TaskModule,
+    ProjectTaskModule,
   ],
   providers: [
     {
