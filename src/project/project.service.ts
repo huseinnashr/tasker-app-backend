@@ -9,9 +9,6 @@ import {
 } from './project.dto';
 import { Status } from './status.enum';
 import { Employee } from '../employee/employee.entity';
-import { ProjectMember } from './project-member.entity';
-import { ProjectMemberRole } from './project-member-role.enum';
-import { getRepository } from 'typeorm';
 
 @Injectable()
 export class ProjectService {
@@ -32,15 +29,8 @@ export class ProjectService {
     project.title = createDto.title;
     project.body = createDto.body;
     project.status = Status.IN_PROGRESS;
-    await this.proRepo.save(project);
+    project.manager = employe;
 
-    const projectMember = new ProjectMember();
-    projectMember.projectId = project.id;
-    projectMember.employeeId = employe.id;
-    projectMember.role = ProjectMemberRole.MANAGER;
-    await getRepository(ProjectMember).save(projectMember);
-
-    project.projectMember = [projectMember];
     return this.proRepo.save(project);
   }
 
@@ -60,9 +50,7 @@ export class ProjectService {
     project.title = updateDto.title;
     project.body = updateDto.body;
 
-    await this.proRepo.save(project);
-
-    return project;
+    return this.proRepo.save(project);
   }
 
   async updateStatus(
@@ -70,12 +58,9 @@ export class ProjectService {
     statusDto: ProjectStatusDTO,
   ): Promise<Project> {
     const project = await this.get(id);
-
     project.status = statusDto.status;
 
-    await this.proRepo.save(project);
-
-    return project;
+    return this.proRepo.save(project);
   }
 
   async delete(id: number): Promise<Project> {

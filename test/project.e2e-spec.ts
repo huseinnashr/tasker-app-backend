@@ -11,7 +11,7 @@ import {
   ProjectStatusDTO,
 } from '../src/project/project.dto';
 import { Status } from '../src/project/status.enum';
-import { ProjectMemberRole } from '../src/project/project-member-role.enum';
+import { classToPlain } from 'class-transformer';
 
 describe('ProjectController (e2e)', () => {
   let app: INestApplication;
@@ -58,22 +58,25 @@ describe('ProjectController (e2e)', () => {
         title: 'New Project',
         body: 'project body',
       };
-      await request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .post('/project')
         .send(createDto)
         .set({ Authorization: token })
         .expect(201);
 
-      const [projects, count] = await proRepo.findAndCount({
-        relations: ['projectMember'],
-      });
-      expect(projects[0]).toMatchObject({
+      const expected = {
+        id: res.body.id,
         ...createDto,
         status: Status.IN_PROGRESS,
-        projectMember: [
-          { employeeId: employee.id, role: ProjectMemberRole.MANAGER },
-        ],
-      });
+        manager: { id: employee.id, username: employee.username },
+      };
+
+      expect(res.body).toEqual(expected);
+
+      const [projects, count] = await proRepo.findAndCount();
+      expect(classToPlain(projects[0], { groups: ['project'] })).toEqual(
+        expected,
+      );
       expect(count).toBe(1);
     });
 

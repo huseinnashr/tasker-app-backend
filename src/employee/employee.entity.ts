@@ -8,7 +8,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { Exclude, Expose } from 'class-transformer';
 import { Role } from './role.enum';
-import { ProjectMember } from '../project/project-member.entity';
+import { Project } from '../project/project.entity';
 
 @Entity()
 @Unique(['username'])
@@ -24,10 +24,10 @@ export class Employee {
   role: Role;
 
   @OneToMany(
-    () => ProjectMember,
-    projectMember => projectMember.employee,
+    () => Project,
+    project => project.manager,
   )
-  projectMember: ProjectMember[];
+  managedProject: Project[];
 
   @Column()
   @Exclude()
