@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectRepository } from './project.repository';
 import { Project } from './project.entity';
@@ -35,17 +35,11 @@ export class ProjectService {
   }
 
   async get(id: number): Promise<Project> {
-    const project = await this.proRepo.findOne(id);
-
-    if (!project) {
-      throw new NotFoundException(`Project with id:${id} was not found`);
-    }
-
-    return project;
+    return this.proRepo.findOneOrException(id);
   }
 
   async update(id: number, updateDto: UpdateProjectDTO): Promise<Project> {
-    const project = await this.get(id);
+    const project = await this.proRepo.findOneOrException(id);
 
     project.title = updateDto.title;
     project.body = updateDto.body;
@@ -57,14 +51,14 @@ export class ProjectService {
     id: number,
     statusDto: ProjectStatusDTO,
   ): Promise<Project> {
-    const project = await this.get(id);
+    const project = await this.proRepo.findOneOrException(id);
     project.status = statusDto.status;
 
     return this.proRepo.save(project);
   }
 
   async delete(id: number): Promise<Project> {
-    const project = await this.get(id);
+    const project = await this.proRepo.findOneOrException(id);
 
     return this.proRepo.remove(project);
   }
