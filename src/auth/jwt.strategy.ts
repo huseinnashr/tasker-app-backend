@@ -23,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const employee = await this.empRepo.findOne({ username });
 
     if (!employee) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('You are not logged in!');
     }
 
     return employee;

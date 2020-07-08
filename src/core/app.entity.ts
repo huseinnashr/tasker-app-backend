@@ -21,7 +21,7 @@ export class AppRepository<T> extends Repository<T> {
     const entity = await this.findOne(any, options);
 
     if (!entity) {
-      throw new NotFoundException(`${this.entityName} was not found`);
+      throw new NotFoundException(`${this.entityName} does not exist`);
     }
 
     return entity;
