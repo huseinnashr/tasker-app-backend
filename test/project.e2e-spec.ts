@@ -9,7 +9,7 @@ import {
   CreateProjectDTO,
   UpdateProjectDTO,
   ProjectStatusDTO,
-} from '../src/project/project.dto';
+} from '../src/project/dto';
 import { ProjectStatus } from '../src/project/project-status.enum';
 import { classToPlain } from 'class-transformer';
 

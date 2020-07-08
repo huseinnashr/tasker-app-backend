@@ -13,11 +13,7 @@ import { ProjectService } from './project.service';
 import { Auth, CurrentEmployee } from '../auth/auth.decorator';
 import { Project } from './project.entity';
 import { Role } from '../employee/role.enum';
-import {
-  CreateProjectDTO,
-  UpdateProjectDTO,
-  ProjectStatusDTO,
-} from './project.dto';
+import { CreateProjectDTO, UpdateProjectDTO, ProjectStatusDTO } from './dto';
 import { Employee } from '../employee/employee.entity';
 
 @Controller('project')
