@@ -4,11 +4,9 @@ import {
   MaxLength,
   Matches,
   IsEnum,
-  IsOptional,
 } from 'class-validator';
-import { Role } from './role.enum';
-
-abstract class ManagemEmployeeDTO {
+import { Role } from '../role.enum';
+export abstract class ManageEmployeeDTO {
   @IsString()
   @MinLength(4)
   @MaxLength(20)
@@ -24,13 +22,4 @@ abstract class ManagemEmployeeDTO {
 
   @IsEnum(Role)
   role: Role;
-}
-
-export class CreateEmployeeDTO extends ManagemEmployeeDTO {
-  password: string;
-}
-
-export class UpdateEmployeeDTO extends ManagemEmployeeDTO {
-  @IsOptional()
-  password?: string;
 }

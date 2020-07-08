@@ -5,10 +5,7 @@ import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/employee/employee.repository';
 import { TestHelper } from './helper/test.helper';
 import { Role } from '../src/employee/role.enum';
-import {
-  CreateEmployeeDTO,
-  UpdateEmployeeDTO,
-} from '../src/employee/employee.dto';
+import { CreateEmployeeDTO, UpdateEmployeeDTO } from '../src/employee/dto';
 
 describe('EmployeeController (e2e)', () => {
   let app: INestApplication;

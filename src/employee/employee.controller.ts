@@ -12,7 +12,7 @@ import {
 import { Employee } from './employee.entity';
 import { EmployeeService } from './employee.service';
 import { Role } from './role.enum';
-import { CreateEmployeeDTO, UpdateEmployeeDTO } from './employee.dto';
+import { CreateEmployeeDTO, UpdateEmployeeDTO } from './dto';
 import { Auth } from '../auth/auth.decorator';
 
 @Controller('employee')
