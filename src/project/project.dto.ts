@@ -1,5 +1,5 @@
 import { IsString, IsEnum } from 'class-validator';
-import { Status } from './status.enum';
+import { ProjectStatus } from './project-status.enum';
 
 abstract class ManageProjectDTO {
   @IsString()
@@ -14,6 +14,6 @@ export class CreateProjectDTO extends ManageProjectDTO {}
 export class UpdateProjectDTO extends ManageProjectDTO {}
 
 export class ProjectStatusDTO {
-  @IsEnum(Status)
-  status: Status;
+  @IsEnum(ProjectStatus)
+  status: ProjectStatus;
 }

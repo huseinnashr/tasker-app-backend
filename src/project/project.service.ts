@@ -7,7 +7,7 @@ import {
   UpdateProjectDTO,
   ProjectStatusDTO,
 } from './project.dto';
-import { Status } from './status.enum';
+import { ProjectStatus } from './project-status.enum';
 import { Employee } from '../employee/employee.entity';
 import { AppService } from '../core/app.service';
 
@@ -31,7 +31,7 @@ export class ProjectService extends AppService {
     const project = new Project();
     project.title = createDto.title;
     project.body = createDto.body;
-    project.status = Status.IN_PROGRESS;
+    project.status = ProjectStatus.IN_PROGRESS;
     project.manager = employe;
 
     return this.proRepo.save(project);

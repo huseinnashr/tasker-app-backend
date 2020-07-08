@@ -10,7 +10,7 @@ import {
   UpdateProjectDTO,
   ProjectStatusDTO,
 } from '../src/project/project.dto';
-import { Status } from '../src/project/status.enum';
+import { ProjectStatus } from '../src/project/project-status.enum';
 import { classToPlain } from 'class-transformer';
 
 describe('ProjectController (e2e)', () => {
@@ -67,7 +67,7 @@ describe('ProjectController (e2e)', () => {
       const expected = {
         id: res.body.id,
         ...createDto,
-        status: Status.IN_PROGRESS,
+        status: ProjectStatus.IN_PROGRESS,
         manager: { id: employee.id, username: employee.username },
       };
 
@@ -93,7 +93,7 @@ describe('ProjectController (e2e)', () => {
         proRepo.create({
           title: 'New Project',
           body: 'project body',
-          status: Status.IN_PROGRESS,
+          status: ProjectStatus.IN_PROGRESS,
         }),
       );
       const res = await request(app.getHttpServer())
@@ -120,7 +120,7 @@ describe('ProjectController (e2e)', () => {
         proRepo.create({
           title: 'New Project',
           body: 'project body',
-          status: Status.IN_PROGRESS,
+          status: ProjectStatus.IN_PROGRESS,
         }),
       );
       const updateDto: UpdateProjectDTO = {
@@ -155,11 +155,11 @@ describe('ProjectController (e2e)', () => {
         proRepo.create({
           title: 'New Project',
           body: 'project body',
-          status: Status.IN_PROGRESS,
+          status: ProjectStatus.IN_PROGRESS,
         }),
       );
       const statusDto: ProjectStatusDTO = {
-        status: Status.DONE,
+        status: ProjectStatus.DONE,
       };
       const res = await request(app.getHttpServer())
         .put('/project/' + project.id + '/status')
@@ -172,7 +172,7 @@ describe('ProjectController (e2e)', () => {
 
     it('returns 404 Not found when the project does not exist', async () =>
       test.notfound(Role.MANAGER, 'PUT', '/project/999999/status', {
-        status: Status.DONE,
+        status: ProjectStatus.DONE,
       }));
 
     it('returns 403 Forbidden when not manager', async () =>
@@ -187,7 +187,7 @@ describe('ProjectController (e2e)', () => {
       const project = await proRepo.save({
         title: 'New Project',
         body: 'project body',
-        status: Status.IN_PROGRESS,
+        status: ProjectStatus.IN_PROGRESS,
       });
       await request(app.getHttpServer())
         .delete('/project/' + project.id)

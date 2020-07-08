@@ -6,7 +6,7 @@ import { TestHelper } from './helper/test.helper';
 import { Role } from '../src/employee/role.enum';
 import { TaskRepository } from '../src/task/task.repository';
 import { ProjectRepository } from '../src/project/project.repository';
-import { Status } from '../src/project/status.enum';
+import { ProjectStatus } from '../src/project/project-status.enum';
 import { TaskStatus } from '../src/task/task-status.enum';
 import { Project } from '../src/project/project.entity';
 import { Employee } from '../src/employee/employee.entity';
@@ -41,7 +41,7 @@ describe('ProjectTaskController (e2e)', () => {
       proRepo.create({
         title: 'New Project',
         body: 'project body',
-        status: Status.IN_PROGRESS,
+        status: ProjectStatus.IN_PROGRESS,
         manager: manager,
       }),
     );

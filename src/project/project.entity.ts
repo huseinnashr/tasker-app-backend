@@ -5,7 +5,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { Status } from './status.enum';
+import { ProjectStatus } from './project-status.enum';
 import { Employee } from '../employee/employee.entity';
 import { Task } from '../task/task.entity';
 
@@ -21,7 +21,7 @@ export class Project {
   body: string;
 
   @Column()
-  status: Status;
+  status: ProjectStatus;
 
   @ManyToOne(
     () => Employee,
