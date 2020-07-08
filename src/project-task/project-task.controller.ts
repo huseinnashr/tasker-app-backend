@@ -1,7 +1,10 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body } from '@nestjs/common';
 import { ProjectTaskService } from './project-task.service';
 import { Task } from '../task/task.entity';
-import { Auth } from '../auth/auth.decorator';
+import { Auth, CurrentEmployee } from '../auth/auth.decorator';
+import { Role } from '../employee/role.enum';
+import { CreateTaskDTO } from './project-task.dto';
+import { Employee } from '../employee/employee.entity';
 
 @Controller('project/:projectId/task')
 export class ProjectTaskController {
@@ -11,6 +14,16 @@ export class ProjectTaskController {
   @Auth()
   async getAll(@Param('projectId') projectId: number): Promise<Task[]> {
     return this.proTaskService.getAll(projectId);
+  }
+
+  @Post('/')
+  @Auth(Role.MANAGER)
+  async create(
+    @Param('projectId') projectId: number,
+    @Body() taskDto: CreateTaskDTO,
+    @CurrentEmployee() employee: Employee,
+  ): Promise<Task> {
+    return this.proTaskService.create(projectId, taskDto, employee);
   }
 
   @Get('/:taskId')

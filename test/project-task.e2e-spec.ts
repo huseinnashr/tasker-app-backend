@@ -11,6 +11,7 @@ import { TaskStatus } from '../src/task/task-status.enum';
 import { Project } from '../src/project/project.entity';
 import { Employee } from '../src/employee/employee.entity';
 import { Task } from '../src/task/task.entity';
+import { CreateTaskDTO } from '../src/project-task/project-task.dto';
 
 describe('ProjectTaskController (e2e)', () => {
   let app: INestApplication;
@@ -90,8 +91,49 @@ describe('ProjectTaskController (e2e)', () => {
       test.unauthorized('GET', '/project/1/task'));
   });
 
-  describe('/project/:projectId/task/:taskId (GET)', () => {
+  describe('/project/:projectId/task (POST)', () => {
     it('returns list of all task in a project given project id', async () => {
+      const signUpDTO = { username: 'test', role: Role.MANAGER };
+      const [token, manager] = await test.signUp(signUpDTO);
+
+      const signUpDTO2 = { username: 'staff', role: Role.STAFF };
+      const [, staff] = await test.signUp(signUpDTO2);
+
+      const project = await createAProject(manager);
+
+      const createDto: CreateTaskDTO = {
+        title: 'New Task',
+        body: 'task body',
+        employeeId: staff.id,
+      };
+      const res = await request(app.getHttpServer())
+        .post(`/project/${project.id}/task`)
+        .send(createDto)
+        .set({ Authorization: token })
+        .expect(201);
+
+      expect(res.body).toEqual({
+        id: res.body.id,
+        title: createDto.title,
+        body: createDto.body,
+        status: TaskStatus.IN_PROGRESS,
+        staff: { id: staff.id, username: staff.username },
+      });
+    });
+
+    it('returns 404 Not Found when the project with given id was not found', async () =>
+      await test.notfound(Role.MANAGER, 'POST', `/project/99999/task`, {
+        title: 'New Task',
+        body: 'task body',
+        employeeId: 1,
+      }));
+
+    it('returns 401 Unauthorized when not logged in', async () =>
+      test.unauthorized('POST', '/project/1/task'));
+  });
+
+  describe('/project/:projectId/task/:taskId (GET)', () => {
+    it('returns a task within a project', async () => {
       const signUpDTO = { username: 'test', role: Role.ADMIN };
       const [token, employee] = await test.signUp(signUpDTO);
 
@@ -112,7 +154,7 @@ describe('ProjectTaskController (e2e)', () => {
       });
     });
 
-    it('returns 404 Not Found when the project with given id was not found', async () => {
+    it('returns 404 Not Found when the task with given id was not found', async () => {
       const signUpDTO = { username: 'test', role: Role.MANAGER };
       const [token, employee] = await test.signUp(signUpDTO);
 
@@ -122,6 +164,6 @@ describe('ProjectTaskController (e2e)', () => {
     });
 
     it('returns 401 Unauthorized when not logged in', async () =>
-      test.unauthorized('GET', '/project/1/task'));
+      test.unauthorized('GET', '/project/1/task/1'));
   });
 });

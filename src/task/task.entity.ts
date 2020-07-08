@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { TaskStatus } from './task-status.enum';
 import { Employee } from '../employee/employee.entity';
 import { Project } from '../project/project.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Task {
@@ -28,5 +29,6 @@ export class Task {
     () => Project,
     project => project.tasks,
   )
+  @Exclude()
   project: Project;
 }

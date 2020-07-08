@@ -35,4 +35,8 @@ export class Project {
     task => task.project,
   )
   tasks: Task;
+
+  isManager(employee: Employee): boolean {
+    return this.manager.id === employee.id;
+  }
 }
