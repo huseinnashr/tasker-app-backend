@@ -3,7 +3,7 @@ import { ProjectTaskService } from './project-task.service';
 import { Task } from '../task/task.entity';
 import { Auth, CurrentEmployee } from '../auth/auth.decorator';
 import { Role } from '../employee/role.enum';
-import { CreateTaskDTO } from './project-task.dto';
+import { CreateTaskDTO } from './dto';
 import { Employee } from '../employee/employee.entity';
 
 @Controller('project/:projectId/task')

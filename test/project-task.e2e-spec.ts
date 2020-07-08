@@ -11,7 +11,7 @@ import { TaskStatus } from '../src/task/task-status.enum';
 import { Project } from '../src/project/project.entity';
 import { Employee } from '../src/employee/employee.entity';
 import { Task } from '../src/task/task.entity';
-import { CreateTaskDTO } from '../src/project-task/project-task.dto';
+import { CreateTaskDTO } from '../src/project-task/dto';
 
 describe('ProjectTaskController (e2e)', () => {
   let app: INestApplication;
