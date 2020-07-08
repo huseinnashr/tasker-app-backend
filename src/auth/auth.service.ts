@@ -3,14 +3,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EmployeeRepository } from '../employee/employee.repository';
 import { SignInDTO, JwtPayload, SignInResponseDTO } from './auth.dto';
 import { JwtService } from '@nestjs/jwt';
+import { AppService } from '../core/app.service';
 
 @Injectable()
-export class AuthService {
+export class AuthService extends AppService {
   constructor(
     @InjectRepository(EmployeeRepository)
     private employeeRepository: EmployeeRepository,
     private jwtService: JwtService,
-  ) {}
+  ) {
+    super();
+  }
 
   async signIn(signInDto: SignInDTO): Promise<SignInResponseDTO> {
     const { username, password } = signInDto;

@@ -9,13 +9,16 @@ import {
 } from './project.dto';
 import { Status } from './status.enum';
 import { Employee } from '../employee/employee.entity';
+import { AppService } from '../core/app.service';
 
 @Injectable()
-export class ProjectService {
+export class ProjectService extends AppService {
   constructor(
     @InjectRepository(ProjectRepository)
     private proRepo: ProjectRepository,
-  ) {}
+  ) {
+    super();
+  }
 
   async getAll(): Promise<Project[]> {
     return this.proRepo.find();

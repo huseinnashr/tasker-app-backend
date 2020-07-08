@@ -3,12 +3,15 @@ import { EmployeeRepository } from './employee.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Employee } from './employee.entity';
 import { CreateEmployeeDTO, UpdateEmployeeDTO } from './employee.dto';
+import { AppService } from '../core/app.service';
 
 @Injectable()
-export class EmployeeService {
+export class EmployeeService extends AppService {
   constructor(
     @InjectRepository(EmployeeRepository) private empRepo: EmployeeRepository,
-  ) {}
+  ) {
+    super();
+  }
 
   async getAll(): Promise<Employee[]> {
     return this.empRepo.find();
