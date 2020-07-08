@@ -83,6 +83,9 @@ describe('ProjectTaskController (e2e)', () => {
       });
     });
 
+    it('returns 404 Not Found when the project with given id was not found', async () =>
+      test.notfound(Role.MANAGER, 'GET', '/project/999999/task'));
+
     it('returns 401 Unauthorized when not logged in', async () =>
       test.unauthorized('GET', '/project/1/task'));
   });
@@ -107,6 +110,15 @@ describe('ProjectTaskController (e2e)', () => {
         status: TaskStatus.IN_PROGRESS,
         staff: { id: task.staff.id, username: task.staff.username },
       });
+    });
+
+    it('returns 404 Not Found when the project with given id was not found', async () => {
+      const signUpDTO = { username: 'test', role: Role.MANAGER };
+      const [token, employee] = await test.signUp(signUpDTO);
+
+      const project = await createAProject(employee);
+
+      await test.notfound(token, 'GET', `/project/${project.id}/task/999999`);
     });
 
     it('returns 401 Unauthorized when not logged in', async () =>
