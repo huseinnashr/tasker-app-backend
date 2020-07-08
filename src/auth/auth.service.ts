@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmployeeRepository } from '../employee/employee.repository';
-import { SignInDTO, JwtPayload, SignInResponseDTO } from './auth.dto';
+import { SignInDTO, SignInResponseDTO, JwtPayload } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { AppService } from '../core/app.service';
 

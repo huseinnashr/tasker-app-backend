@@ -6,7 +6,7 @@ import {
   Get,
   SerializeOptions,
 } from '@nestjs/common';
-import { SignInDTO, SignInResponseDTO } from './auth.dto';
+import { SignInDTO, SignInResponseDTO } from './dto';
 import { AuthService } from './auth.service';
 import { CurrentEmployee, Auth } from './auth.decorator';
 import { Employee } from '../employee/employee.entity';

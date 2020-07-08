@@ -1,7 +1,7 @@
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SignInDTO } from '../src/auth/auth.dto';
+import { SignInDTO } from '../src/auth/dto';
 import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/employee/employee.repository';
 import { CreateEmployeeDTO } from '../src/employee/employee.dto';
