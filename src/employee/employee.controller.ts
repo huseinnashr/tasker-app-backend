@@ -13,7 +13,7 @@ import { Employee } from '../database/entity';
 import { EmployeeService } from './employee.service';
 import { Role } from '../database/enum';
 import { CreateEmployeeDTO, UpdateEmployeeDTO } from './dto';
-import { Auth } from '../auth/auth.decorator';
+import { Auth } from '../core/decorator';
 
 @Controller('employee')
 @SerializeOptions({ groups: ['employee'] })

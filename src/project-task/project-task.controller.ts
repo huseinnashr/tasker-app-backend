@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Post, Body } from '@nestjs/common';
 import { ProjectTaskService } from './project-task.service';
-import { Auth, CurrentEmployee } from '../auth/auth.decorator';
+import { Auth, CurrentEmployee } from '../core/decorator';
 import { Role } from '../database/enum';
 import { CreateTaskDTO } from './dto';
 import { Employee, Task } from '../database/entity';

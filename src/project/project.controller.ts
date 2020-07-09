@@ -10,7 +10,7 @@ import {
   SerializeOptions,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
-import { Auth, CurrentEmployee } from '../auth/auth.decorator';
+import { Auth, CurrentEmployee } from '../core/decorator';
 import { Employee, Project } from '../database/entity';
 import { Role } from '../database/enum';
 import { CreateProjectDTO, UpdateProjectDTO, ProjectStatusDTO } from './dto';
