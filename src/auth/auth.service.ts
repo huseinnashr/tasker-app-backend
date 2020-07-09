@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EmployeeRepository } from '../employee/employee.repository';
+import { EmployeeRepository } from '../database/repository';
 import { SignInDTO, SignInResponseDTO, JwtPayload } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { AppService } from '../core/app.service';

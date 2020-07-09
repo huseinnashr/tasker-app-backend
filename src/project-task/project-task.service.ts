@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TaskRepository } from '../task/task.repository';
 import { Task } from '../task/task.entity';
-import { ProjectRepository } from '../project/project.repository';
 import { CreateTaskDTO } from './dto';
 import { Employee } from '../employee/employee.entity';
-import { EmployeeRepository } from '../employee/employee.repository';
+import {
+  EmployeeRepository,
+  ProjectRepository,
+  TaskRepository,
+} from '../database/repository';
 import { TaskStatus } from '../task/task-status.enum';
 import { AppService } from '../core/app.service';
 

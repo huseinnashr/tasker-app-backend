@@ -1,6 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
 import { INestApplication } from '@nestjs/common';
-import { EmployeeRepository } from '../../src/employee/employee.repository';
+import { EmployeeRepository } from '../../src/database/repository';
 import { Role } from '../../src/employee/role.enum';
 import { Employee } from '../../src/employee/employee.entity';
 

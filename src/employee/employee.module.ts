@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { EmployeeController } from './employee.controller';
 import { EmployeeService } from './employee.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EmployeeRepository } from './employee.repository';
+import { EmployeeRepository } from '../database/repository';
 import { AuthModule } from '../auth/auth.module';
 import { EmployeeSubscriber } from './employee.subscriber';
 

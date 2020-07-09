@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProjectRepository } from './project.repository';
+import { ProjectRepository } from '../database/repository';
 import { Project } from './project.entity';
 import { CreateProjectDTO, UpdateProjectDTO, ProjectStatusDTO } from './dto';
 import { ProjectStatus } from './project-status.enum';

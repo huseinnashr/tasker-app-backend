@@ -2,7 +2,7 @@ import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
-import { ProjectRepository } from '../src/project/project.repository';
+import { ProjectRepository } from '../src/database/repository';
 import { TestHelper } from './helper/test.helper';
 import { Role } from '../src/employee/role.enum';
 import {
