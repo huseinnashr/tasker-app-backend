@@ -7,9 +7,9 @@ import {
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Exclude, Expose } from 'class-transformer';
-import { Role } from './role.enum';
-import { Project } from '../project/project.entity';
-import { Task } from '../task/task.entity';
+import { Role } from '../enum/role.enum';
+import { Project } from './project.entity';
+import { Task } from './task.entity';
 
 @Entity()
 @Unique(['username'])

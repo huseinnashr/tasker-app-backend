@@ -5,10 +5,10 @@ import {
   SetMetadata,
   UseGuards,
 } from '@nestjs/common';
-import { Employee } from '../employee/employee.entity';
+import { Employee } from '../database/entity';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from './roles.guard';
-import { Role } from '../employee/role.enum';
+import { Role } from '../database/enum';
 
 export const CurrentEmployee = createParamDecorator(
   (_, ctx: ExecutionContext): Employee => {

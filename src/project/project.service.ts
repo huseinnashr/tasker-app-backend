@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectRepository } from '../database/repository';
-import { Project } from './project.entity';
 import { CreateProjectDTO, UpdateProjectDTO, ProjectStatusDTO } from './dto';
-import { ProjectStatus } from './project-status.enum';
-import { Employee } from '../employee/employee.entity';
+import { ProjectStatus } from '../database/enum';
+import { Employee, Project } from '../database/entity';
 import { AppService } from '../core/app.service';
 
 @Injectable()

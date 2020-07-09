@@ -1,5 +1,5 @@
 import { EntityRepository } from 'typeorm';
-import { Task } from '../../task/task.entity';
+import { Task } from '../entity';
 import { AppRepository } from '../../core/app.repository';
 
 @EntityRepository(Task)

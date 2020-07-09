@@ -3,13 +3,9 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { TestHelper } from './helper/test.helper';
-import { Role } from '../src/employee/role.enum';
 import { ProjectRepository, TaskRepository } from '../src/database/repository';
-import { ProjectStatus } from '../src/project/project-status.enum';
-import { TaskStatus } from '../src/task/task-status.enum';
-import { Project } from '../src/project/project.entity';
-import { Employee } from '../src/employee/employee.entity';
-import { Task } from '../src/task/task.entity';
+import { Role, ProjectStatus, TaskStatus } from '../src/database/enum';
+import { Employee, Project, Task } from '../src/database/entity';
 import { CreateTaskDTO } from '../src/project-task/dto';
 
 describe('ProjectTaskController (e2e)', () => {

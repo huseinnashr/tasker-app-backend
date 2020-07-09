@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/database/repository';
 import { TestHelper } from './helper/test.helper';
-import { Role } from '../src/employee/role.enum';
+import { Role } from '../src/database/enum';
 import { CreateEmployeeDTO, UpdateEmployeeDTO } from '../src/employee/dto';
 
 describe('EmployeeController (e2e)', () => {

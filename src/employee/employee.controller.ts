@@ -9,9 +9,9 @@ import {
   Delete,
   SerializeOptions,
 } from '@nestjs/common';
-import { Employee } from './employee.entity';
+import { Employee } from '../database/entity';
 import { EmployeeService } from './employee.service';
-import { Role } from './role.enum';
+import { Role } from '../database/enum';
 import { CreateEmployeeDTO, UpdateEmployeeDTO } from './dto';
 import { Auth } from '../auth/auth.decorator';
 

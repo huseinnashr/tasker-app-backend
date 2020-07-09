@@ -4,13 +4,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { ProjectRepository } from '../src/database/repository';
 import { TestHelper } from './helper/test.helper';
-import { Role } from '../src/employee/role.enum';
 import {
   CreateProjectDTO,
   UpdateProjectDTO,
   ProjectStatusDTO,
 } from '../src/project/dto';
-import { ProjectStatus } from '../src/project/project-status.enum';
+import { Role, ProjectStatus } from '../src/database/enum';
 import { classToPlain } from 'class-transformer';
 
 describe('ProjectController (e2e)', () => {

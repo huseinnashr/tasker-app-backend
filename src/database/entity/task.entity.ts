@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { TaskStatus } from './task-status.enum';
-import { Employee } from '../employee/employee.entity';
-import { Project } from '../project/project.entity';
+import { TaskStatus } from '../enum/task-status.enum';
+import { Employee } from './employee.entity';
+import { Project } from './project.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity()

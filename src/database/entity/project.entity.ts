@@ -5,9 +5,9 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { ProjectStatus } from './project-status.enum';
-import { Employee } from '../employee/employee.entity';
-import { Task } from '../task/task.entity';
+import { ProjectStatus } from '../enum/project-status.enum';
+import { Employee } from './employee.entity';
+import { Task } from './task.entity';
 
 @Entity()
 export class Project {

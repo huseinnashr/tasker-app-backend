@@ -5,7 +5,7 @@ import { SignInDTO } from '../src/auth/dto';
 import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/database/repository';
 import { CreateEmployeeDTO } from '../src/employee/dto';
-import { Role } from '../src/employee/role.enum';
+import { Role } from '../src/database/enum';
 import { TestHelper } from './helper/test.helper';
 
 describe('AuthController (e2e)', () => {

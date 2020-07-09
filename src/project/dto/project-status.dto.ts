@@ -1,5 +1,5 @@
 import { IsEnum } from 'class-validator';
-import { ProjectStatus } from '../project-status.enum';
+import { ProjectStatus } from '../../database/enum';
 
 export class ProjectStatusDTO {
   @IsEnum(ProjectStatus)

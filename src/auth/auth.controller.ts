@@ -9,7 +9,7 @@ import {
 import { SignInDTO, SignInResponseDTO } from './dto';
 import { AuthService } from './auth.service';
 import { CurrentEmployee, Auth } from './auth.decorator';
-import { Employee } from '../employee/employee.entity';
+import { Employee } from '../database/entity';
 
 @Controller('auth')
 @SerializeOptions({ groups: ['auth'] })

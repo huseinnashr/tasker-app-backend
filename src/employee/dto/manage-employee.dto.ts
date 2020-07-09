@@ -5,7 +5,7 @@ import {
   Matches,
   IsEnum,
 } from 'class-validator';
-import { Role } from '../role.enum';
+import { Role } from '../../database/enum';
 export abstract class ManageEmployeeDTO {
   @IsString()
   @MinLength(4)

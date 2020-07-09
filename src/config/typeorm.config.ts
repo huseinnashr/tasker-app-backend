@@ -8,7 +8,7 @@ export const TypeOrmConfig: TypeOrmModuleOptions = {
   username: env.get('string', 'DB_USERNAME'),
   password: env.get('string', 'DB_PASSWORD'),
   database: env.get('string', 'DB_NAME'),
-  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+  entities: [__dirname + '/../database/entity/*.entity{.ts,.js}'],
   synchronize: env.get('boolean', 'TYPEORM_SYNCHRONIZE'),
   dropSchema: env.get('boolean', 'TYPEORM_DROP_SCHEMA', false),
 };

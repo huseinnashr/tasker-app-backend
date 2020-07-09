@@ -1,8 +1,8 @@
-import { Role } from '../../src/employee/role.enum';
+import { Role } from '../../src/database/enum';
 import { INestApplication } from '@nestjs/common';
 import { SupertestHelper, HTTPMethod } from './supertest.helper';
 import { AuthHelper, SignUpDTO } from './auth.helper';
-import { Employee } from '../../src/employee/employee.entity';
+import { Employee } from '../../src/database/entity';
 
 class TestHelper {
   private auth: AuthHelper;

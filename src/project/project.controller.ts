@@ -11,10 +11,9 @@ import {
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { Auth, CurrentEmployee } from '../auth/auth.decorator';
-import { Project } from './project.entity';
-import { Role } from '../employee/role.enum';
+import { Employee, Project } from '../database/entity';
+import { Role } from '../database/enum';
 import { CreateProjectDTO, UpdateProjectDTO, ProjectStatusDTO } from './dto';
-import { Employee } from '../employee/employee.entity';
 
 @Controller('project')
 @SerializeOptions({ groups: ['project'] })

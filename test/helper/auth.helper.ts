@@ -1,8 +1,8 @@
 import { JwtService } from '@nestjs/jwt';
 import { INestApplication } from '@nestjs/common';
 import { EmployeeRepository } from '../../src/database/repository';
-import { Role } from '../../src/employee/role.enum';
-import { Employee } from '../../src/employee/employee.entity';
+import { Role } from '../../src/database/enum';
+import { Employee } from '../../src/database/entity';
 
 interface SignUpDTO {
   username: string;

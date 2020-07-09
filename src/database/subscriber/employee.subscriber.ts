@@ -5,7 +5,7 @@ import {
   UpdateEvent,
   EventSubscriber,
 } from 'typeorm';
-import { Employee } from './employee.entity';
+import { Employee } from '../entity/employee.entity';
 import * as bcrypt from 'bcrypt';
 
 @EventSubscriber()

@@ -1,4 +1,4 @@
-import { Employee } from '../../employee/employee.entity';
+import { Employee } from '../../database/entity';
 
 export interface SignInResponseDTO {
   employee: Employee;
