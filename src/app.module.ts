@@ -11,7 +11,7 @@ import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ProjectModule } from './project/project.module';
 import { TaskModule } from './task/task.module';
 import { ProjectTaskModule } from './project-task/project-task.module';
-import { UpdateModule } from './update/update.module';
+import { UpdateModule } from './task-update/task-update.module';
 
 @Module({
   imports: [
