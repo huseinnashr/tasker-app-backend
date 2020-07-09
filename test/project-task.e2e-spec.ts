@@ -6,7 +6,7 @@ import { TestHelper } from './helper/test.helper';
 import { ProjectRepository, TaskRepository } from '../src/database/repository';
 import { Role, ProjectStatus, TaskStatus } from '../src/database/enum';
 import { Employee, Project, Task } from '../src/database/entity';
-import { CreateTaskDTO } from '../src/project-task/dto';
+import { CreateTaskDTO, UpdateTaskDTO } from '../src/project-task/dto';
 
 describe('ProjectTaskController (e2e)', () => {
   let app: INestApplication;
@@ -160,5 +160,133 @@ describe('ProjectTaskController (e2e)', () => {
 
     it('returns 401 Unauthorized when not logged in', async () =>
       test.unauthorized('GET', '/project/1/task/1'));
+  });
+
+  describe('/project/:projectId/task/:taskId (PUT)', () => {
+    it('update the task and return it', async () => {
+      const signUpDTO = { username: 'test', role: Role.MANAGER };
+      const [token, manager] = await test.signUp(signUpDTO);
+
+      const signUpDTO2 = { username: 'staff', role: Role.STAFF };
+      const [, staff] = await test.signUp(signUpDTO2);
+
+      const project = await createAProject(manager);
+      const task = await createATask(project, staff);
+
+      const updateTask: UpdateTaskDTO = {
+        title: 'Updated Task',
+        body: 'updated task body',
+        employeeId: task.staff.id,
+      };
+      const res = await request(app.getHttpServer())
+        .put(`/project/${project.id}/task/${task.id}`)
+        .send(updateTask)
+        .set({ Authorization: token })
+        .expect(200);
+
+      expect(res.body).toEqual({
+        id: res.body.id,
+        title: updateTask.title,
+        body: updateTask.body,
+        status: TaskStatus.IN_PROGRESS,
+        staff: { id: staff.id, username: staff.username },
+      });
+    });
+
+    it('return 403 Forbidden if current employee not the task project manager', async () => {
+      const signUpDTO1 = { username: 'manager1', role: Role.MANAGER };
+      const [, manager1] = await test.signUp(signUpDTO1);
+
+      const signUpDTO2 = { username: 'manager2', role: Role.MANAGER };
+      const [token2] = await test.signUp(signUpDTO2);
+
+      const signUpDTO3 = { username: 'staff', role: Role.STAFF };
+      const [, staff] = await test.signUp(signUpDTO3);
+
+      const project = await createAProject(manager1);
+      const task = await createATask(project, staff);
+
+      const updateTask: UpdateTaskDTO = {
+        title: 'Updated Task',
+        body: 'updated task body',
+        employeeId: task.staff.id,
+      };
+      await request(app.getHttpServer())
+        .put(`/project/${project.id}/task/${task.id}`)
+        .send(updateTask)
+        .set({ Authorization: token2 })
+        .expect(403);
+    });
+
+    it('returns 404 Not Found when the task with given id was not found', async () => {
+      const signUpDTO = { username: 'test', role: Role.MANAGER };
+      const [token, employee] = await test.signUp(signUpDTO);
+
+      const project = await createAProject(employee);
+
+      await test.notfound(token, 'PUT', `/project/${project.id}/task/999999`, {
+        title: 'New Task',
+        body: 'task body',
+        employeeId: 1,
+      });
+    });
+
+    it('returns 401 Unauthorized when not logged in', async () =>
+      test.unauthorized('PUT', '/project/1/task/1'));
+  });
+
+  describe('/project/:projectId/task/:taskId (DELETE)', () => {
+    it('delete the task', async () => {
+      const signUpDTO = { username: 'test', role: Role.MANAGER };
+      const [token, manager] = await test.signUp(signUpDTO);
+
+      const signUpDTO2 = { username: 'staff', role: Role.STAFF };
+      const [, staff] = await test.signUp(signUpDTO2);
+
+      const project = await createAProject(manager);
+      const task = await createATask(project, staff);
+
+      await request(app.getHttpServer())
+        .delete(`/project/${project.id}/task/${task.id}`)
+        .set({ Authorization: token })
+        .expect(200);
+
+      expect(await taskRepo.findOne(task.id)).toBeUndefined();
+    });
+
+    it('return 403 Forbidden if current employee not the task project manager', async () => {
+      const signUpDTO1 = { username: 'manager1', role: Role.MANAGER };
+      const [, manager1] = await test.signUp(signUpDTO1);
+
+      const signUpDTO2 = { username: 'manager2', role: Role.MANAGER };
+      const [token2] = await test.signUp(signUpDTO2);
+
+      const signUpDTO3 = { username: 'staff', role: Role.STAFF };
+      const [, staff] = await test.signUp(signUpDTO3);
+
+      const project = await createAProject(manager1);
+      const task = await createATask(project, staff);
+
+      await request(app.getHttpServer())
+        .delete(`/project/${project.id}/task/${task.id}`)
+        .set({ Authorization: token2 })
+        .expect(403);
+    });
+
+    it('returns 404 Not Found when the task with given id was not found', async () => {
+      const signUpDTO = { username: 'test', role: Role.MANAGER };
+      const [token, employee] = await test.signUp(signUpDTO);
+
+      const project = await createAProject(employee);
+
+      await test.notfound(
+        token,
+        'DELETE',
+        `/project/${project.id}/task/999999`,
+      );
+    });
+
+    it('returns 401 Unauthorized when not logged in', async () =>
+      test.unauthorized('DELETE', '/project/1/task/1'));
   });
 });

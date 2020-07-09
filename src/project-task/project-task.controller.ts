@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Body,
+  Put,
+  Delete,
+} from '@nestjs/common';
 import { ProjectTaskService } from './project-task.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { Role } from '../database/enum';
@@ -32,5 +40,26 @@ export class ProjectTaskController {
     @Param('taskId') taskId: number,
   ): Promise<Task> {
     return this.proTaskService.get(projectId, taskId);
+  }
+
+  @Put('/:taskId')
+  @Auth(Role.MANAGER)
+  async update(
+    @Param('projectId') projectId: number,
+    @Param('taskId') taskId: number,
+    @Body() taskDto: CreateTaskDTO,
+    @CurrentEmployee() employee: Employee,
+  ): Promise<Task> {
+    return this.proTaskService.update(projectId, taskId, taskDto, employee);
+  }
+
+  @Delete('/:taskId')
+  @Auth(Role.MANAGER)
+  async delete(
+    @Param('projectId') projectId: number,
+    @Param('taskId') taskId: number,
+    @CurrentEmployee() employee: Employee,
+  ): Promise<void> {
+    return this.proTaskService.delete(projectId, taskId, employee);
   }
 }
