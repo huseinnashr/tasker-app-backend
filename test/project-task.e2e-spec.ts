@@ -3,26 +3,26 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { TestHelper } from './helper/test.helper';
-import { ProjectRepository, TaskRepository } from '../src/database/repository';
-import { Role, ProjectStatus, TaskStatus } from '../src/database/enum';
-import { Employee, Project, Task } from '../src/database/entity';
+import { TaskRepository } from '../src/database/repository';
+import { Role, TaskStatus } from '../src/database/enum';
 import { CreateTaskDTO, UpdateTaskDTO } from '../src/project-task/dto';
+import { RepoHelper } from './helper/repo.helper';
 
 describe('ProjectTaskController (e2e)', () => {
   let app: INestApplication;
-  let proRepo: ProjectRepository;
   let taskRepo: TaskRepository;
   let test: TestHelper;
+  let repo: RepoHelper;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
-    proRepo = moduleRef.get<ProjectRepository>(ProjectRepository);
     taskRepo = moduleRef.get<TaskRepository>(TaskRepository);
     app = moduleRef.createNestApplication();
     test = new TestHelper(app);
+    repo = new RepoHelper(app);
 
     await app.init();
   });
@@ -31,39 +31,13 @@ describe('ProjectTaskController (e2e)', () => {
     await app.close();
   });
 
-  const createAProject = async (manager: Employee): Promise<Project> => {
-    return await proRepo.save(
-      proRepo.create({
-        title: 'New Project',
-        body: 'project body',
-        status: ProjectStatus.IN_PROGRESS,
-        manager: manager,
-      }),
-    );
-  };
-
-  const createATask = async (
-    project: Project,
-    staff: Employee,
-  ): Promise<Task> => {
-    return await taskRepo.save(
-      taskRepo.create({
-        title: 'New Task',
-        body: 'task body',
-        status: TaskStatus.IN_PROGRESS,
-        project: project,
-        staff: staff,
-      }),
-    );
-  };
-
   describe('/project/:projectId/task (GET)', () => {
     it('returns list of all task in a project given project id', async () => {
       const signUpDTO = { username: 'test', role: Role.ADMIN };
       const [token, employee] = await test.signUp(signUpDTO);
 
-      const project = await createAProject(employee);
-      const task = await createATask(project, employee);
+      const project = await repo.createAProject(employee);
+      const task = await repo.createATask(project, employee);
 
       const res = await request(app.getHttpServer())
         .get(`/project/${project.id}/task`)
@@ -94,7 +68,7 @@ describe('ProjectTaskController (e2e)', () => {
       const signUpDTO2 = { username: 'staff', role: Role.STAFF };
       const [, staff] = await test.signUp(signUpDTO2);
 
-      const project = await createAProject(manager);
+      const project = await repo.createAProject(manager);
 
       const createDto: CreateTaskDTO = {
         title: 'New Task',
@@ -132,8 +106,8 @@ describe('ProjectTaskController (e2e)', () => {
       const signUpDTO = { username: 'test', role: Role.ADMIN };
       const [token, employee] = await test.signUp(signUpDTO);
 
-      const project = await createAProject(employee);
-      const task = await createATask(project, employee);
+      const project = await repo.createAProject(employee);
+      const task = await repo.createATask(project, employee);
 
       const res = await request(app.getHttpServer())
         .get(`/project/${project.id}/task/${task.id}`)
@@ -153,7 +127,7 @@ describe('ProjectTaskController (e2e)', () => {
       const signUpDTO = { username: 'test', role: Role.MANAGER };
       const [token, employee] = await test.signUp(signUpDTO);
 
-      const project = await createAProject(employee);
+      const project = await repo.createAProject(employee);
 
       await test.notfound(token, 'GET', `/project/${project.id}/task/999999`);
     });
@@ -170,8 +144,8 @@ describe('ProjectTaskController (e2e)', () => {
       const signUpDTO2 = { username: 'staff', role: Role.STAFF };
       const [, staff] = await test.signUp(signUpDTO2);
 
-      const project = await createAProject(manager);
-      const task = await createATask(project, staff);
+      const project = await repo.createAProject(manager);
+      const task = await repo.createATask(project, staff);
 
       const updateTask: UpdateTaskDTO = {
         title: 'Updated Task',
@@ -203,8 +177,8 @@ describe('ProjectTaskController (e2e)', () => {
       const signUpDTO3 = { username: 'staff', role: Role.STAFF };
       const [, staff] = await test.signUp(signUpDTO3);
 
-      const project = await createAProject(manager1);
-      const task = await createATask(project, staff);
+      const project = await repo.createAProject(manager1);
+      const task = await repo.createATask(project, staff);
 
       const updateTask: UpdateTaskDTO = {
         title: 'Updated Task',
@@ -222,7 +196,7 @@ describe('ProjectTaskController (e2e)', () => {
       const signUpDTO = { username: 'test', role: Role.MANAGER };
       const [token, employee] = await test.signUp(signUpDTO);
 
-      const project = await createAProject(employee);
+      const project = await repo.createAProject(employee);
 
       await test.notfound(token, 'PUT', `/project/${project.id}/task/999999`, {
         title: 'New Task',
@@ -243,8 +217,8 @@ describe('ProjectTaskController (e2e)', () => {
       const signUpDTO2 = { username: 'staff', role: Role.STAFF };
       const [, staff] = await test.signUp(signUpDTO2);
 
-      const project = await createAProject(manager);
-      const task = await createATask(project, staff);
+      const project = await repo.createAProject(manager);
+      const task = await repo.createATask(project, staff);
 
       await request(app.getHttpServer())
         .delete(`/project/${project.id}/task/${task.id}`)
@@ -264,8 +238,8 @@ describe('ProjectTaskController (e2e)', () => {
       const signUpDTO3 = { username: 'staff', role: Role.STAFF };
       const [, staff] = await test.signUp(signUpDTO3);
 
-      const project = await createAProject(manager1);
-      const task = await createATask(project, staff);
+      const project = await repo.createAProject(manager1);
+      const task = await repo.createATask(project, staff);
 
       await request(app.getHttpServer())
         .delete(`/project/${project.id}/task/${task.id}`)
@@ -277,7 +251,7 @@ describe('ProjectTaskController (e2e)', () => {
       const signUpDTO = { username: 'test', role: Role.MANAGER };
       const [token, employee] = await test.signUp(signUpDTO);
 
-      const project = await createAProject(employee);
+      const project = await repo.createAProject(employee);
 
       await test.notfound(
         token,
