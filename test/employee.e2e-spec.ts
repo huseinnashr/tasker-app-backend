@@ -3,13 +3,14 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/database/repository';
-import { TestHelper } from './helper/test.helper';
 import { Role } from '../src/database/enum';
 import { CreateEmployeeDTO, UpdateEmployeeDTO } from '../src/employee/dto';
+import { AuthHelper, TestHelper } from './helper';
 
 describe('EmployeeController (e2e)', () => {
   let app: INestApplication;
   let empRepo: EmployeeRepository;
+  let auth: AuthHelper;
   let test: TestHelper;
 
   beforeEach(async () => {
@@ -19,7 +20,9 @@ describe('EmployeeController (e2e)', () => {
 
     empRepo = moduleRef.get<EmployeeRepository>(EmployeeRepository);
     app = moduleRef.createNestApplication();
-    test = new TestHelper(app);
+
+    auth = new AuthHelper(app);
+    test = new TestHelper(app, auth);
 
     await app.init();
   });
@@ -33,7 +36,7 @@ describe('EmployeeController (e2e)', () => {
 
   describe('/employee (GET)', () => {
     it('returns list of employee', async () => {
-      const [token] = await test.signUp({ role: Role.ADMIN });
+      const [token] = await auth.signUp({ role: Role.ADMIN });
 
       await request(app.getHttpServer())
         .get('/employee')
@@ -47,7 +50,7 @@ describe('EmployeeController (e2e)', () => {
 
   describe('/employee (POST)', () => {
     it('create new employee', async () => {
-      const [token] = await test.signUp({ role: Role.ADMIN });
+      const [token] = await auth.signUp({ role: Role.ADMIN });
 
       const createDTO: CreateEmployeeDTO = {
         username: 'John',
@@ -71,7 +74,7 @@ describe('EmployeeController (e2e)', () => {
 
   describe('/employee/:id (PUT)', () => {
     it('updates the employee', async () => {
-      const [token] = await test.signUp({ role: Role.ADMIN });
+      const [token] = await auth.signUp({ role: Role.ADMIN });
       const createDTO: CreateEmployeeDTO = {
         username: 'John',
         password: 'Test1234',
@@ -105,7 +108,7 @@ describe('EmployeeController (e2e)', () => {
 
   describe('/employee/:id (DELETE)', () => {
     it('deletes the employee', async () => {
-      const [token] = await test.signUp({ role: Role.ADMIN });
+      const [token] = await auth.signUp({ role: Role.ADMIN });
 
       const createDTO: CreateEmployeeDTO = {
         username: 'John',

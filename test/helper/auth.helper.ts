@@ -15,6 +15,9 @@ class AuthHelper {
 
   private employeeCounter = 0;
 
+  /** Employee creation helper. This helper uses increment username to avoid conflict.
+   * Please keep this to only an instance per db truncate
+   */
   constructor(app: INestApplication) {
     this.empRepo = app.get(EmployeeRepository);
     this.jwtService = app.get(JwtService);

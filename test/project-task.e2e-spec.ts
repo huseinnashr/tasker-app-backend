@@ -2,15 +2,15 @@ import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
-import { TestHelper } from './helper/test.helper';
 import { TaskRepository } from '../src/database/repository';
 import { Role, TaskStatus } from '../src/database/enum';
 import { CreateTaskDTO, UpdateTaskDTO } from '../src/project-task/dto';
-import { RepoHelper } from './helper/repo.helper';
+import { AuthHelper, TestHelper, RepoHelper } from './helper';
 
 describe('ProjectTaskController (e2e)', () => {
   let app: INestApplication;
   let taskRepo: TaskRepository;
+  let auth: AuthHelper;
   let test: TestHelper;
   let repo: RepoHelper;
 
@@ -21,8 +21,10 @@ describe('ProjectTaskController (e2e)', () => {
 
     taskRepo = moduleRef.get<TaskRepository>(TaskRepository);
     app = moduleRef.createNestApplication();
-    test = new TestHelper(app);
-    repo = new RepoHelper(app);
+
+    auth = new AuthHelper(app);
+    test = new TestHelper(app, auth);
+    repo = new RepoHelper(app, auth);
 
     await app.init();
   });
@@ -33,7 +35,7 @@ describe('ProjectTaskController (e2e)', () => {
 
   describe('/project/:projectId/task (GET)', () => {
     it('returns list of all task in a project given project id', async () => {
-      const [token, employee] = await test.signUp({ role: Role.ADMIN });
+      const [token, employee] = await auth.signUp({ role: Role.ADMIN });
 
       const project = await repo.createAProject(employee);
       const task = await repo.createATask(project, employee);
@@ -61,8 +63,8 @@ describe('ProjectTaskController (e2e)', () => {
 
   describe('/project/:projectId/task (POST)', () => {
     it('returns list of all task in a project given project id', async () => {
-      const [token, manager] = await test.signUp({ role: Role.MANAGER });
-      const [, staff] = await test.signUp({ role: Role.STAFF });
+      const [token, manager] = await auth.signUp({ role: Role.MANAGER });
+      const [, staff] = await auth.signUp({ role: Role.STAFF });
 
       const project = await repo.createAProject(manager);
 
@@ -99,7 +101,7 @@ describe('ProjectTaskController (e2e)', () => {
 
   describe('/project/:projectId/task/:taskId (GET)', () => {
     it('returns a task within a project', async () => {
-      const [token, employee] = await test.signUp({ role: Role.ADMIN });
+      const [token, employee] = await auth.signUp({ role: Role.ADMIN });
 
       const project = await repo.createAProject(employee);
       const task = await repo.createATask(project, employee);
@@ -119,7 +121,7 @@ describe('ProjectTaskController (e2e)', () => {
     });
 
     it('returns 404 Not Found when the task with given id was not found', async () => {
-      const [token, employee] = await test.signUp({ role: Role.MANAGER });
+      const [token, employee] = await auth.signUp({ role: Role.MANAGER });
 
       const project = await repo.createAProject(employee);
 
@@ -132,8 +134,8 @@ describe('ProjectTaskController (e2e)', () => {
 
   describe('/project/:projectId/task/:taskId (PUT)', () => {
     it('update the task and return it', async () => {
-      const [token, manager] = await test.signUp({ role: Role.MANAGER });
-      const [, staff] = await test.signUp({ role: Role.STAFF });
+      const [token, manager] = await auth.signUp({ role: Role.MANAGER });
+      const [, staff] = await auth.signUp({ role: Role.STAFF });
 
       const project = await repo.createAProject(manager);
       const task = await repo.createATask(project, staff);
@@ -159,9 +161,9 @@ describe('ProjectTaskController (e2e)', () => {
     });
 
     it('return 403 Forbidden if current employee not the task project manager', async () => {
-      const [, manager1] = await test.signUp({ role: Role.MANAGER });
-      const [token2] = await test.signUp({ role: Role.MANAGER });
-      const [, staff] = await test.signUp({ role: Role.STAFF });
+      const [, manager1] = await auth.signUp({ role: Role.MANAGER });
+      const [token2] = await auth.signUp({ role: Role.MANAGER });
+      const [, staff] = await auth.signUp({ role: Role.STAFF });
 
       const project = await repo.createAProject(manager1);
       const task = await repo.createATask(project, staff);
@@ -179,7 +181,7 @@ describe('ProjectTaskController (e2e)', () => {
     });
 
     it('returns 404 Not Found when the task with given id was not found', async () => {
-      const [token, employee] = await test.signUp({ role: Role.MANAGER });
+      const [token, employee] = await auth.signUp({ role: Role.MANAGER });
 
       const project = await repo.createAProject(employee);
 
@@ -196,8 +198,8 @@ describe('ProjectTaskController (e2e)', () => {
 
   describe('/project/:projectId/task/:taskId (DELETE)', () => {
     it('delete the task', async () => {
-      const [token, manager] = await test.signUp({ role: Role.MANAGER });
-      const [, staff] = await test.signUp({ role: Role.STAFF });
+      const [token, manager] = await auth.signUp({ role: Role.MANAGER });
+      const [, staff] = await auth.signUp({ role: Role.STAFF });
 
       const project = await repo.createAProject(manager);
       const task = await repo.createATask(project, staff);
@@ -211,9 +213,9 @@ describe('ProjectTaskController (e2e)', () => {
     });
 
     it('return 403 Forbidden if current employee not the task project manager', async () => {
-      const [, manager1] = await test.signUp({ role: Role.MANAGER });
-      const [token2] = await test.signUp({ role: Role.MANAGER });
-      const [, staff] = await test.signUp({ role: Role.STAFF });
+      const [, manager1] = await auth.signUp({ role: Role.MANAGER });
+      const [token2] = await auth.signUp({ role: Role.MANAGER });
+      const [, staff] = await auth.signUp({ role: Role.STAFF });
 
       const project = await repo.createAProject(manager1);
       const task = await repo.createATask(project, staff);
@@ -225,7 +227,7 @@ describe('ProjectTaskController (e2e)', () => {
     });
 
     it('returns 404 Not Found when the task with given id was not found', async () => {
-      const [token, employee] = await test.signUp({ role: Role.MANAGER });
+      const [token, employee] = await auth.signUp({ role: Role.MANAGER });
 
       const project = await repo.createAProject(employee);
 
