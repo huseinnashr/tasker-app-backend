@@ -36,3 +36,5 @@ lerna-debug.log*
 package-lock.json
 
 *.env
+
+/test/playground.e2e-spec.ts
