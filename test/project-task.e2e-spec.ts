@@ -33,8 +33,7 @@ describe('ProjectTaskController (e2e)', () => {
 
   describe('/project/:projectId/task (GET)', () => {
     it('returns list of all task in a project given project id', async () => {
-      const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token, employee] = await test.signUp(signUpDTO);
+      const [token, employee] = await test.signUp({ role: Role.ADMIN });
 
       const project = await repo.createAProject(employee);
       const task = await repo.createATask(project, employee);
@@ -62,11 +61,8 @@ describe('ProjectTaskController (e2e)', () => {
 
   describe('/project/:projectId/task (POST)', () => {
     it('returns list of all task in a project given project id', async () => {
-      const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token, manager] = await test.signUp(signUpDTO);
-
-      const signUpDTO2 = { username: 'staff', role: Role.STAFF };
-      const [, staff] = await test.signUp(signUpDTO2);
+      const [token, manager] = await test.signUp({ role: Role.MANAGER });
+      const [, staff] = await test.signUp({ role: Role.STAFF });
 
       const project = await repo.createAProject(manager);
 
@@ -103,8 +99,7 @@ describe('ProjectTaskController (e2e)', () => {
 
   describe('/project/:projectId/task/:taskId (GET)', () => {
     it('returns a task within a project', async () => {
-      const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token, employee] = await test.signUp(signUpDTO);
+      const [token, employee] = await test.signUp({ role: Role.ADMIN });
 
       const project = await repo.createAProject(employee);
       const task = await repo.createATask(project, employee);
@@ -124,8 +119,7 @@ describe('ProjectTaskController (e2e)', () => {
     });
 
     it('returns 404 Not Found when the task with given id was not found', async () => {
-      const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token, employee] = await test.signUp(signUpDTO);
+      const [token, employee] = await test.signUp({ role: Role.MANAGER });
 
       const project = await repo.createAProject(employee);
 
@@ -138,11 +132,8 @@ describe('ProjectTaskController (e2e)', () => {
 
   describe('/project/:projectId/task/:taskId (PUT)', () => {
     it('update the task and return it', async () => {
-      const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token, manager] = await test.signUp(signUpDTO);
-
-      const signUpDTO2 = { username: 'staff', role: Role.STAFF };
-      const [, staff] = await test.signUp(signUpDTO2);
+      const [token, manager] = await test.signUp({ role: Role.MANAGER });
+      const [, staff] = await test.signUp({ role: Role.STAFF });
 
       const project = await repo.createAProject(manager);
       const task = await repo.createATask(project, staff);
@@ -168,14 +159,9 @@ describe('ProjectTaskController (e2e)', () => {
     });
 
     it('return 403 Forbidden if current employee not the task project manager', async () => {
-      const signUpDTO1 = { username: 'manager1', role: Role.MANAGER };
-      const [, manager1] = await test.signUp(signUpDTO1);
-
-      const signUpDTO2 = { username: 'manager2', role: Role.MANAGER };
-      const [token2] = await test.signUp(signUpDTO2);
-
-      const signUpDTO3 = { username: 'staff', role: Role.STAFF };
-      const [, staff] = await test.signUp(signUpDTO3);
+      const [, manager1] = await test.signUp({ role: Role.MANAGER });
+      const [token2] = await test.signUp({ role: Role.MANAGER });
+      const [, staff] = await test.signUp({ role: Role.STAFF });
 
       const project = await repo.createAProject(manager1);
       const task = await repo.createATask(project, staff);
@@ -193,8 +179,7 @@ describe('ProjectTaskController (e2e)', () => {
     });
 
     it('returns 404 Not Found when the task with given id was not found', async () => {
-      const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token, employee] = await test.signUp(signUpDTO);
+      const [token, employee] = await test.signUp({ role: Role.MANAGER });
 
       const project = await repo.createAProject(employee);
 
@@ -211,11 +196,8 @@ describe('ProjectTaskController (e2e)', () => {
 
   describe('/project/:projectId/task/:taskId (DELETE)', () => {
     it('delete the task', async () => {
-      const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token, manager] = await test.signUp(signUpDTO);
-
-      const signUpDTO2 = { username: 'staff', role: Role.STAFF };
-      const [, staff] = await test.signUp(signUpDTO2);
+      const [token, manager] = await test.signUp({ role: Role.MANAGER });
+      const [, staff] = await test.signUp({ role: Role.STAFF });
 
       const project = await repo.createAProject(manager);
       const task = await repo.createATask(project, staff);
@@ -229,14 +211,9 @@ describe('ProjectTaskController (e2e)', () => {
     });
 
     it('return 403 Forbidden if current employee not the task project manager', async () => {
-      const signUpDTO1 = { username: 'manager1', role: Role.MANAGER };
-      const [, manager1] = await test.signUp(signUpDTO1);
-
-      const signUpDTO2 = { username: 'manager2', role: Role.MANAGER };
-      const [token2] = await test.signUp(signUpDTO2);
-
-      const signUpDTO3 = { username: 'staff', role: Role.STAFF };
-      const [, staff] = await test.signUp(signUpDTO3);
+      const [, manager1] = await test.signUp({ role: Role.MANAGER });
+      const [token2] = await test.signUp({ role: Role.MANAGER });
+      const [, staff] = await test.signUp({ role: Role.STAFF });
 
       const project = await repo.createAProject(manager1);
       const task = await repo.createATask(project, staff);
@@ -248,8 +225,7 @@ describe('ProjectTaskController (e2e)', () => {
     });
 
     it('returns 404 Not Found when the task with given id was not found', async () => {
-      const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token, employee] = await test.signUp(signUpDTO);
+      const [token, employee] = await test.signUp({ role: Role.MANAGER });
 
       const project = await repo.createAProject(employee);
 

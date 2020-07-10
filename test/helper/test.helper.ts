@@ -31,8 +31,7 @@ class TestHelper {
   async forbidden(arg1: Role | string, method: HTTPMethod, url: string) {
     let token: string;
     if (Object.values(<any>Role).includes(arg1)) {
-      const signUpDTO = { username: 'testforbidden', role: <Role>arg1 };
-      token = (await this.signUp(signUpDTO))[0];
+      token = (await this.signUp({ role: <Role>arg1 }))[0];
     } else {
       token = arg1;
     }

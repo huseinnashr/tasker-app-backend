@@ -5,7 +5,7 @@ import { Role } from '../../src/database/enum';
 import { Employee } from '../../src/database/entity';
 
 interface SignUpDTO {
-  username: string;
+  username?: string;
   role: Role;
 }
 
@@ -13,13 +13,20 @@ class AuthHelper {
   private empRepo: EmployeeRepository;
   private jwtService: JwtService;
 
+  private employeeCounter = 0;
+
   constructor(app: INestApplication) {
     this.empRepo = app.get(EmployeeRepository);
     this.jwtService = app.get(JwtService);
   }
 
   signUp = async (data: SignUpDTO): Promise<[string, Employee]> => {
-    const employee = this.empRepo.create(data);
+    this.employeeCounter += 1;
+    let { username } = data;
+    if (!username) {
+      username = 'employee' + this.employeeCounter;
+    }
+    const employee = this.empRepo.create({ ...data, username });
     employee.password = 'SecretPassword1234';
     await this.empRepo.save(employee);
     const accessToken = this.jwtService.sign({ username: employee.username });

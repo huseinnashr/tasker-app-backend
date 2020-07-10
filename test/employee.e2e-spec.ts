@@ -33,8 +33,7 @@ describe('EmployeeController (e2e)', () => {
 
   describe('/employee (GET)', () => {
     it('returns list of employee', async () => {
-      const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token] = await test.signUp(signUpDTO);
+      const [token] = await test.signUp({ role: Role.ADMIN });
 
       await request(app.getHttpServer())
         .get('/employee')
@@ -48,8 +47,7 @@ describe('EmployeeController (e2e)', () => {
 
   describe('/employee (POST)', () => {
     it('create new employee', async () => {
-      const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token] = await test.signUp(signUpDTO);
+      const [token] = await test.signUp({ role: Role.ADMIN });
 
       const createDTO: CreateEmployeeDTO = {
         username: 'John',
@@ -73,8 +71,7 @@ describe('EmployeeController (e2e)', () => {
 
   describe('/employee/:id (PUT)', () => {
     it('updates the employee', async () => {
-      const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token] = await test.signUp(signUpDTO);
+      const [token] = await test.signUp({ role: Role.ADMIN });
       const createDTO: CreateEmployeeDTO = {
         username: 'John',
         password: 'Test1234',
@@ -108,8 +105,7 @@ describe('EmployeeController (e2e)', () => {
 
   describe('/employee/:id (DELETE)', () => {
     it('deletes the employee', async () => {
-      const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token] = await test.signUp(signUpDTO);
+      const [token] = await test.signUp({ role: Role.ADMIN });
 
       const createDTO: CreateEmployeeDTO = {
         username: 'John',

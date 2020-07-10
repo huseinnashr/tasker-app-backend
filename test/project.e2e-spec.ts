@@ -35,8 +35,7 @@ describe('ProjectController (e2e)', () => {
 
   describe('/project (GET)', () => {
     it('returns list of project', async () => {
-      const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token] = await test.signUp(signUpDTO);
+      const [token] = await test.signUp({ role: Role.ADMIN });
 
       await request(app.getHttpServer())
         .get('/project')
@@ -50,8 +49,7 @@ describe('ProjectController (e2e)', () => {
 
   describe('/project (POST)', () => {
     it('creates new project & returns it', async () => {
-      const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token, employee] = await test.signUp(signUpDTO);
+      const [token, employee] = await test.signUp({ role: Role.MANAGER });
 
       const createDto: CreateProjectDTO = {
         title: 'New Project',
@@ -85,8 +83,7 @@ describe('ProjectController (e2e)', () => {
 
   describe('/project/:id (GET)', () => {
     it('returns a project with given id', async () => {
-      const signUpDTO = { username: 'test', role: Role.STAFF };
-      const [token] = await test.signUp(signUpDTO);
+      const [token] = await test.signUp({ role: Role.STAFF });
 
       const project = await proRepo.save(
         proRepo.create({
@@ -112,8 +109,7 @@ describe('ProjectController (e2e)', () => {
 
   describe('/project/:id (PUT)', () => {
     it('update the project with given id', async () => {
-      const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token] = await test.signUp(signUpDTO);
+      const [token] = await test.signUp({ role: Role.MANAGER });
 
       const project = await proRepo.save(
         proRepo.create({
@@ -147,8 +143,7 @@ describe('ProjectController (e2e)', () => {
 
   describe('/project/:id/status (PUT)', () => {
     it('update the project status and returns updated project', async () => {
-      const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token] = await test.signUp(signUpDTO);
+      const [token] = await test.signUp({ role: Role.MANAGER });
 
       const project = await proRepo.save(
         proRepo.create({
@@ -180,8 +175,7 @@ describe('ProjectController (e2e)', () => {
 
   describe('/project/:id (DELETE)', () => {
     it('deletes the project', async () => {
-      const signUpDTO = { username: 'test', role: Role.MANAGER };
-      const [token] = await test.signUp(signUpDTO);
+      const [token] = await test.signUp({ role: Role.MANAGER });
 
       const project = await proRepo.save({
         title: 'New Project',

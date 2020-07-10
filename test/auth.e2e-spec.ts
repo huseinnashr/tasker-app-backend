@@ -70,15 +70,14 @@ describe('AuthController (e2e)', () => {
 
   describe('/auth/current (GET)', () => {
     it('returns current user', async () => {
-      const signUpDTO = { username: 'test', role: Role.ADMIN };
-      const [token] = await test.signUp(signUpDTO);
+      const [token, admin] = await test.signUp({ role: Role.ADMIN });
 
       const currentRes = await request(app.getHttpServer())
         .get('/auth/current')
         .set({ Authorization: token })
         .expect(200);
 
-      expect(currentRes.body.username).toBe(signUpDTO.username);
+      expect(currentRes.body.username).toBe(admin.username);
     });
 
     it('returns 401 when not logged in', async () => {
