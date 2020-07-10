@@ -45,4 +45,8 @@ export class Task {
   )
   @Exclude()
   updates: Update[];
+
+  isStaff(employee: Employee): boolean {
+    return this.staff.id === employee.id;
+  }
 }

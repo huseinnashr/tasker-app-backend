@@ -10,7 +10,7 @@ import {
 import { ProjectTaskService } from './project-task.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { Role } from '../database/enum';
-import { CreateTaskDTO } from './dto';
+import { CreateTaskDTO, UpdateTaskDTO } from './dto';
 import { Employee, Task } from '../database/entity';
 
 @Controller('project/:projectId/task')
@@ -47,7 +47,7 @@ export class ProjectTaskController {
   async update(
     @Param('projectId') projectId: number,
     @Param('taskId') taskId: number,
-    @Body() taskDto: CreateTaskDTO,
+    @Body() taskDto: UpdateTaskDTO,
     @CurrentEmployee() employee: Employee,
   ): Promise<Task> {
     return this.proTaskService.update(projectId, taskId, taskDto, employee);

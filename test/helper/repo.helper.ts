@@ -52,7 +52,7 @@ class RepoHelper {
     );
   }
 
-  createAnUpdate = async (task?: Task): Promise<Update> => {
+  async createAnUpdate(task?: Task): Promise<Update> {
     if (!task) task = await this.createATask();
     return await this.updateRepo.save(
       this.updateRepo.create({
@@ -62,7 +62,7 @@ class RepoHelper {
         task: task,
       }),
     );
-  };
+  }
 }
 
 export { RepoHelper };
