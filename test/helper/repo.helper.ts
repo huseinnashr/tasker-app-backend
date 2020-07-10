@@ -3,8 +3,15 @@ import {
   ProjectRepository,
   TaskRepository,
   UpdateRepository,
+  CommentRepository,
 } from '../../src/database/repository';
-import { Employee, Project, Task, Update } from '../../src/database/entity';
+import {
+  Employee,
+  Project,
+  Task,
+  Update,
+  Comment,
+} from '../../src/database/entity';
 import {
   ProjectStatus,
   TaskStatus,
@@ -17,12 +24,14 @@ class RepoHelper {
   private proRepo: ProjectRepository;
   private taskRepo: TaskRepository;
   private updateRepo: UpdateRepository;
+  private commRepo: CommentRepository;
   private auth: AuthHelper;
 
   constructor(app: INestApplication, auth: AuthHelper) {
     this.proRepo = app.get(ProjectRepository);
     this.taskRepo = app.get(TaskRepository);
     this.updateRepo = app.get(UpdateRepository);
+    this.commRepo = app.get(CommentRepository);
     this.auth = auth;
   }
 
@@ -60,6 +69,18 @@ class RepoHelper {
         body: 'update body',
         type: UpdateType.PROGRESS,
         task: task,
+      }),
+    );
+  }
+
+  async createAComment(update?: Update, creator?: Employee): Promise<Comment> {
+    if (!update) update = await this.createAnUpdate();
+    if (!creator) creator = update.task.staff;
+    return await this.commRepo.save(
+      this.commRepo.create({
+        body: 'comment body',
+        update: update,
+        creator: creator,
       }),
     );
   }

@@ -10,6 +10,7 @@ import { Exclude, Expose } from 'class-transformer';
 import { Role } from '../enum/role.enum';
 import { Project } from './project.entity';
 import { Task } from './task.entity';
+import { Comment } from './comment.entity';
 
 @Entity()
 @Unique(['username'])
@@ -28,13 +29,22 @@ export class Employee {
     () => Project,
     project => project.manager,
   )
+  @Exclude()
   managedProject: Project[];
 
   @OneToMany(
     () => Task,
     task => task.staff,
   )
+  @Exclude()
   assignedTask: Task[];
+
+  @OneToMany(
+    () => Comment,
+    comment => comment.creator,
+  )
+  @Exclude()
+  comments: Comment[];
 
   @Column()
   @Exclude()
