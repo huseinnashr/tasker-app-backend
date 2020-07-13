@@ -6,11 +6,11 @@ import {
   OneToMany,
 } from 'typeorm';
 import { ProjectStatus } from '../enum/project-status.enum';
-import { Employee } from './employee.entity';
-import { Task } from './task.entity';
+import { EmployeeEntity } from './employee.entity';
+import { TaskEntity } from './task.entity';
 
 @Entity()
-export class Project {
+export class ProjectEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -24,19 +24,19 @@ export class Project {
   status: ProjectStatus;
 
   @ManyToOne(
-    () => Employee,
+    () => EmployeeEntity,
     employee => employee.managedProject,
     { eager: true },
   )
-  manager: Employee;
+  manager: EmployeeEntity;
 
   @OneToMany(
-    () => Task,
+    () => TaskEntity,
     task => task.project,
   )
-  tasks: Task;
+  tasks: TaskEntity;
 
-  isManager(employee: Employee): boolean {
+  isManager(employee: EmployeeEntity): boolean {
     return this.manager.id === employee.id;
   }
 }

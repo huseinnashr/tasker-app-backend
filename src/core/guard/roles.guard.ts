@@ -5,7 +5,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Employee } from '../../database/entity';
+import { EmployeeEntity } from '../../database/entity';
 import { Role } from '../../database/enum';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class RolesGuard implements CanActivate {
       return true;
     }
     const request = context.switchToHttp().getRequest();
-    const employee: Employee = request.user;
+    const employee: EmployeeEntity = request.user;
     const can = roles.includes(employee.role);
 
     if (!can) throw new ForbiddenException("You don't have the permission");

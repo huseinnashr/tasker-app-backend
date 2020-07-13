@@ -5,21 +5,22 @@ import {
   UpdateEvent,
   EventSubscriber,
 } from 'typeorm';
-import { Employee } from '../entity/employee.entity';
+import { EmployeeEntity } from '../entity/employee.entity';
 import * as bcrypt from 'bcrypt';
 
 @EventSubscriber()
-export class EmployeeSubscriber implements EntitySubscriberInterface<Employee> {
+export class EmployeeSubscriber
+  implements EntitySubscriberInterface<EmployeeEntity> {
   constructor(connection: Connection) {
     connection.subscribers.push(this);
   }
 
   listenTo(): any {
-    return Employee;
+    return EmployeeEntity;
   }
 
   private async hashPassword(
-    event: InsertEvent<Employee> | UpdateEvent<Employee>,
+    event: InsertEvent<EmployeeEntity> | UpdateEvent<EmployeeEntity>,
   ) {
     event.entity.salt = await bcrypt.genSalt();
     event.entity.password = await bcrypt.hash(
@@ -28,11 +29,11 @@ export class EmployeeSubscriber implements EntitySubscriberInterface<Employee> {
     );
   }
 
-  async beforeInsert(event: InsertEvent<Employee>): Promise<void> {
+  async beforeInsert(event: InsertEvent<EmployeeEntity>): Promise<void> {
     await this.hashPassword(event);
   }
 
-  async beforeUpdate(event: UpdateEvent<Employee>): Promise<void> {
+  async beforeUpdate(event: UpdateEvent<EmployeeEntity>): Promise<void> {
     if (event.entity.password !== event.databaseEntity.password) {
       await this.hashPassword(event);
     }

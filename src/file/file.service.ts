@@ -3,7 +3,7 @@ import { AppService } from '../core/app.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FileRepository } from '../database/repository';
 import { MulterFile } from '../core/interface';
-import { File, Employee } from '../database/entity';
+import { FileEntity, EmployeeEntity } from '../database/entity';
 import { MimeType } from '../database/enum';
 import { promises as fs } from 'fs';
 import { Readable, Stream } from 'stream';
@@ -16,10 +16,13 @@ export class FileService extends AppService {
     super();
   }
 
-  async create(uploadedFile: MulterFile, employee: Employee): Promise<File> {
+  async create(
+    uploadedFile: MulterFile,
+    employee: EmployeeEntity,
+  ): Promise<FileEntity> {
     if (!uploadedFile) throw new BadRequestException('File cannot be empty');
 
-    const file = new File();
+    const file = new FileEntity();
     file.filename = uploadedFile.originalname;
     file.mime = <MimeType>uploadedFile.mimetype;
     file.filepath = uploadedFile.path;
@@ -30,7 +33,7 @@ export class FileService extends AppService {
 
   async get(
     fileId: number,
-    employee: Employee,
+    employee: EmployeeEntity,
   ): Promise<{ stream: Stream; length: number; mime: MimeType }> {
     const file = await this.fileRepo.findOneOrException(fileId);
 

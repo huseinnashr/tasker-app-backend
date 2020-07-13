@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectRepository } from '../database/repository';
 import { CreateProjectDTO, UpdateProjectDTO, ProjectStatusDTO } from './dto';
 import { ProjectStatus } from '../database/enum';
-import { Employee, Project } from '../database/entity';
+import { EmployeeEntity, ProjectEntity } from '../database/entity';
 import { AppService } from '../core/app.service';
 
 @Injectable()
@@ -15,15 +15,15 @@ export class ProjectService extends AppService {
     super();
   }
 
-  async getAll(): Promise<Project[]> {
+  async getAll(): Promise<ProjectEntity[]> {
     return this.proRepo.find();
   }
 
   async create(
     createDto: CreateProjectDTO,
-    employe: Employee,
-  ): Promise<Project> {
-    const project = new Project();
+    employe: EmployeeEntity,
+  ): Promise<ProjectEntity> {
+    const project = new ProjectEntity();
     project.title = createDto.title;
     project.body = createDto.body;
     project.status = ProjectStatus.IN_PROGRESS;
@@ -32,11 +32,14 @@ export class ProjectService extends AppService {
     return this.proRepo.save(project);
   }
 
-  async get(id: number): Promise<Project> {
+  async get(id: number): Promise<ProjectEntity> {
     return this.proRepo.findOneOrException(id);
   }
 
-  async update(id: number, updateDto: UpdateProjectDTO): Promise<Project> {
+  async update(
+    id: number,
+    updateDto: UpdateProjectDTO,
+  ): Promise<ProjectEntity> {
     const project = await this.proRepo.findOneOrException(id);
 
     project.title = updateDto.title;
@@ -48,14 +51,14 @@ export class ProjectService extends AppService {
   async updateStatus(
     id: number,
     statusDto: ProjectStatusDTO,
-  ): Promise<Project> {
+  ): Promise<ProjectEntity> {
     const project = await this.proRepo.findOneOrException(id);
     project.status = statusDto.status;
 
     return this.proRepo.save(project);
   }
 
-  async delete(id: number): Promise<Project> {
+  async delete(id: number): Promise<ProjectEntity> {
     const project = await this.proRepo.findOneOrException(id);
 
     return this.proRepo.remove(project);

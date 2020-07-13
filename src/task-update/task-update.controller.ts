@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { TaskUpdateService } from './task-update.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
-import { Update, Employee } from '../database/entity';
+import { UpdateEntity, EmployeeEntity } from '../database/entity';
 import { Role } from '../database/enum';
 import { CreateUpdateDTO, UpdateUpdateDTO } from './dto';
 
@@ -19,7 +19,7 @@ export class TaskUpdateController {
 
   @Get('/')
   @Auth()
-  async getAll(@Param('taskId') taskId: number): Promise<Update[]> {
+  async getAll(@Param('taskId') taskId: number): Promise<UpdateEntity[]> {
     return this.taskUpdService.getAll(taskId);
   }
 
@@ -28,8 +28,8 @@ export class TaskUpdateController {
   async create(
     @Param('taskId') taskId: number,
     @Body() createDto: CreateUpdateDTO,
-    @CurrentEmployee() employee: Employee,
-  ): Promise<Update> {
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<UpdateEntity> {
     return this.taskUpdService.create(taskId, createDto, employee);
   }
 
@@ -38,7 +38,7 @@ export class TaskUpdateController {
   async get(
     @Param('taskId') taskId: number,
     @Param('updateId') updateId: number,
-  ): Promise<Update> {
+  ): Promise<UpdateEntity> {
     return this.taskUpdService.get(taskId, updateId);
   }
 
@@ -48,8 +48,8 @@ export class TaskUpdateController {
     @Param('taskId') taskId: number,
     @Param('updateId') updateId: number,
     @Body() updateDto: UpdateUpdateDTO,
-    @CurrentEmployee() employee: Employee,
-  ): Promise<Update> {
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<UpdateEntity> {
     return this.taskUpdService.update(taskId, updateId, updateDto, employee);
   }
 
@@ -58,7 +58,7 @@ export class TaskUpdateController {
   async delete(
     @Param('taskId') taskId: number,
     @Param('updateId') updateId: number,
-    @CurrentEmployee() employee: Employee,
+    @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<void> {
     return this.taskUpdService.delete(taskId, updateId, employee);
   }

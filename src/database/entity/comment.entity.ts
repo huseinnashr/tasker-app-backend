@@ -1,9 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { Update, Employee } from './';
+import { UpdateEntity, EmployeeEntity } from './';
 
 @Entity()
-export class Comment {
+export class CommentEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -11,20 +11,20 @@ export class Comment {
   body: string;
 
   @ManyToOne(
-    () => Update,
+    () => UpdateEntity,
     update => update.comments,
   )
   @Exclude()
-  update: Update;
+  update: UpdateEntity;
 
   @ManyToOne(
-    () => Employee,
+    () => EmployeeEntity,
     employee => employee.comments,
     { eager: true },
   )
-  creator: Employee;
+  creator: EmployeeEntity;
 
-  isCreator(employee: Employee): boolean {
+  isCreator(employee: EmployeeEntity): boolean {
     return this.creator.id === employee.id;
   }
 }

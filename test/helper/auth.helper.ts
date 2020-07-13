@@ -2,7 +2,7 @@ import { JwtService } from '@nestjs/jwt';
 import { INestApplication } from '@nestjs/common';
 import { EmployeeRepository } from '../../src/database/repository';
 import { Role } from '../../src/database/enum';
-import { Employee } from '../../src/database/entity';
+import { EmployeeEntity } from '../../src/database/entity';
 
 interface SignUpDTO {
   username?: string;
@@ -23,7 +23,7 @@ class AuthHelper {
     this.jwtService = app.get(JwtService);
   }
 
-  signUp = async (data: SignUpDTO): Promise<[string, Employee]> => {
+  signUp = async (data: SignUpDTO): Promise<[string, EmployeeEntity]> => {
     this.employeeCounter += 1;
     let { username } = data;
     if (!username) {

@@ -1,9 +1,9 @@
 import { EntityRepository } from 'typeorm';
-import { Task } from '../entity';
+import { TaskEntity } from '../entity';
 import { AppRepository } from '../../core/app.repository';
 
-@EntityRepository(Task)
-export class TaskRepository extends AppRepository<Task> {
+@EntityRepository(TaskEntity)
+export class TaskRepository extends AppRepository<TaskEntity> {
   constructor() {
     super('Task');
   }

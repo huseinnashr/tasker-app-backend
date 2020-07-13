@@ -9,7 +9,7 @@ import {
   Delete,
   SerializeOptions,
 } from '@nestjs/common';
-import { Employee } from '../database/entity';
+import { EmployeeEntity } from '../database/entity';
 import { EmployeeService } from './employee.service';
 import { Role } from '../database/enum';
 import { CreateEmployeeDTO, UpdateEmployeeDTO } from './dto';
@@ -22,13 +22,13 @@ export class EmployeeController {
 
   @Get('/')
   @Auth(Role.ADMIN)
-  async getAll(): Promise<Employee[]> {
+  async getAll(): Promise<EmployeeEntity[]> {
     return this.empService.getAll();
   }
 
   @Post('/')
   @Auth(Role.ADMIN)
-  async create(@Body() createDto: CreateEmployeeDTO): Promise<Employee> {
+  async create(@Body() createDto: CreateEmployeeDTO): Promise<EmployeeEntity> {
     return this.empService.create(createDto);
   }
 
@@ -38,7 +38,7 @@ export class EmployeeController {
   async update(
     @Param('id') id: number,
     @Body() employee: UpdateEmployeeDTO,
-  ): Promise<Employee> {
+  ): Promise<EmployeeEntity> {
     return this.empService.update(id, employee);
   }
 

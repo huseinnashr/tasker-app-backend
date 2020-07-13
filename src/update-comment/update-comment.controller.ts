@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { UpdateCommentService } from './update-comment.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
-import { Comment, Employee } from '../database/entity';
+import { CommentEntity, EmployeeEntity } from '../database/entity';
 import { CreateCommentDTO, UpdateCommentDTO } from './dto';
 
 @Controller('update/:updateId/comment')
@@ -18,7 +18,7 @@ export class UpdateCommentController {
 
   @Get('/')
   @Auth()
-  async getAll(@Param('updateId') updateId: number): Promise<Comment[]> {
+  async getAll(@Param('updateId') updateId: number): Promise<CommentEntity[]> {
     return this.updateCommService.getAll(updateId);
   }
 
@@ -27,8 +27,8 @@ export class UpdateCommentController {
   async create(
     @Param('updateId') updateId: number,
     @Body() createDto: CreateCommentDTO,
-    @CurrentEmployee() employee: Employee,
-  ): Promise<Comment> {
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<CommentEntity> {
     return this.updateCommService.create(updateId, createDto, employee);
   }
 
@@ -37,7 +37,7 @@ export class UpdateCommentController {
   async get(
     @Param('updateId') updateId: number,
     @Param('commentId') commentId: number,
-  ): Promise<Comment> {
+  ): Promise<CommentEntity> {
     return this.updateCommService.get(updateId, commentId);
   }
 
@@ -47,8 +47,8 @@ export class UpdateCommentController {
     @Param('updateId') updateId: number,
     @Param('commentId') commentId: number,
     @Body() commentDto: UpdateCommentDTO,
-    @CurrentEmployee() employee: Employee,
-  ): Promise<Comment> {
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<CommentEntity> {
     return this.updateCommService.update(
       updateId,
       commentId,
@@ -62,7 +62,7 @@ export class UpdateCommentController {
   async delete(
     @Param('updateId') updateId: number,
     @Param('commentId') commentId: number,
-    @CurrentEmployee() employee: Employee,
+    @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<void> {
     return this.updateCommService.delete(updateId, commentId, employee);
   }

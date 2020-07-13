@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AppService } from '../core/app.service';
 import { TaskRepository, UpdateRepository } from '../database/repository';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Update, Employee } from '../database/entity';
+import { UpdateEntity, EmployeeEntity } from '../database/entity';
 import { CreateUpdateDTO, UpdateUpdateDTO } from './dto';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class TaskUpdateService extends AppService {
     super();
   }
 
-  async getAll(taskId: number): Promise<Update[]> {
+  async getAll(taskId: number): Promise<UpdateEntity[]> {
     const task = await this.taskRepo.findOneOrException(taskId);
     return this.updateRepo.find({ where: { task } });
   }
@@ -22,13 +22,13 @@ export class TaskUpdateService extends AppService {
   async create(
     taskId: number,
     createDto: CreateUpdateDTO,
-    employee: Employee,
-  ): Promise<Update> {
+    employee: EmployeeEntity,
+  ): Promise<UpdateEntity> {
     const task = await this.taskRepo.findOneOrException(taskId);
 
     this.canManage(task.isStaff(employee), 'Task');
 
-    const update = new Update();
+    const update = new UpdateEntity();
     update.title = createDto.title;
     update.body = createDto.body;
     update.type = createDto.type;
@@ -37,7 +37,7 @@ export class TaskUpdateService extends AppService {
     return this.updateRepo.save(update);
   }
 
-  async get(taskId: number, updateId: number): Promise<Update> {
+  async get(taskId: number, updateId: number): Promise<UpdateEntity> {
     return this.updateRepo.findOneOrException({
       id: updateId,
       task: { id: taskId },
@@ -48,8 +48,8 @@ export class TaskUpdateService extends AppService {
     taskId: number,
     updateId: number,
     updateDto: UpdateUpdateDTO,
-    employee: Employee,
-  ): Promise<Update> {
+    employee: EmployeeEntity,
+  ): Promise<UpdateEntity> {
     const where = { id: updateId, task: { id: taskId } };
     const option = { relations: ['task'] };
     const update = await this.updateRepo.findOneOrException(where, option);
@@ -66,7 +66,7 @@ export class TaskUpdateService extends AppService {
   async delete(
     taskId: number,
     updateId: number,
-    employee: Employee,
+    employee: EmployeeEntity,
   ): Promise<void> {
     const where = { id: updateId, task: { id: taskId } };
     const option = { relations: ['task'] };

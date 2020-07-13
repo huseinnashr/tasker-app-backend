@@ -11,7 +11,7 @@ import { ProjectTaskService } from './project-task.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { Role } from '../database/enum';
 import { CreateTaskDTO, UpdateTaskDTO } from './dto';
-import { Employee, Task } from '../database/entity';
+import { EmployeeEntity, TaskEntity } from '../database/entity';
 
 @Controller('project/:projectId/task')
 export class ProjectTaskController {
@@ -19,7 +19,7 @@ export class ProjectTaskController {
 
   @Get('/')
   @Auth()
-  async getAll(@Param('projectId') projectId: number): Promise<Task[]> {
+  async getAll(@Param('projectId') projectId: number): Promise<TaskEntity[]> {
     return this.proTaskService.getAll(projectId);
   }
 
@@ -28,8 +28,8 @@ export class ProjectTaskController {
   async create(
     @Param('projectId') projectId: number,
     @Body() taskDto: CreateTaskDTO,
-    @CurrentEmployee() employee: Employee,
-  ): Promise<Task> {
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<TaskEntity> {
     return this.proTaskService.create(projectId, taskDto, employee);
   }
 
@@ -38,7 +38,7 @@ export class ProjectTaskController {
   async get(
     @Param('projectId') projectId: number,
     @Param('taskId') taskId: number,
-  ): Promise<Task> {
+  ): Promise<TaskEntity> {
     return this.proTaskService.get(projectId, taskId);
   }
 
@@ -48,8 +48,8 @@ export class ProjectTaskController {
     @Param('projectId') projectId: number,
     @Param('taskId') taskId: number,
     @Body() taskDto: UpdateTaskDTO,
-    @CurrentEmployee() employee: Employee,
-  ): Promise<Task> {
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<TaskEntity> {
     return this.proTaskService.update(projectId, taskId, taskDto, employee);
   }
 
@@ -58,7 +58,7 @@ export class ProjectTaskController {
   async delete(
     @Param('projectId') projectId: number,
     @Param('taskId') taskId: number,
-    @CurrentEmployee() employee: Employee,
+    @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<void> {
     return this.proTaskService.delete(projectId, taskId, employee);
   }

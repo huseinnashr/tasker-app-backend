@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EmployeeRepository } from '../database/repository';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Employee } from '../database/entity';
+import { EmployeeEntity } from '../database/entity';
 import { CreateEmployeeDTO, UpdateEmployeeDTO } from './dto';
 import { AppService } from '../core/app.service';
 
@@ -13,23 +13,26 @@ export class EmployeeService extends AppService {
     super();
   }
 
-  async getAll(): Promise<Employee[]> {
+  async getAll(): Promise<EmployeeEntity[]> {
     return this.empRepo.find();
   }
 
-  async create(createDto: CreateEmployeeDTO): Promise<Employee> {
-    const employee = new Employee();
+  async create(createDto: CreateEmployeeDTO): Promise<EmployeeEntity> {
+    const employee = new EmployeeEntity();
     employee.username = createDto.username;
     employee.role = createDto.role;
     employee.password = createDto.password;
     return this.empRepo.save(employee);
   }
 
-  async get(id: number): Promise<Employee> {
+  async get(id: number): Promise<EmployeeEntity> {
     return this.empRepo.findOneOrException(id);
   }
 
-  async update(id: number, updateDto: UpdateEmployeeDTO): Promise<Employee> {
+  async update(
+    id: number,
+    updateDto: UpdateEmployeeDTO,
+  ): Promise<EmployeeEntity> {
     const employee = await this.empRepo.findOneOrException(id);
 
     const { username, role, password } = updateDto;

@@ -1,9 +1,9 @@
 import { EntityRepository } from 'typeorm';
-import { File } from '../entity';
+import { FileEntity } from '../entity';
 import { AppRepository } from '../../core/app.repository';
 
-@EntityRepository(File)
-export class FileRepository extends AppRepository<File> {
+@EntityRepository(FileEntity)
+export class FileRepository extends AppRepository<FileEntity> {
   constructor() {
     super('File');
   }

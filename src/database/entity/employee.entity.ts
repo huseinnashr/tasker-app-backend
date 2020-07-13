@@ -8,14 +8,14 @@ import {
 import * as bcrypt from 'bcrypt';
 import { Exclude, Expose } from 'class-transformer';
 import { Role } from '../enum/role.enum';
-import { Project } from './project.entity';
-import { Task } from './task.entity';
-import { Comment } from './comment.entity';
-import { File } from './file.entity';
+import { ProjectEntity } from './project.entity';
+import { TaskEntity } from './task.entity';
+import { CommentEntity } from './comment.entity';
+import { FileEntity } from './file.entity';
 
 @Entity()
 @Unique(['username'])
-export class Employee {
+export class EmployeeEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -27,32 +27,32 @@ export class Employee {
   role: Role;
 
   @OneToMany(
-    () => Project,
+    () => ProjectEntity,
     project => project.manager,
   )
   @Exclude()
-  managedProject: Project[];
+  managedProject: ProjectEntity[];
 
   @OneToMany(
-    () => Task,
+    () => TaskEntity,
     task => task.staff,
   )
   @Exclude()
-  assignedTask: Task[];
+  assignedTask: TaskEntity[];
 
   @OneToMany(
-    () => Comment,
+    () => CommentEntity,
     comment => comment.creator,
   )
   @Exclude()
-  comments: Comment[];
+  comments: CommentEntity[];
 
   @OneToMany(
-    () => File,
+    () => FileEntity,
     file => file.owner,
   )
   @Exclude()
-  files: File[];
+  files: FileEntity[];
 
   @Column()
   @Exclude()

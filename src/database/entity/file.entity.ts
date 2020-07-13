@@ -1,10 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { Employee } from '.';
+import { EmployeeEntity } from '.';
 import { MimeType } from '../enum';
 
 @Entity()
-export class File {
+export class FileEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -19,13 +19,13 @@ export class File {
   filepath: string;
 
   @ManyToOne(
-    () => Employee,
+    () => EmployeeEntity,
     employee => employee.files,
     { eager: true },
   )
-  owner: Employee;
+  owner: EmployeeEntity;
 
-  isOwner(employee: Employee): boolean {
+  isOwner(employee: EmployeeEntity): boolean {
     return this.owner.id === employee.id;
   }
 }

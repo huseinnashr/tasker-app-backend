@@ -1,6 +1,6 @@
-import { Employee } from '../../database/entity';
+import { EmployeeEntity } from '../../database/entity';
 
 export interface SignInResponseDTO {
-  employee: Employee;
+  employee: EmployeeEntity;
   accessToken: string;
 }

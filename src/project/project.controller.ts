@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
-import { Employee, Project } from '../database/entity';
+import { EmployeeEntity, ProjectEntity } from '../database/entity';
 import { Role } from '../database/enum';
 import { CreateProjectDTO, UpdateProjectDTO, ProjectStatusDTO } from './dto';
 
@@ -22,7 +22,7 @@ export class ProjectController {
 
   @Get('/')
   @Auth()
-  async getAll(): Promise<Project[]> {
+  async getAll(): Promise<ProjectEntity[]> {
     return this.projectService.getAll();
   }
 
@@ -30,14 +30,14 @@ export class ProjectController {
   @Auth(Role.MANAGER)
   async create(
     @Body() createDto: CreateProjectDTO,
-    @CurrentEmployee() employee: Employee,
-  ): Promise<Project> {
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<ProjectEntity> {
     return this.projectService.create(createDto, employee);
   }
 
   @Get('/:id')
   @Auth()
-  async get(@Param('id', ParseIntPipe) id: number): Promise<Project> {
+  async get(@Param('id', ParseIntPipe) id: number): Promise<ProjectEntity> {
     return this.projectService.get(id);
   }
 
@@ -46,7 +46,7 @@ export class ProjectController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateProjectDTO,
-  ): Promise<Project> {
+  ): Promise<ProjectEntity> {
     return this.projectService.update(id, updateDto);
   }
 
@@ -55,13 +55,13 @@ export class ProjectController {
   async updateStatus(
     @Param('id', ParseIntPipe) id: number,
     @Body() statusDto: ProjectStatusDTO,
-  ): Promise<Project> {
+  ): Promise<ProjectEntity> {
     return this.projectService.updateStatus(id, statusDto);
   }
 
   @Delete('/:id')
   @Auth(Role.MANAGER)
-  async delete(@Param('id', ParseIntPipe) id: number): Promise<Project> {
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<ProjectEntity> {
     return this.projectService.delete(id);
   }
 }

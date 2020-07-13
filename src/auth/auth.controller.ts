@@ -9,7 +9,7 @@ import {
 import { SignInDTO, SignInResponseDTO } from './dto';
 import { AuthService } from './auth.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
-import { Employee } from '../database/entity';
+import { EmployeeEntity } from '../database/entity';
 
 @Controller('auth')
 @SerializeOptions({ groups: ['auth'] })
@@ -24,7 +24,7 @@ export class AuthController {
 
   @Get('/current')
   @Auth()
-  currentUser(@CurrentEmployee() employee: Employee): Employee {
+  currentUser(@CurrentEmployee() employee: EmployeeEntity): EmployeeEntity {
     return employee;
   }
 }

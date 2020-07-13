@@ -6,11 +6,11 @@ import {
   CommentRepository,
 } from '../../src/database/repository';
 import {
-  Employee,
-  Project,
-  Task,
-  Update,
-  Comment,
+  EmployeeEntity,
+  ProjectEntity,
+  TaskEntity,
+  UpdateEntity,
+  CommentEntity,
 } from '../../src/database/entity';
 import {
   ProjectStatus,
@@ -35,7 +35,7 @@ class RepoHelper {
     this.auth = auth;
   }
 
-  async createAProject(manager?: Employee): Promise<Project> {
+  async createAProject(manager?: EmployeeEntity): Promise<ProjectEntity> {
     if (!manager) manager = (await this.auth.signUp({ role: Role.MANAGER }))[1];
     return await this.proRepo.save(
       this.proRepo.create({
@@ -47,7 +47,10 @@ class RepoHelper {
     );
   }
 
-  async createATask(project?: Project, staff?: Employee): Promise<Task> {
+  async createATask(
+    project?: ProjectEntity,
+    staff?: EmployeeEntity,
+  ): Promise<TaskEntity> {
     if (!project) project = await this.createAProject();
     if (!staff) staff = (await this.auth.signUp({ role: Role.STAFF }))[1];
     return await this.taskRepo.save(
@@ -61,7 +64,7 @@ class RepoHelper {
     );
   }
 
-  async createAnUpdate(task?: Task): Promise<Update> {
+  async createAnUpdate(task?: TaskEntity): Promise<UpdateEntity> {
     if (!task) task = await this.createATask();
     return await this.updateRepo.save(
       this.updateRepo.create({
@@ -73,7 +76,10 @@ class RepoHelper {
     );
   }
 
-  async createAComment(update?: Update, creator?: Employee): Promise<Comment> {
+  async createAComment(
+    update?: UpdateEntity,
+    creator?: EmployeeEntity,
+  ): Promise<CommentEntity> {
     if (!update) update = await this.createAnUpdate();
     if (!creator) creator = update.task.staff;
     return await this.commRepo.save(

@@ -6,13 +6,13 @@ import {
   OneToMany,
 } from 'typeorm';
 import { TaskStatus } from '../enum/task-status.enum';
-import { Employee } from './employee.entity';
-import { Project } from './project.entity';
+import { EmployeeEntity } from './employee.entity';
+import { ProjectEntity } from './project.entity';
 import { Exclude } from 'class-transformer';
-import { Update } from './update.entity';
+import { UpdateEntity } from './update.entity';
 
 @Entity()
-export class Task {
+export class TaskEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -26,27 +26,27 @@ export class Task {
   status: TaskStatus;
 
   @ManyToOne(
-    () => Employee,
+    () => EmployeeEntity,
     employee => employee.managedProject,
     { eager: true },
   )
-  staff: Employee;
+  staff: EmployeeEntity;
 
   @ManyToOne(
-    () => Project,
+    () => ProjectEntity,
     project => project.tasks,
   )
   @Exclude()
-  project: Project;
+  project: ProjectEntity;
 
   @OneToMany(
-    () => Update,
+    () => UpdateEntity,
     update => update.task,
   )
   @Exclude()
-  updates: Update[];
+  updates: UpdateEntity[];
 
-  isStaff(employee: Employee): boolean {
+  isStaff(employee: EmployeeEntity): boolean {
     return this.staff.id === employee.id;
   }
 }

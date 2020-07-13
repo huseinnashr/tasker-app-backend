@@ -7,10 +7,10 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { UpdateType } from '../enum';
-import { Task, Comment } from './';
+import { TaskEntity, CommentEntity } from './';
 
 @Entity()
-export class Update {
+export class UpdateEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -24,16 +24,16 @@ export class Update {
   type: UpdateType;
 
   @ManyToOne(
-    () => Task,
+    () => TaskEntity,
     task => task.updates,
   )
   @Exclude()
-  task: Task;
+  task: TaskEntity;
 
   @OneToMany(
-    () => Comment,
+    () => CommentEntity,
     comment => comment.update,
   )
   @Exclude()
-  comments: Comment[];
+  comments: CommentEntity[];
 }

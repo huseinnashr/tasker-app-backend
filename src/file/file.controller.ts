@@ -8,7 +8,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { File, Employee } from '../database/entity';
+import { FileEntity, EmployeeEntity } from '../database/entity';
 import { MulterFile } from '../core/interface';
 import { FileService } from './file.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
@@ -23,8 +23,8 @@ export class FileController {
   @UseInterceptors(FileInterceptor('file'))
   async create(
     @UploadedFile() uploadedFile: MulterFile,
-    @CurrentEmployee() employee: Employee,
-  ): Promise<File> {
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<FileEntity> {
     return this.fileService.create(uploadedFile, employee);
   }
 
@@ -32,7 +32,7 @@ export class FileController {
   @Auth()
   async get(
     @Param('id') fileId: number,
-    @CurrentEmployee() employee: Employee,
+    @CurrentEmployee() employee: EmployeeEntity,
     @Res() res: Response,
   ): Promise<void> {
     const file = await this.fileService.get(fileId, employee);
