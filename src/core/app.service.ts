@@ -26,4 +26,13 @@ export abstract class AppService {
       );
     }
   }
+
+  /** if can not manage return '403 Forbidden' */
+  canView(can: boolean, entityName: string): void {
+    if (!can) {
+      throw new ForbiddenException(
+        `You don't have the permission to veiw this ${entityName}`,
+      );
+    }
+  }
 }

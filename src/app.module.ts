@@ -13,6 +13,7 @@ import { TaskModule } from './task/task.module';
 import { ProjectTaskModule } from './project-task/project-task.module';
 import { UpdateModule } from './task-update/task-update.module';
 import { UpdateCommentModule } from './update-comment/update-comment.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UpdateCommentModule } from './update-comment/update-comment.module';
     ProjectTaskModule,
     UpdateModule,
     UpdateCommentModule,
+    FileModule,
   ],
   providers: [
     {

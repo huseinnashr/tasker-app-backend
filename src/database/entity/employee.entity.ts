@@ -11,6 +11,7 @@ import { Role } from '../enum/role.enum';
 import { Project } from './project.entity';
 import { Task } from './task.entity';
 import { Comment } from './comment.entity';
+import { File } from './file.entity';
 
 @Entity()
 @Unique(['username'])
@@ -45,6 +46,13 @@ export class Employee {
   )
   @Exclude()
   comments: Comment[];
+
+  @OneToMany(
+    () => File,
+    file => file.owner,
+  )
+  @Exclude()
+  files: File[];
 
   @Column()
   @Exclude()

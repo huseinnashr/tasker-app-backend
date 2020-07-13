@@ -1,0 +1,83 @@
+import * as request from 'supertest';
+import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { AppModule } from '../src/app.module';
+import { FileRepository } from '../src/database/repository';
+import { Role } from '../src/database/enum';
+import { AuthHelper, TestHelper, FileHelper } from './helper';
+import { classToPlain } from 'class-transformer';
+
+describe('FileController (e2e)', () => {
+  let app: INestApplication;
+  let fileRepo: FileRepository;
+  let auth: AuthHelper;
+  let test: TestHelper;
+  let file: FileHelper;
+
+  beforeEach(async () => {
+    const moduleRef: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    fileRepo = moduleRef.get(FileRepository);
+    app = moduleRef.createNestApplication();
+
+    auth = new AuthHelper(app);
+    test = new TestHelper(app, auth);
+    file = new FileHelper();
+
+    await app.init();
+  });
+
+  afterEach(async () => {
+    await app.close();
+  });
+
+  it('test /file (POST, GET) specs', async () => {
+    const [token, staff] = await auth.signUp({ role: Role.STAFF });
+
+    const testFile = {
+      filename: 'image.jpg',
+      contentType: 'image/jpeg',
+      filepath: './test/file/image.jpg',
+    };
+    const testFileStat = await file.stat(testFile.filepath);
+
+    const res = await request(app.getHttpServer())
+      .post(`/file`)
+      .attach('file', testFile.filepath)
+      .set({ Authorization: token });
+
+    // A.1. Return 201 Created on correct create request as task staff
+    expect(res.status).toEqual(201);
+
+    const expected = {
+      id: res.body.id,
+      mime: testFile.contentType,
+      filename: testFile.filename,
+      owner: { id: staff.id, username: staff.username },
+    };
+
+    // A.2. Return response contain expected file response payload;
+    expect(res.body).toEqual(expected);
+
+    // A.3. File entity is saved in the database
+    const [files, count] = await fileRepo.findAndCount();
+    expect(count).toEqual(1);
+    expect(classToPlain(files[0])).toEqual(expected);
+
+    const getRes = await request(app.getHttpServer())
+      .get(`/file/${res.body.id}`)
+      .set({ Authorization: token });
+
+    // B. Return correct get file payload
+    expect(getRes.status).toBe(200);
+    expect(getRes.header['content-type']).toBe(testFile.contentType);
+    expect(getRes.header['content-length']).toBe(testFileStat.size.toString());
+
+    // C. returns 401 Unauthorized when not logged in
+    await test.unauthorized('POST', `/file`);
+
+    await file.emptyFolder('./upload', ['.gitignore']);
+  });
+});
