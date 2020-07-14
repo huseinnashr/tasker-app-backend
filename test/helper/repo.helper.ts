@@ -69,7 +69,10 @@ class RepoHelper {
     );
   }
 
-  async createAnUpdate(task?: TaskEntity): Promise<UpdateEntity> {
+  async createAnUpdate(
+    task?: TaskEntity,
+    files?: FileEntity[],
+  ): Promise<UpdateEntity> {
     if (!task) task = await this.createATask();
     return await this.updateRepo.save(
       this.updateRepo.create({
@@ -77,6 +80,7 @@ class RepoHelper {
         body: 'update body',
         type: UpdateType.PROGRESS,
         task: task,
+        files: files ? files : [],
       }),
     );
   }
@@ -96,13 +100,16 @@ class RepoHelper {
     );
   }
 
-  async createAFile(owner?: EmployeeEntity): Promise<FileEntity> {
+  async createAFile(
+    owner?: EmployeeEntity,
+    filepath?: string,
+  ): Promise<FileEntity> {
     if (!owner) owner = (await this.auth.signUp({ role: Role.STAFF }))[1];
     return await this.fileRepo.save(
       this.fileRepo.create({
         mime: MimeType.JPEG,
         filename: 'test.jpeg',
-        filepath: '\\upload\\231ase34wda',
+        filepath: filepath ? filepath : '\\upload\\231ase34wda',
         owner,
       }),
     );

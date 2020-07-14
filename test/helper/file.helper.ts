@@ -24,4 +24,9 @@ export class FileHelper {
     const stats = await fs.stat(path);
     return stats;
   }
+
+  async create(filepath: string): Promise<string> {
+    await fs.writeFile(filepath, 'test');
+    return filepath;
+  }
 }

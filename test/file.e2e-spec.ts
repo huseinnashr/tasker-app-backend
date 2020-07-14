@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { FileRepository } from '../src/database/repository';
 import { Role } from '../src/database/enum';
-import { AuthHelper, TestHelper, FileHelper } from './helper';
+import { AuthHelper, TestHelper, FileHelper, RepoHelper } from './helper';
 import { classToPlain } from 'class-transformer';
 
 describe('FileController (e2e)', () => {
@@ -12,6 +12,7 @@ describe('FileController (e2e)', () => {
   let fileRepo: FileRepository;
   let auth: AuthHelper;
   let test: TestHelper;
+  let repo: RepoHelper;
   let file: FileHelper;
 
   beforeEach(async () => {
@@ -24,6 +25,7 @@ describe('FileController (e2e)', () => {
 
     auth = new AuthHelper(app);
     test = new TestHelper(app, auth);
+    repo = new RepoHelper(app, auth);
     file = new FileHelper();
 
     await app.init();
@@ -64,7 +66,7 @@ describe('FileController (e2e)', () => {
     // A.3. File entity is saved in the database
     const [files, count] = await fileRepo.findAndCount();
     expect(count).toEqual(1);
-    expect(classToPlain(files[0])).toEqual(expected);
+    expect(classToPlain(files[0], { groups: ['file'] })).toEqual(expected);
 
     const getRes = await request(app.getHttpServer())
       .get(`/file/${res.body.id}`)
@@ -79,5 +81,34 @@ describe('FileController (e2e)', () => {
     await test.unauthorized('POST', `/file`);
 
     await file.emptyFolder('./upload', ['.gitignore']);
+  });
+
+  it('test /file permission control specs', async () => {
+    const [token1, staff] = await auth.signUp({ role: Role.STAFF });
+    const [token2, manager] = await auth.signUp({ role: Role.MANAGER });
+    const [] = await auth.signUp({ role: Role.MANAGER });
+
+    const filepath = './upload/test.jpeg';
+    const afile = await repo.createAFile(staff, await file.create(filepath));
+
+    // OWner should be able to view
+    await request(app.getHttpServer())
+      .get(`/file/${afile.id}`)
+      .set({ Authorization: token1 })
+      .expect(200);
+
+    const project = await repo.createAProject(manager);
+    const task = await repo.createATask(project, staff);
+    await repo.createAnUpdate(task, [afile]);
+
+    // The Project Manager should be able to view the file
+    await request(app.getHttpServer())
+      .get(`/file/${afile.id}`)
+      .set({ Authorization: token2 })
+      .expect(200);
+
+    // TODO: Other staffs in the project should be able to view the file
+
+    file.emptyFolder('./upload', ['.gitignore']);
   });
 });

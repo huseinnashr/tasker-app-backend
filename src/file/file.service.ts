@@ -35,9 +35,18 @@ export class FileService extends AppService {
     fileId: number,
     employee: EmployeeEntity,
   ): Promise<{ stream: Stream; length: number; mime: MimeType }> {
-    const file = await this.fileRepo.findOneOrException(fileId);
+    const file = await this.fileRepo.findOneOrException(fileId, {
+      relations: ['update', 'update.task', 'update.task.project'],
+    });
 
-    this.canView(file.isOwner(employee), 'file');
+    let can = file.isOwner(employee);
+
+    if (!can && file.update) {
+      const project = file.update.task.project;
+      can = can || project.isManager(employee);
+    }
+
+    this.canView(can, 'file');
 
     const buffer = await fs.readFile(file.filepath);
     const stream = new Readable();
