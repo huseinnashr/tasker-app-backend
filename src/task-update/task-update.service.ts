@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { AppService } from '../core/app.service';
-import { TaskRepository, UpdateRepository } from '../database/repository';
+import {
+  TaskRepository,
+  UpdateRepository,
+  FileRepository,
+} from '../database/repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateEntity, EmployeeEntity } from '../database/entity';
 import { CreateUpdateDTO, UpdateUpdateDTO } from './dto';
@@ -10,6 +14,7 @@ export class TaskUpdateService extends AppService {
   constructor(
     @InjectRepository(TaskRepository) private taskRepo: TaskRepository,
     @InjectRepository(UpdateRepository) private updateRepo: UpdateRepository,
+    @InjectRepository(FileRepository) private fileRepo: FileRepository,
   ) {
     super();
   }
@@ -32,6 +37,12 @@ export class TaskUpdateService extends AppService {
     update.title = createDto.title;
     update.body = createDto.body;
     update.type = createDto.type;
+
+    const files = await this.fileRepo.findByIds(createDto.files, {
+      where: { owner: { id: employee.id } },
+    });
+
+    update.files = files;
     update.task = task;
 
     return this.updateRepo.save(update);
@@ -60,6 +71,12 @@ export class TaskUpdateService extends AppService {
     update.body = updateDto.body;
     update.type = updateDto.type;
 
+    const files = await this.fileRepo.findByIds(updateDto.files, {
+      where: { owner: { id: employee.id } },
+    });
+
+    update.files = files;
+
     return this.updateRepo.save(update);
   }
 
@@ -74,6 +91,6 @@ export class TaskUpdateService extends AppService {
 
     this.canManage(update.task.isStaff(employee), 'Update');
 
-    await this.updateRepo.delete(update);
+    await this.updateRepo.remove(update);
   }
 }

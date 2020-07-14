@@ -8,6 +8,7 @@ import {
 import { Exclude } from 'class-transformer';
 import { UpdateType } from '../enum';
 import { TaskEntity, CommentEntity } from './';
+import { FileEntity } from './file.entity';
 
 @Entity()
 export class UpdateEntity {
@@ -36,4 +37,11 @@ export class UpdateEntity {
   )
   @Exclude()
   comments: CommentEntity[];
+
+  @OneToMany(
+    () => FileEntity,
+    file => file.update,
+    { eager: true },
+  )
+  files: FileEntity[];
 }

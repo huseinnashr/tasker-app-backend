@@ -1,4 +1,10 @@
-import { Repository, ObjectID, FindOneOptions, FindConditions } from 'typeorm';
+import {
+  Repository,
+  ObjectID,
+  FindOneOptions,
+  FindConditions,
+  FindManyOptions,
+} from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 
 export class AppRepository<T> extends Repository<T> {

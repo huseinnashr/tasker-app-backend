@@ -1,7 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { EmployeeEntity } from '.';
 import { MimeType } from '../enum';
+import { UpdateEntity } from './update.entity';
 
 @Entity()
 export class FileEntity {
@@ -23,7 +24,16 @@ export class FileEntity {
     employee => employee.files,
     { eager: true },
   )
+  @Expose({ groups: ['file'] })
   owner: EmployeeEntity;
+
+  @ManyToOne(
+    () => UpdateEntity,
+    update => update.files,
+    { nullable: true },
+  )
+  @Exclude()
+  update: UpdateEntity;
 
   isOwner(employee: EmployeeEntity): boolean {
     return this.owner.id === employee.id;

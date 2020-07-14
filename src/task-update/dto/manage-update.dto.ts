@@ -1,4 +1,4 @@
-import { IsString, IsEnum } from 'class-validator';
+import { IsString, IsEnum, IsArray } from 'class-validator';
 import { UpdateType } from '../../database/enum';
 
 export class ManageUpdateDTO {
@@ -10,4 +10,7 @@ export class ManageUpdateDTO {
 
   @IsEnum(UpdateType)
   type: UpdateType;
+
+  @IsArray()
+  files: number[];
 }

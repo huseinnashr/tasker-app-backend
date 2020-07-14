@@ -4,6 +4,7 @@ import {
   TaskRepository,
   UpdateRepository,
   CommentRepository,
+  FileRepository,
 } from '../../src/database/repository';
 import {
   EmployeeEntity,
@@ -11,12 +12,14 @@ import {
   TaskEntity,
   UpdateEntity,
   CommentEntity,
+  FileEntity,
 } from '../../src/database/entity';
 import {
   ProjectStatus,
   TaskStatus,
   UpdateType,
   Role,
+  MimeType,
 } from '../../src/database/enum';
 import { AuthHelper } from './auth.helper';
 
@@ -25,6 +28,7 @@ class RepoHelper {
   private taskRepo: TaskRepository;
   private updateRepo: UpdateRepository;
   private commRepo: CommentRepository;
+  private fileRepo: FileRepository;
   private auth: AuthHelper;
 
   constructor(app: INestApplication, auth: AuthHelper) {
@@ -32,6 +36,7 @@ class RepoHelper {
     this.taskRepo = app.get(TaskRepository);
     this.updateRepo = app.get(UpdateRepository);
     this.commRepo = app.get(CommentRepository);
+    this.fileRepo = app.get(FileRepository);
     this.auth = auth;
   }
 
@@ -87,6 +92,18 @@ class RepoHelper {
         body: 'comment body',
         update: update,
         creator: creator,
+      }),
+    );
+  }
+
+  async createAFile(owner?: EmployeeEntity): Promise<FileEntity> {
+    if (!owner) owner = (await this.auth.signUp({ role: Role.STAFF }))[1];
+    return await this.fileRepo.save(
+      this.fileRepo.create({
+        mime: MimeType.JPEG,
+        filename: 'test.jpeg',
+        filepath: '\\upload\\231ase34wda',
+        owner,
       }),
     );
   }

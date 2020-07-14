@@ -51,6 +51,7 @@ describe('ProjectTaskController (e2e)', () => {
       title: update.title,
       body: update.body,
       type: update.type,
+      files: [],
     };
 
     // A.2. Return correct list of all updates in a task
@@ -67,11 +68,13 @@ describe('ProjectTaskController (e2e)', () => {
     const [token, staff] = await auth.signUp({ role: Role.STAFF });
 
     const task = await repo.createATask(null, staff);
+    const file = await repo.createAFile(staff);
 
     const createDto: CreateUpdateDTO = {
       title: 'New Update',
       body: 'update body',
       type: UpdateType.PROGRESS,
+      files: [file.id],
     };
 
     const res = await request(app.getHttpServer())
@@ -87,6 +90,7 @@ describe('ProjectTaskController (e2e)', () => {
       title: createDto.title,
       body: createDto.body,
       type: createDto.type,
+      files: [{ id: file.id, filename: file.filename, mime: file.mime }],
     };
 
     // A.2. Return the newly created update, and the update can be found in db
@@ -118,6 +122,7 @@ describe('ProjectTaskController (e2e)', () => {
       title: update.title,
       body: update.body,
       type: update.type,
+      files: [],
     };
 
     // A.2. Returns the correct update with given id.
@@ -135,11 +140,13 @@ describe('ProjectTaskController (e2e)', () => {
 
     const task = await repo.createATask(null, staff);
     const update = await repo.createAnUpdate(task);
+    const file = await repo.createAFile(staff);
 
     const updateDto: UpdateUpdateDTO = {
       title: 'Updated update',
       body: 'updated update body',
       type: UpdateType.PROGRESS,
+      files: [file.id],
     };
 
     const res = await request(app.getHttpServer())
@@ -155,6 +162,7 @@ describe('ProjectTaskController (e2e)', () => {
       title: updateDto.title,
       body: updateDto.body,
       type: updateDto.type,
+      files: [{ id: file.id, filename: file.filename, mime: file.mime }],
     };
 
     // A.2. Return the updated update, and the updates reflected in db

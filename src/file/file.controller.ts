@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Res,
+  SerializeOptions,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileEntity, EmployeeEntity } from '../database/entity';
@@ -15,6 +16,7 @@ import { Auth, CurrentEmployee } from '../core/decorator';
 import { Response } from 'express';
 
 @Controller('file')
+@SerializeOptions({ groups: ['file'] })
 export class FileController {
   constructor(private fileService: FileService) {}
 
