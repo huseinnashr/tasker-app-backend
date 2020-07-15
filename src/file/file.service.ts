@@ -36,7 +36,12 @@ export class FileService extends AppService {
     employee: EmployeeEntity,
   ): Promise<{ stream: Stream; length: number; mime: MimeType }> {
     const file = await this.fileRepo.findOneOrException(fileId, {
-      relations: ['update', 'update.task', 'update.task.project'],
+      relations: [
+        'update',
+        'update.task',
+        'update.task.project',
+        'update.task.project.tasks',
+      ],
     });
 
     let can = file.isOwner(employee);
@@ -44,6 +49,10 @@ export class FileService extends AppService {
     if (!can && file.update) {
       const project = file.update.task.project;
       can = can || project.isManager(employee);
+
+      // TODO: use query builder, - more efficient way to get employeeIds.
+      const employeeIds = project.tasks.map(({ staff: { id } }) => id);
+      can = can || employeeIds.includes(employee.id);
     }
 
     this.canView(can, 'file');

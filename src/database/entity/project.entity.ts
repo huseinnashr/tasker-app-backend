@@ -34,7 +34,7 @@ export class ProjectEntity {
     () => TaskEntity,
     task => task.project,
   )
-  tasks: TaskEntity;
+  tasks: TaskEntity[];
 
   isManager(employee: EmployeeEntity): boolean {
     return this.manager.id === employee.id;

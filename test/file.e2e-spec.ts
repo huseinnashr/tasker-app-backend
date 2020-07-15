@@ -85,10 +85,12 @@ describe('FileController (e2e)', () => {
 
   it('test /file permission control specs', async () => {
     const [token1, staff] = await auth.signUp({ role: Role.STAFF });
+    const [token12, staff2] = await auth.signUp({ role: Role.STAFF });
+    const [token13] = await auth.signUp({ role: Role.STAFF });
     const [token2, manager] = await auth.signUp({ role: Role.MANAGER });
-    const [] = await auth.signUp({ role: Role.MANAGER });
+    const [token22] = await auth.signUp({ role: Role.MANAGER });
 
-    const filepath = './upload/test.jpeg';
+    const filepath = './upload/test2.jpeg';
     const afile = await repo.createAFile(staff, await file.create(filepath));
 
     // OWner should be able to view
@@ -99,6 +101,7 @@ describe('FileController (e2e)', () => {
 
     const project = await repo.createAProject(manager);
     const task = await repo.createATask(project, staff);
+    await repo.createATask(project, staff2);
     await repo.createAnUpdate(task, [afile]);
 
     // The Project Manager should be able to view the file
@@ -107,7 +110,23 @@ describe('FileController (e2e)', () => {
       .set({ Authorization: token2 })
       .expect(200);
 
-    // TODO: Other staffs in the project should be able to view the file
+    // Other staffs in the project should be able to view the file
+    await request(app.getHttpServer())
+      .get(`/file/${afile.id}`)
+      .set({ Authorization: token12 })
+      .expect(200);
+
+    // Stuffs on another project should NOT be able to view
+    await request(app.getHttpServer())
+      .get(`/file/${afile.id}`)
+      .set({ Authorization: token13 })
+      .expect(403);
+
+    // Manager on another project should NOT be able to view
+    await request(app.getHttpServer())
+      .get(`/file/${afile.id}`)
+      .set({ Authorization: token22 })
+      .expect(403);
 
     file.emptyFolder('./upload', ['.gitignore']);
   });
