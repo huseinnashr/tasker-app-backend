@@ -5,6 +5,7 @@ import {
   UpdateRepository,
   CommentRepository,
   FileRepository,
+  ArtifactRepository,
 } from '../../src/database/repository';
 import {
   EmployeeEntity,
@@ -13,6 +14,7 @@ import {
   UpdateEntity,
   CommentEntity,
   FileEntity,
+  ArtifactEntity,
 } from '../../src/database/entity';
 import {
   ProjectStatus,
@@ -27,6 +29,7 @@ class RepoHelper {
   private proRepo: ProjectRepository;
   private taskRepo: TaskRepository;
   private updateRepo: UpdateRepository;
+  private artifactRepo: ArtifactRepository;
   private commRepo: CommentRepository;
   private fileRepo: FileRepository;
   private auth: AuthHelper;
@@ -35,6 +38,7 @@ class RepoHelper {
     this.proRepo = app.get(ProjectRepository);
     this.taskRepo = app.get(TaskRepository);
     this.updateRepo = app.get(UpdateRepository);
+    this.artifactRepo = app.get(ArtifactRepository);
     this.commRepo = app.get(CommentRepository);
     this.fileRepo = app.get(FileRepository);
     this.auth = auth;
@@ -65,6 +69,16 @@ class RepoHelper {
         status: TaskStatus.IN_PROGRESS,
         project: project,
         staff: staff,
+      }),
+    );
+  }
+
+  async createAnArtifact(task?: TaskEntity): Promise<ArtifactEntity> {
+    if (!task) task = await this.createATask();
+    return await this.artifactRepo.save(
+      this.artifactRepo.create({
+        description: 'New Artifact',
+        task: task,
       }),
     );
   }

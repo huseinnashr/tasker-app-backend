@@ -5,7 +5,7 @@ import { AppModule } from '../src/app.module';
 import { ArtifactRepository } from '../src/database/repository';
 import { Role } from '../src/database/enum';
 import { AuthHelper, TestHelper, RepoHelper } from './helper';
-import { CreateArtifactDTO } from '../src/task-artifact/dto';
+import { CreateArtifactDTO, UpdateArtifactDTO } from '../src/task-artifact/dto';
 
 describe('ProjectTaskController (e2e)', () => {
   let app: INestApplication;
@@ -60,10 +60,69 @@ describe('ProjectTaskController (e2e)', () => {
       description: createDto.description,
     };
 
-    // A.2. Return the newly created artifact, and the update can be found in db
+    // A.2. Return the newly created artifact, and the artifact can be found in db
     expect(res.body).toEqual(expected);
-    expect(await artifactRepo.findOne(res.body.id)).toMatchObject(expected);
+    expect(await artifactRepo.findOne(res.body.id)).toEqual(expected);
 
     await test.forbidden(mgtok2, 'POST', endpoint, createDto);
+  });
+
+  it('test /task/:taskId/artifact/:artifactId (PUT) specs', async () => {
+    const [mgtok, manager] = await auth.signUp({ role: Role.MANAGER });
+    const [mgtok2] = await auth.signUp({ role: Role.MANAGER });
+    const [, staff] = await auth.signUp({ role: Role.STAFF });
+
+    const project = await repo.createAProject(manager);
+    const task = await repo.createATask(project, staff);
+    const artifact = await repo.createAnArtifact(task);
+
+    const endpoint = `/task/${task.id}/artifact/${artifact.id}`;
+
+    const updateDto: UpdateArtifactDTO = {
+      description: 'Updated Artifact',
+    };
+
+    const res = await request(app.getHttpServer())
+      .put(endpoint)
+      .send(updateDto)
+      .set({ Authorization: mgtok });
+
+    // A.1. Return 200 OK on correct update an artifact request
+    expect(res.status).toEqual(200);
+
+    const expected = {
+      id: artifact.id,
+      description: updateDto.description,
+    };
+
+    // A.2. Return the updated artifact, and the update can be found in db
+    expect(res.body).toEqual(expected);
+    expect(await artifactRepo.findOne(artifact.id)).toEqual(expected);
+
+    await test.forbidden(mgtok2, 'PUT', endpoint, updateDto);
+  });
+
+  it('test /task/:taskId/artifact/:artifactId (DELETE) specs', async () => {
+    const [mgtok, manager] = await auth.signUp({ role: Role.MANAGER });
+    const [mgtok2] = await auth.signUp({ role: Role.MANAGER });
+    const [, staff] = await auth.signUp({ role: Role.STAFF });
+
+    const project = await repo.createAProject(manager);
+    const task = await repo.createATask(project, staff);
+    const artifact = await repo.createAnArtifact(task);
+
+    const endpoint = `/task/${task.id}/artifact/${artifact.id}`;
+
+    await test.forbidden(mgtok2, 'DELETE', endpoint);
+
+    const res = await request(app.getHttpServer())
+      .delete(endpoint)
+      .set({ Authorization: mgtok });
+
+    // A.1. Return 200 OK on correct delete an artifact request
+    expect(res.status).toEqual(200);
+
+    // A.2. Deleted artifact should NOT exist in database
+    expect(await artifactRepo.findOne(artifact.id)).toBeUndefined();
   });
 });
