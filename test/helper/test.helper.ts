@@ -17,12 +17,17 @@ class TestHelper {
   };
 
   /** Create new employee with role R and test if endpoint forbid role R employee.*/
-  async forbidden(role: Role, method: HTTPMethod, url: string);
+  async forbidden(role: Role, method: HTTPMethod, url: string, data?: any);
 
   /** Use token with role R to test if endpoint forbid role R employee.*/
-  async forbidden(token: string, method: HTTPMethod, url: string);
+  async forbidden(token: string, method: HTTPMethod, url: string, data?: any);
 
-  async forbidden(arg1: Role | string, method: HTTPMethod, url: string) {
+  async forbidden(
+    arg1: Role | string,
+    method: HTTPMethod,
+    url: string,
+    data?: any,
+  ) {
     let token: string;
     if (Object.values(<any>Role).includes(arg1)) {
       token = (await this.auth.signUp({ role: <Role>arg1 }))[0];
@@ -33,6 +38,7 @@ class TestHelper {
     await this.supertest
       .request(method, url)
       .set({ Authorization: token })
+      .send(data)
       .expect(403);
   }
 

@@ -4,10 +4,11 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { UpdateType } from '../enum';
-import { TaskEntity, CommentEntity } from './';
+import { TaskEntity, CommentEntity, ArtifactEntity } from './';
 import { FileEntity } from './file.entity';
 
 @Entity()
@@ -44,4 +45,11 @@ export class UpdateEntity {
     { eager: true },
   )
   files: FileEntity[];
+
+  @OneToOne(
+    () => ArtifactEntity,
+    artifact => artifact.update,
+  )
+  @Exclude()
+  artifact: ArtifactEntity;
 }

@@ -10,6 +10,7 @@ import { EmployeeEntity } from './employee.entity';
 import { ProjectEntity } from './project.entity';
 import { Exclude } from 'class-transformer';
 import { UpdateEntity } from './update.entity';
+import { ArtifactEntity } from '.';
 
 @Entity()
 export class TaskEntity {
@@ -45,6 +46,13 @@ export class TaskEntity {
   )
   @Exclude()
   updates: UpdateEntity[];
+
+  @OneToMany(
+    () => ArtifactEntity,
+    artifact => artifact.task,
+  )
+  @Exclude()
+  artifacts: ArtifactEntity[];
 
   isStaff(employee: EmployeeEntity): boolean {
     return this.staff.id === employee.id;

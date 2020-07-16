@@ -4,3 +4,4 @@ export * from './task.entity';
 export * from './update.entity';
 export * from './comment.entity';
 export * from './file.entity';
+export * from './artifact.entity';
