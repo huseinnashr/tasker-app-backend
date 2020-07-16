@@ -6,6 +6,7 @@ import {
   Body,
   Put,
   Delete,
+  Get,
 } from '@nestjs/common';
 import { TaskArtifactService } from './task-artifact.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
@@ -17,6 +18,12 @@ import { CreateArtifactDTO, UpdateArtifactDTO } from './dto';
 @SerializeOptions({ groups: ['task-artifact'] })
 export class TaskArtifactController {
   constructor(private taskArtifactService: TaskArtifactService) {}
+
+  @Get('/')
+  @Auth()
+  async getAll(@Param('taskId') taskId: number): Promise<ArtifactEntity[]> {
+    return this.taskArtifactService.getAll(taskId);
+  }
 
   @Post('/')
   @Auth(Role.MANAGER)

@@ -33,6 +33,29 @@ describe('ProjectTaskController (e2e)', () => {
     await app.close();
   });
 
+  it('test /task/:taskId/artifact (GET) specs', async () => {
+    const [mgtok, manager] = await auth.signUp({ role: Role.MANAGER });
+
+    const project = await repo.createAProject(manager);
+    const task = await repo.createATask(project);
+    const artifact = await repo.createAnArtifact(task);
+
+    const endpoint = `/task/${task.id}/artifact`;
+
+    const res = await request(app.getHttpServer())
+      .get(endpoint)
+      .set({ Authorization: mgtok });
+
+    // A.1. Return 200 OK on correct getall artifacts request
+    expect(res.status).toEqual(200);
+
+    const expected = { id: artifact.id, description: artifact.description };
+
+    // A.2. Return the list of artifacts
+    expect(res.body.length).toBe(1);
+    expect(res.body[0]).toEqual(expected);
+  });
+
   it('test /task/:taskId/artifact (POST) specs', async () => {
     const [mgtok, manager] = await auth.signUp({ role: Role.MANAGER });
     const [mgtok2] = await auth.signUp({ role: Role.MANAGER });

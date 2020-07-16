@@ -16,6 +16,11 @@ export class TaskArtifactService extends AppService {
     super();
   }
 
+  async getAll(taskId: number): Promise<ArtifactEntity[]> {
+    const task = await this.taskRepo.findOneOrException(taskId);
+    return this.artifactRepo.find({ where: { task } });
+  }
+
   async create(
     taskId: number,
     createDto: CreateArtifactDTO,
