@@ -5,7 +5,7 @@ import {
 
 export abstract class AppService {
   /** if foreign entity does not exist return '422 Unprocessible Entity'  */
-  async existOrUnprocessable<T>(
+  protected async existOrUnprocessable<T>(
     entityPromise: Promise<T | undefined>,
     entityName: string,
   ): Promise<T> {
@@ -19,7 +19,7 @@ export abstract class AppService {
   }
 
   /** if can not manage return '403 Forbidden' */
-  canManage(can: boolean, entityName: string): void {
+  protected canManage(can: boolean, entityName: string): void {
     if (!can) {
       throw new ForbiddenException(
         `You don't have the permission to manage this ${entityName}`,
@@ -28,7 +28,7 @@ export abstract class AppService {
   }
 
   /** if can not manage return '403 Forbidden' */
-  canView(can: boolean, entityName: string): void {
+  protected canView(can: boolean, entityName: string): void {
     if (!can) {
       throw new ForbiddenException(
         `You don't have the permission to veiw this ${entityName}`,
