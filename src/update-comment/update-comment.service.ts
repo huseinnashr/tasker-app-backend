@@ -4,6 +4,7 @@ import { AppService } from '../core/app.service';
 import { CommentEntity, EmployeeEntity } from '../database/entity';
 import { CreateCommentDTO, UpdateCommentDTO } from './dto';
 import { UpdateRepository, CommentRepository } from '../database/repository';
+import { UpdateCommentParamDTO, TaskUpdateParamDTO } from '../shared/dto';
 
 @Injectable()
 export class UpdateCommentService extends AppService {
@@ -14,17 +15,17 @@ export class UpdateCommentService extends AppService {
     super();
   }
 
-  async getAll(updateId: number): Promise<CommentEntity[]> {
-    const update = await this.updateRepo.findOneOrException(updateId);
+  async getAll(param: TaskUpdateParamDTO): Promise<CommentEntity[]> {
+    const update = await this.updateRepo.findOneOrException(param.updateId);
     return this.commentRepo.find({ where: { update } });
   }
 
   async create(
-    updateId: number,
+    param: TaskUpdateParamDTO,
     createDto: CreateCommentDTO,
     employee: EmployeeEntity,
   ): Promise<CommentEntity> {
-    const update = await this.updateRepo.findOneOrException(updateId, {
+    const update = await this.updateRepo.findOneOrException(param.updateId, {
       relations: ['task', 'task.project'],
     });
 
@@ -40,20 +41,19 @@ export class UpdateCommentService extends AppService {
     return this.commentRepo.save(comment);
   }
 
-  async get(updateId: number, commentId: number): Promise<CommentEntity> {
+  async get(param: UpdateCommentParamDTO): Promise<CommentEntity> {
     return this.commentRepo.findOneOrException({
-      id: commentId,
-      update: { id: updateId },
+      id: param.commentId,
+      update: { id: param.updateId },
     });
   }
 
   async update(
-    updateId: number,
-    commentId: number,
+    param: UpdateCommentParamDTO,
     commentDto: UpdateCommentDTO,
     employee: EmployeeEntity,
   ): Promise<CommentEntity> {
-    const where = { id: commentId, update: { id: updateId } };
+    const where = { id: param.commentId, update: { id: param.updateId } };
     const comment = await this.commentRepo.findOneOrException(where);
 
     this.canManage(comment.isCreator(employee), 'Comment');
@@ -64,11 +64,10 @@ export class UpdateCommentService extends AppService {
   }
 
   async delete(
-    updateId: number,
-    commentId: number,
+    param: UpdateCommentParamDTO,
     employee: EmployeeEntity,
   ): Promise<void> {
-    const where = { id: commentId, update: { id: updateId } };
+    const where = { id: param.commentId, update: { id: param.updateId } };
     const comment = await this.commentRepo.findOneOrException(where);
 
     this.canManage(comment.isCreator(employee), 'Comment');
