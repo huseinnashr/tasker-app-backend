@@ -9,9 +9,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfig } from './config/typeorm.config';
 import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ProjectModule } from './project/project.module';
-import { TaskModule } from './task/task.module';
 import { ProjectTaskModule } from './project-task/project-task.module';
-import { UpdateModule } from './task-update/task-update.module';
+import { TaskUpdateModule } from './task-update/task-update.module';
 import { UpdateCommentModule } from './update-comment/update-comment.module';
 import { FileModule } from './file/file.module';
 import { TaskArtifactModule } from './task-artifact/task-artifact.module';
@@ -22,9 +21,8 @@ import { TaskArtifactModule } from './task-artifact/task-artifact.module';
     AuthModule,
     EmployeeModule,
     ProjectModule,
-    TaskModule,
     ProjectTaskModule,
-    UpdateModule,
+    TaskUpdateModule,
     UpdateCommentModule,
     FileModule,
     TaskArtifactModule,

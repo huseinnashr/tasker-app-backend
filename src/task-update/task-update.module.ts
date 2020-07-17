@@ -19,4 +19,4 @@ import {
   controllers: [TaskUpdateController],
   providers: [TaskUpdateService],
 })
-export class UpdateModule {}
+export class TaskUpdateModule {}
