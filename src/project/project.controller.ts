@@ -61,7 +61,7 @@ export class ProjectController {
 
   @Delete('/:projectId')
   @Auth(Role.MANAGER)
-  async delete(@Param() param: ProjectParamDTO): Promise<ProjectEntity> {
+  async delete(@Param() param: ProjectParamDTO): Promise<void> {
     return this.projectService.delete(param);
   }
 }

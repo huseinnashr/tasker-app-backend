@@ -72,6 +72,6 @@ export class UpdateCommentService extends AppService {
 
     this.canManage(comment.isCreator(employee), 'Comment');
 
-    await this.commentRepo.delete(comment);
+    await this.commentRepo.delete({ id: comment.id });
   }
 }

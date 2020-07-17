@@ -93,6 +93,6 @@ export class ProjectTaskService extends AppService {
 
     this.canManage(task.project.isManager(employee), 'Task');
 
-    await this.taskRepo.delete(task);
+    await this.taskRepo.delete({ id: task.id });
   }
 }

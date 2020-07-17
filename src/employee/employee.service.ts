@@ -52,6 +52,6 @@ export class EmployeeService extends AppService {
   async delete(id: number): Promise<void> {
     const employee = await this.empRepo.findOneOrException(id);
 
-    await this.empRepo.delete(employee);
+    await this.empRepo.delete({ id: employee.id });
   }
 }
