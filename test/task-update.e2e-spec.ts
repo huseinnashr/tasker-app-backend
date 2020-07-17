@@ -33,14 +33,16 @@ describe('ProjectTaskController (e2e)', () => {
     await app.close();
   });
 
-  it('test /task/:taskId/update (GET) specs', async () => {
+  it('test project/:projectId/task/:taskId/update (GET) specs', async () => {
     const [token, staff] = await auth.signUp({ role: Role.STAFF });
 
     const task = await repo.createATask(null, staff);
     const update = await repo.createAnUpdate(task);
 
+    const endpoint = `/project/${task.project.id}/task/${task.id}/update`;
+
     const res = await request(app.getHttpServer())
-      .get(`/task/${task.id}/update`)
+      .get(endpoint)
       .set({ Authorization: token });
 
     // A.1. Return 200 OK on correct get updates request
@@ -58,17 +60,20 @@ describe('ProjectTaskController (e2e)', () => {
     expect(res.body[0]).toEqual(expected);
 
     // B. Return 404 Not Found when task was not found
-    await test.notfound(Role.STAFF, 'GET', '/task/999999/update');
+    const endpoint404 = `/project/${task.project.id}/task/99999/update`;
+    await test.notfound(Role.STAFF, 'GET', endpoint404);
 
     // C. Return 401 Unauthorized when not logged in
-    await test.unauthorized('GET', '/task/1/update');
+    await test.unauthorized('GET', endpoint);
   });
 
-  it('test /task/:taskId/update (POST) specs', async () => {
+  it('test project/:projectId/task/:taskId/update (POST) specs', async () => {
     const [token, staff] = await auth.signUp({ role: Role.STAFF });
 
     const task = await repo.createATask(null, staff);
     const file = await repo.createAFile(staff);
+
+    const endpoint = `/project/${task.project.id}/task/${task.id}/update`;
 
     const createDto: CreateUpdateDTO = {
       title: 'New Update',
@@ -78,7 +83,7 @@ describe('ProjectTaskController (e2e)', () => {
     };
 
     const res = await request(app.getHttpServer())
-      .post(`/task/${task.id}/update`)
+      .post(endpoint)
       .send(createDto)
       .set({ Authorization: token });
 
@@ -98,20 +103,23 @@ describe('ProjectTaskController (e2e)', () => {
     expect(await updateRepo.findOne(res.body.id)).toMatchObject(expected);
 
     // B. Return 404 Not Found when task was not found
-    await test.notfound(Role.STAFF, 'POST', `/task/99999/update`, createDto);
+    const endpoint404 = `/project/${task.project.id}/task/99999/update`;
+    await test.notfound(Role.STAFF, 'POST', endpoint404, createDto);
 
     // C. returns 401 Unauthorized when not logged in
-    await test.unauthorized('POST', '/task/1/update');
+    await test.unauthorized('POST', endpoint);
   });
 
-  it('test /task/:taskId/update/:updateId (GET) specs', async () => {
+  it('test project/:projectId/task/:taskId/update/:updateId (GET) specs', async () => {
     const [token, staff] = await auth.signUp({ role: Role.STAFF });
 
     const task = await repo.createATask(null, staff);
     const update = await repo.createAnUpdate(task);
 
+    const endpoint = `/project/${task.project.id}/task/${task.id}/update/${update.id}`;
+
     const res = await request(app.getHttpServer())
-      .get(`/task/${task.id}/update/${update.id}`)
+      .get(endpoint)
       .set({ Authorization: token });
 
     // A.1. Return 200 OK on correct get an update request
@@ -129,18 +137,21 @@ describe('ProjectTaskController (e2e)', () => {
     expect(res.body).toEqual(expected);
 
     // B. Returns 404 when update with given id was not found
-    await test.notfound(token, 'GET', `/task/${task.id}/update/999999`);
+    const endpoint404 = `/project/${task.project.id}/task/${task.id}/update/99999`;
+    await test.notfound(token, 'GET', endpoint404);
 
     // C. returns 401 Unauthorized when not logged in
-    await test.unauthorized('GET', '/task/1/update/1');
+    await test.unauthorized('GET', endpoint);
   });
 
-  it('test /task/:taskId/update/:updateId (PUT) specs', async () => {
+  it('test project/:projectId/task/:taskId/update/:updateId (PUT) specs', async () => {
     const [token, staff] = await auth.signUp({ role: Role.STAFF });
 
     const task = await repo.createATask(null, staff);
     const update = await repo.createAnUpdate(task);
     const file = await repo.createAFile(staff);
+
+    const endpoint = `/project/${task.project.id}/task/${task.id}/update/${update.id}`;
 
     const updateDto: UpdateUpdateDTO = {
       title: 'Updated update',
@@ -150,7 +161,7 @@ describe('ProjectTaskController (e2e)', () => {
     };
 
     const res = await request(app.getHttpServer())
-      .put(`/task/${task.id}/update/${update.id}`)
+      .put(endpoint)
       .send(updateDto)
       .set({ Authorization: token });
 
@@ -171,7 +182,7 @@ describe('ProjectTaskController (e2e)', () => {
 
     const [token2] = await auth.signUp({ role: Role.STAFF });
     const forbiddenRes = await request(app.getHttpServer())
-      .put(`/task/${task.id}/update/${update.id}`)
+      .put(endpoint)
       .send(updateDto)
       .set({ Authorization: token2 });
 
@@ -179,40 +190,37 @@ describe('ProjectTaskController (e2e)', () => {
     expect(forbiddenRes.status).toEqual(403);
 
     // C. Return 404 Not Found when update was not found
-    const notFoundUrl = `/task/${task.id}/update/999999`;
-    await test.notfound(token, 'PUT', notFoundUrl, updateDto);
+    const endpoint404 = `/project/${task.project.id}/task/${task.id}/update/9999`;
+    await test.notfound(token, 'PUT', endpoint404, updateDto);
 
     // D. Return 401 Unauthorized when not logged in
-    await test.unauthorized('PUT', `/task/${task.id}/update/${update.id}`);
+    await test.unauthorized('PUT', endpoint);
   });
 
-  it('test /task/:taskId/update/:updateId (DELETE) specs', async () => {
+  it('test project/:projectId/task/:taskId/update/:updateId (DELETE) specs', async () => {
     const [token, staff] = await auth.signUp({ role: Role.STAFF });
+    const [sttok2] = await auth.signUp({ role: Role.STAFF });
 
     const task = await repo.createATask(null, staff);
     const update = await repo.createAnUpdate(task);
 
+    const endpoint = `/project/${task.project.id}/task/${task.id}/update/${update.id}`;
+
+    // B. Return 403 Forbidden when the authorized employee is not the task staff
+    await test.forbidden(sttok2, 'DELETE', endpoint);
+
     const res = await request(app.getHttpServer())
-      .delete(`/task/${task.id}/update/${update.id}`)
+      .delete(endpoint)
       .set({ Authorization: token });
 
     // A.1. Return 200 OK on correct delete an update request
     expect(res.status).toEqual(200);
 
-    const update2 = await repo.createAnUpdate(task);
-    const [token2] = await auth.signUp({ role: Role.STAFF });
-    const forbiddenRes = await request(app.getHttpServer())
-      .delete(`/task/${task.id}/update/${update2.id}`)
-      .set({ Authorization: token2 });
-
-    // B. Return 403 Forbidden when the authorized employee is not the task staff
-    expect(forbiddenRes.status).toEqual(403);
-
     // C. Return 404 Not Found when update was not found
-    const notFoundUrl = `/task/${task.id}/update/999999`;
-    await test.notfound(token, 'DELETE', notFoundUrl);
+    const endpoint404 = `/project/${task.project.id}/task/${task.id}/update/9999`;
+    await test.notfound(token, 'DELETE', endpoint404);
 
     // D. Return 401 Unauthorized when not logged in
-    await test.unauthorized('DELETE', `/task/${task.id}/update/${update.id}`);
+    await test.unauthorized('DELETE', endpoint);
   });
 });

@@ -8,6 +8,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateEntity, EmployeeEntity } from '../database/entity';
 import { CreateUpdateDTO, UpdateUpdateDTO } from './dto';
+import { ProjectTaskParamDTO, TaskUpdateParamDTO } from '../shared/dto';
 
 @Injectable()
 export class TaskUpdateService extends AppService {
@@ -19,17 +20,17 @@ export class TaskUpdateService extends AppService {
     super();
   }
 
-  async getAll(taskId: number): Promise<UpdateEntity[]> {
-    const task = await this.taskRepo.findOneOrException(taskId);
+  async getAll(param: ProjectTaskParamDTO): Promise<UpdateEntity[]> {
+    const task = await this.taskRepo.findOneOrException(param.taskId);
     return this.updateRepo.find({ where: { task } });
   }
 
   async create(
-    taskId: number,
+    param: ProjectTaskParamDTO,
     createDto: CreateUpdateDTO,
     employee: EmployeeEntity,
   ): Promise<UpdateEntity> {
-    const task = await this.taskRepo.findOneOrException(taskId);
+    const task = await this.taskRepo.findOneOrException(param.taskId);
 
     this.canManage(task.isStaff(employee), 'Task');
 
@@ -48,20 +49,19 @@ export class TaskUpdateService extends AppService {
     return this.updateRepo.save(update);
   }
 
-  async get(taskId: number, updateId: number): Promise<UpdateEntity> {
+  async get(param: TaskUpdateParamDTO): Promise<UpdateEntity> {
     return this.updateRepo.findOneOrException({
-      id: updateId,
-      task: { id: taskId },
+      id: param.updateId,
+      task: { id: param.taskId },
     });
   }
 
   async update(
-    taskId: number,
-    updateId: number,
+    param: TaskUpdateParamDTO,
     updateDto: UpdateUpdateDTO,
     employee: EmployeeEntity,
   ): Promise<UpdateEntity> {
-    const where = { id: updateId, task: { id: taskId } };
+    const where = { id: param.updateId, task: { id: param.taskId } };
     const option = { relations: ['task'] };
     const update = await this.updateRepo.findOneOrException(where, option);
 
@@ -81,11 +81,10 @@ export class TaskUpdateService extends AppService {
   }
 
   async delete(
-    taskId: number,
-    updateId: number,
+    param: TaskUpdateParamDTO,
     employee: EmployeeEntity,
   ): Promise<void> {
-    const where = { id: updateId, task: { id: taskId } };
+    const where = { id: param.updateId, task: { id: param.taskId } };
     const option = { relations: ['task'] };
     const update = await this.updateRepo.findOneOrException(where, option);
 
