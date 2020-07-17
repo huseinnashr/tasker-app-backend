@@ -4,7 +4,6 @@ import {
   Post,
   Body,
   Param,
-  ParseIntPipe,
   Put,
   Delete,
   SerializeOptions,
@@ -14,6 +13,7 @@ import { Auth, CurrentEmployee } from '../core/decorator';
 import { EmployeeEntity, ProjectEntity } from '../database/entity';
 import { Role } from '../database/enum';
 import { CreateProjectDTO, UpdateProjectDTO, ProjectStatusDTO } from './dto';
+import { ProjectParamDTO } from '../shared/dto';
 
 @Controller('project')
 @SerializeOptions({ groups: ['project'] })
@@ -35,33 +35,33 @@ export class ProjectController {
     return this.projectService.create(createDto, employee);
   }
 
-  @Get('/:id')
+  @Get('/:projectId')
   @Auth()
-  async get(@Param('id', ParseIntPipe) id: number): Promise<ProjectEntity> {
-    return this.projectService.get(id);
+  async get(@Param() param: ProjectParamDTO): Promise<ProjectEntity> {
+    return this.projectService.get(param);
   }
 
-  @Put('/:id')
+  @Put('/:projectId')
   @Auth(Role.MANAGER)
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param() param: ProjectParamDTO,
     @Body() updateDto: UpdateProjectDTO,
   ): Promise<ProjectEntity> {
-    return this.projectService.update(id, updateDto);
+    return this.projectService.update(param, updateDto);
   }
 
-  @Put('/:id/status')
+  @Put('/:projectId/status')
   @Auth(Role.MANAGER)
   async updateStatus(
-    @Param('id', ParseIntPipe) id: number,
+    @Param() param: ProjectParamDTO,
     @Body() statusDto: ProjectStatusDTO,
   ): Promise<ProjectEntity> {
-    return this.projectService.updateStatus(id, statusDto);
+    return this.projectService.updateStatus(param, statusDto);
   }
 
-  @Delete('/:id')
+  @Delete('/:projectId')
   @Auth(Role.MANAGER)
-  async delete(@Param('id', ParseIntPipe) id: number): Promise<ProjectEntity> {
-    return this.projectService.delete(id);
+  async delete(@Param() param: ProjectParamDTO): Promise<ProjectEntity> {
+    return this.projectService.delete(param);
   }
 }

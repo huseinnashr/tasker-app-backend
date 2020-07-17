@@ -33,14 +33,14 @@ describe('ProjectTaskController (e2e)', () => {
     await app.close();
   });
 
-  it('test /task/:taskId/artifact (GET) specs', async () => {
+  it('test /project/:projectid/task/:taskId/artifact (GET) specs', async () => {
     const [mgtok, manager] = await auth.signUp({ role: Role.MANAGER });
 
     const project = await repo.createAProject(manager);
     const task = await repo.createATask(project);
     const artifact = await repo.createAnArtifact(task);
 
-    const endpoint = `/task/${task.id}/artifact`;
+    const endpoint = `/project/${project.id}/task/${task.id}/artifact`;
 
     const res = await request(app.getHttpServer())
       .get(endpoint)
@@ -56,7 +56,7 @@ describe('ProjectTaskController (e2e)', () => {
     expect(res.body[0]).toEqual(expected);
   });
 
-  it('test /task/:taskId/artifact (POST) specs', async () => {
+  it('test /project/:projectid/task/:taskId/artifact (POST) specs', async () => {
     const [mgtok, manager] = await auth.signUp({ role: Role.MANAGER });
     const [mgtok2] = await auth.signUp({ role: Role.MANAGER });
     const [, staff] = await auth.signUp({ role: Role.STAFF });
@@ -64,7 +64,7 @@ describe('ProjectTaskController (e2e)', () => {
     const project = await repo.createAProject(manager);
     const task = await repo.createATask(project, staff);
 
-    const endpoint = `/task/${task.id}/artifact`;
+    const endpoint = `/project/${project.id}/task/${task.id}/artifact`;
 
     const createDto: CreateArtifactDTO = {
       description: 'New Artifact',
@@ -90,7 +90,7 @@ describe('ProjectTaskController (e2e)', () => {
     await test.forbidden(mgtok2, 'POST', endpoint, createDto);
   });
 
-  it('test /task/:taskId/artifact/:artifactId (PUT) specs', async () => {
+  it('test /project/:projectid/task/:taskId/artifact/:artifactId (PUT) specs', async () => {
     const [mgtok, manager] = await auth.signUp({ role: Role.MANAGER });
     const [mgtok2] = await auth.signUp({ role: Role.MANAGER });
     const [, staff] = await auth.signUp({ role: Role.STAFF });
@@ -99,7 +99,7 @@ describe('ProjectTaskController (e2e)', () => {
     const task = await repo.createATask(project, staff);
     const artifact = await repo.createAnArtifact(task);
 
-    const endpoint = `/task/${task.id}/artifact/${artifact.id}`;
+    const endpoint = `/project/${project.id}/task/${task.id}/artifact/${artifact.id}`;
 
     const updateDto: UpdateArtifactDTO = {
       description: 'Updated Artifact',
@@ -125,7 +125,7 @@ describe('ProjectTaskController (e2e)', () => {
     await test.forbidden(mgtok2, 'PUT', endpoint, updateDto);
   });
 
-  it('test /task/:taskId/artifact/:artifactId (DELETE) specs', async () => {
+  it('test /project/:projectid/task/:taskId/artifact/:artifactId (DELETE) specs', async () => {
     const [mgtok, manager] = await auth.signUp({ role: Role.MANAGER });
     const [mgtok2] = await auth.signUp({ role: Role.MANAGER });
     const [, staff] = await auth.signUp({ role: Role.STAFF });
@@ -134,7 +134,7 @@ describe('ProjectTaskController (e2e)', () => {
     const task = await repo.createATask(project, staff);
     const artifact = await repo.createAnArtifact(task);
 
-    const endpoint = `/task/${task.id}/artifact/${artifact.id}`;
+    const endpoint = `/project/${project.id}/task/${task.id}/artifact/${artifact.id}`;
 
     await test.forbidden(mgtok2, 'DELETE', endpoint);
 

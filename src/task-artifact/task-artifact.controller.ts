@@ -13,51 +13,45 @@ import { Auth, CurrentEmployee } from '../core/decorator';
 import { Role } from '../database/enum';
 import { ArtifactEntity, EmployeeEntity } from '../database/entity';
 import { CreateArtifactDTO, UpdateArtifactDTO } from './dto';
+import { TaskArtifactParamDTO, ProjectTaskParamDTO } from '../shared/dto';
 
-@Controller('task/:taskId/artifact')
+@Controller('project/:projectId/task/:taskId/artifact')
 @SerializeOptions({ groups: ['task-artifact'] })
 export class TaskArtifactController {
   constructor(private taskArtifactService: TaskArtifactService) {}
 
   @Get('/')
   @Auth()
-  async getAll(@Param('taskId') taskId: number): Promise<ArtifactEntity[]> {
-    return this.taskArtifactService.getAll(taskId);
+  async getAll(@Param() param: ProjectTaskParamDTO): Promise<ArtifactEntity[]> {
+    return this.taskArtifactService.getAll(param);
   }
 
   @Post('/')
   @Auth(Role.MANAGER)
   async create(
-    @Param('taskId') taskId: number,
+    @Param() param: ProjectTaskParamDTO,
     @Body() createDto: CreateArtifactDTO,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<ArtifactEntity> {
-    return this.taskArtifactService.create(taskId, createDto, employee);
+    return this.taskArtifactService.create(param, createDto, employee);
   }
 
   @Put('/:artifactId')
   @Auth(Role.MANAGER)
   async update(
-    @Param('taskId') taskId: number,
-    @Param('artifactId') artifactId: number,
+    @Param() param: TaskArtifactParamDTO,
     @Body() updateDto: UpdateArtifactDTO,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<ArtifactEntity> {
-    return this.taskArtifactService.update(
-      taskId,
-      artifactId,
-      updateDto,
-      employee,
-    );
+    return this.taskArtifactService.update(param, updateDto, employee);
   }
 
   @Delete('/:artifactId')
   @Auth(Role.MANAGER)
   async delete(
-    @Param('taskId') taskId: number,
-    @Param('artifactId') artifactId: number,
+    @Param() param: TaskArtifactParamDTO,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<void> {
-    return this.taskArtifactService.delete(taskId, artifactId, employee);
+    return this.taskArtifactService.delete(param, employee);
   }
 }

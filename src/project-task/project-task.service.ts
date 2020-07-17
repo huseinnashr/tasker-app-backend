@@ -9,6 +9,7 @@ import {
 } from '../database/repository';
 import { TaskStatus } from '../database/enum';
 import { AppService } from '../core/app.service';
+import { ProjectParamDTO, ProjectTaskParamDTO } from '../shared/dto';
 
 @Injectable()
 export class ProjectTaskService extends AppService {
@@ -20,17 +21,17 @@ export class ProjectTaskService extends AppService {
     super();
   }
 
-  async getAll(projectId: number): Promise<TaskEntity[]> {
-    const project = await this.proRepo.findOneOrException(projectId);
+  async getAll(param: ProjectParamDTO): Promise<TaskEntity[]> {
+    const project = await this.proRepo.findOneOrException(param.projectId);
     return this.taskRepo.find({ where: { project } });
   }
 
   async create(
-    projectId: number,
+    param: ProjectParamDTO,
     createDto: CreateTaskDTO,
     employee: EmployeeEntity,
   ): Promise<TaskEntity> {
-    const project = await this.proRepo.findOneOrException(projectId);
+    const project = await this.proRepo.findOneOrException(param.projectId);
 
     this.canManage(project.isManager(employee), 'Project');
 
@@ -49,20 +50,19 @@ export class ProjectTaskService extends AppService {
     return this.taskRepo.save(task);
   }
 
-  async get(projectId: number, taskId: number): Promise<TaskEntity> {
+  async get(param: ProjectTaskParamDTO): Promise<TaskEntity> {
     return this.taskRepo.findOneOrException({
-      id: taskId,
-      project: { id: projectId },
+      id: param.taskId,
+      project: { id: param.projectId },
     });
   }
 
   async update(
-    projectId: number,
-    taskId: number,
+    param: ProjectTaskParamDTO,
     updateTask: UpdateTaskDTO,
     employee: EmployeeEntity,
   ): Promise<TaskEntity> {
-    const taskWhere = { id: taskId, project: { id: projectId } };
+    const taskWhere = { id: param.taskId, project: { id: param.projectId } };
     const taskOption = { relations: ['project'] };
     const task = await this.taskRepo.findOneOrException(taskWhere, taskOption);
 
@@ -84,11 +84,10 @@ export class ProjectTaskService extends AppService {
   }
 
   async delete(
-    projectId: number,
-    taskId: number,
+    param: ProjectTaskParamDTO,
     employee: EmployeeEntity,
   ): Promise<void> {
-    const taskWhere = { id: taskId, project: { id: projectId } };
+    const taskWhere = { id: param.taskId, project: { id: param.projectId } };
     const taskOption = { relations: ['project'] };
     const task = await this.taskRepo.findOneOrException(taskWhere, taskOption);
 

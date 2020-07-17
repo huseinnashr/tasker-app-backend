@@ -4,6 +4,7 @@ import { ArtifactRepository, TaskRepository } from '../database/repository';
 import { AppService } from '../core/app.service';
 import { ArtifactEntity, EmployeeEntity } from '../database/entity';
 import { CreateArtifactDTO, UpdateArtifactDTO } from './dto';
+import { TaskArtifactParamDTO, ProjectTaskParamDTO } from '../shared/dto';
 
 @Injectable()
 export class TaskArtifactService extends AppService {
@@ -16,17 +17,17 @@ export class TaskArtifactService extends AppService {
     super();
   }
 
-  async getAll(taskId: number): Promise<ArtifactEntity[]> {
-    const task = await this.taskRepo.findOneOrException(taskId);
+  async getAll(param: ProjectTaskParamDTO): Promise<ArtifactEntity[]> {
+    const task = await this.taskRepo.findOneOrException(param.taskId);
     return this.artifactRepo.find({ where: { task } });
   }
 
   async create(
-    taskId: number,
+    param: ProjectTaskParamDTO,
     createDto: CreateArtifactDTO,
     employee: EmployeeEntity,
   ): Promise<ArtifactEntity> {
-    const task = await this.taskRepo.findOneOrException(taskId, {
+    const task = await this.taskRepo.findOneOrException(param.taskId, {
       relations: ['project'],
     });
     this.canManage(task.project.isManager(employee), "task's entities");
@@ -40,12 +41,11 @@ export class TaskArtifactService extends AppService {
   }
 
   async update(
-    taskId: number,
-    artifactId: number,
+    param: TaskArtifactParamDTO,
     updateDto: UpdateArtifactDTO,
     employee: EmployeeEntity,
   ): Promise<ArtifactEntity> {
-    const where = { id: artifactId, task: { id: taskId } };
+    const where = { id: param.artifactId, task: { id: param.taskId } };
     const option = { relations: ['task', 'task.project'] };
     const artifact = await this.artifactRepo.findOneOrException(where, option);
 
@@ -60,11 +60,10 @@ export class TaskArtifactService extends AppService {
   }
 
   async delete(
-    taskId: number,
-    artifactId: number,
+    param: TaskArtifactParamDTO,
     employee: EmployeeEntity,
   ): Promise<void> {
-    const where = { id: artifactId, task: { id: taskId } };
+    const where = { id: param.artifactId, task: { id: param.taskId } };
     const option = { relations: ['task', 'task.project'] };
     const artifact = await this.artifactRepo.findOneOrException(where, option);
 
