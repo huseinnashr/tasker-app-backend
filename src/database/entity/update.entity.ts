@@ -28,6 +28,7 @@ export class UpdateEntity {
   @ManyToOne(
     () => TaskEntity,
     task => task.updates,
+    { onDelete: 'CASCADE' },
   )
   @Exclude()
   task: TaskEntity;

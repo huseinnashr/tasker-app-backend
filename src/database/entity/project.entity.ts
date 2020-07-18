@@ -26,7 +26,7 @@ export class ProjectEntity {
   @ManyToOne(
     () => EmployeeEntity,
     employee => employee.managedProject,
-    { eager: true },
+    { eager: true, onDelete: 'CASCADE' },
   )
   manager: EmployeeEntity;
 

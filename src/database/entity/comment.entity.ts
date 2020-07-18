@@ -13,6 +13,7 @@ export class CommentEntity {
   @ManyToOne(
     () => UpdateEntity,
     update => update.comments,
+    { onDelete: 'CASCADE' },
   )
   @Exclude()
   update: UpdateEntity;
@@ -20,7 +21,7 @@ export class CommentEntity {
   @ManyToOne(
     () => EmployeeEntity,
     employee => employee.comments,
-    { eager: true },
+    { eager: true, onDelete: 'CASCADE' },
   )
   creator: EmployeeEntity;
 

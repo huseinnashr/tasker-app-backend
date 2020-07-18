@@ -22,7 +22,7 @@ export class FileEntity {
   @ManyToOne(
     () => EmployeeEntity,
     employee => employee.files,
-    { eager: true },
+    { eager: true, onDelete: 'CASCADE' },
   )
   @Expose({ groups: ['file'] })
   owner: EmployeeEntity;
@@ -30,7 +30,7 @@ export class FileEntity {
   @ManyToOne(
     () => UpdateEntity,
     update => update.files,
-    { nullable: true },
+    { nullable: true, onDelete: 'CASCADE' },
   )
   @Exclude()
   update: UpdateEntity;

@@ -29,13 +29,14 @@ export class TaskEntity {
   @ManyToOne(
     () => EmployeeEntity,
     employee => employee.managedProject,
-    { eager: true },
+    { eager: true, onDelete: 'CASCADE' },
   )
   staff: EmployeeEntity;
 
   @ManyToOne(
     () => ProjectEntity,
     project => project.tasks,
+    { onDelete: 'CASCADE' },
   )
   @Exclude()
   project: ProjectEntity;

@@ -4,6 +4,7 @@ import {
   Column,
   OneToOne,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { UpdateEntity } from './';
 import { TaskEntity } from './task.entity';
@@ -20,6 +21,7 @@ export class ArtifactEntity {
   @ManyToOne(
     () => TaskEntity,
     task => task.artifacts,
+    { onDelete: 'CASCADE' },
   )
   @Exclude()
   task: TaskEntity;
@@ -27,6 +29,8 @@ export class ArtifactEntity {
   @OneToOne(
     () => UpdateEntity,
     update => update.artifact,
+    { onDelete: 'SET NULL' },
   )
+  @JoinColumn()
   update?: UpdateEntity;
 }
