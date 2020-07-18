@@ -72,6 +72,6 @@ export class TaskArtifactService extends AppService {
       "task's artifact",
     );
 
-    await this.artifactRepo.delete({ id: artifact.id });
+    await this.artifactRepo.remove(artifact);
   }
 }

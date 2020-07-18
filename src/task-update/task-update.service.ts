@@ -90,6 +90,6 @@ export class TaskUpdateService extends AppService {
 
     this.canManage(update.task.isStaff(employee), 'Update');
 
-    await this.updateRepo.delete({ id: update.id });
+    await this.updateRepo.remove(update);
   }
 }

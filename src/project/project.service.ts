@@ -62,6 +62,6 @@ export class ProjectService extends AppService {
   async delete(param: ProjectParamDTO): Promise<void> {
     const project = await this.proRepo.findOneOrException(param.projectId);
 
-    await this.proRepo.delete({ id: project.id });
+    await this.proRepo.remove(project);
   }
 }
