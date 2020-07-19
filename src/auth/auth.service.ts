@@ -25,6 +25,7 @@ export class AuthService extends AppService {
 
     const payload: JwtPayload = { username };
     const accessToken = this.jwtService.sign(payload);
-    return { employee, accessToken };
+
+    return { ...employee, accessToken };
   }
 }

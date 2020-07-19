@@ -6,6 +6,7 @@ import { EmployeeEntity } from '../../src/database/entity';
 
 interface SignUpDTO {
   username?: string;
+  password?: string;
   role: Role;
 }
 
@@ -25,12 +26,13 @@ class AuthHelper {
 
   signUp = async (data: SignUpDTO): Promise<[string, EmployeeEntity]> => {
     this.employeeCounter += 1;
-    let { username } = data;
-    if (!username) {
-      username = 'employee' + this.employeeCounter;
-    }
-    const employee = this.empRepo.create({ ...data, username });
-    employee.password = 'SecretPassword1234';
+    let { username, password } = data;
+
+    username = username ? username : 'employee' + this.employeeCounter;
+    password = password ? password : 'SecretPassword1234';
+
+    const employee = this.empRepo.create({ ...data, username, password });
+
     await this.empRepo.save(employee);
     const accessToken = this.jwtService.sign({ username: employee.username });
 

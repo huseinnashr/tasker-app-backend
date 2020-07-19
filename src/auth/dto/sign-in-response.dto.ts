@@ -1,6 +1,7 @@
-import { EmployeeEntity } from '../../database/entity';
+import { Expose } from 'class-transformer';
+import { CurrentUserResponseDTO } from '.';
 
-export interface SignInResponseDTO {
-  employee: EmployeeEntity;
+export class SignInResponseDTO extends CurrentUserResponseDTO {
+  @Expose()
   accessToken: string;
 }

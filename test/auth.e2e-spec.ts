@@ -1,7 +1,7 @@
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SignInDTO } from '../src/auth/dto';
+import { SignInDTO, CurrentUserResponseDTO } from '../src/auth/dto';
 import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/database/repository';
 import { CreateEmployeeDTO } from '../src/employee/dto';
@@ -32,20 +32,28 @@ describe('AuthController (e2e)', () => {
 
   describe('/auth/signin (POST)', () => {
     it('returns employee and access token', async () => {
-      const signInDto: SignInDTO = { username: 'test', password: 'Test1234' };
-      const createEmployeeDto: CreateEmployeeDTO = {
-        ...signInDto,
-        role: Role.STAFF,
+      const password = 'Secret1234@';
+      const [, admin] = await auth.signUp({ password, role: Role.ADMIN });
+
+      const signInDto: SignInDTO = {
+        username: admin.username,
+        password,
       };
 
-      await empRepo.save(empRepo.create(createEmployeeDto));
-      const loginRes = await request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .post('/auth/signin')
         .send(signInDto)
         .expect(200);
 
-      expect(loginRes.body.accessToken).toBeDefined();
-      expect(loginRes.body.employee).toBeDefined();
+      const expected: CurrentUserResponseDTO = {
+        id: admin.id,
+        username: admin.username,
+        role: admin.role,
+      };
+
+      const { accessToken, ...employee } = res.body;
+      expect(accessToken).toBeDefined();
+      expect(employee).toEqual(expected);
     });
 
     it('returns 401 Unauthorized when account was not found / wrong password', async () => {
@@ -73,12 +81,18 @@ describe('AuthController (e2e)', () => {
     it('returns current user', async () => {
       const [token, admin] = await auth.signUp({ role: Role.ADMIN });
 
-      const currentRes = await request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .get('/auth/current')
         .set({ Authorization: token })
         .expect(200);
 
-      expect(currentRes.body.username).toBe(admin.username);
+      const expected: CurrentUserResponseDTO = {
+        id: admin.id,
+        username: admin.username,
+        role: admin.role,
+      };
+
+      expect(res.body).toEqual(expected);
     });
 
     it('returns 401 when not logged in', async () => {

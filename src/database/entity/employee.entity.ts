@@ -6,7 +6,6 @@ import {
   OneToMany,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { Exclude, Expose } from 'class-transformer';
 import { Role } from '../enum/role.enum';
 import { ProjectEntity } from './project.entity';
 import { TaskEntity } from './task.entity';
@@ -23,43 +22,36 @@ export class EmployeeEntity {
   username: string;
 
   @Column()
-  @Expose({ groups: ['auth', 'employee'] })
   role: Role;
 
   @OneToMany(
     () => ProjectEntity,
     project => project.manager,
   )
-  @Exclude()
   managedProject: ProjectEntity[];
 
   @OneToMany(
     () => TaskEntity,
     task => task.staff,
   )
-  @Exclude()
   assignedTask: TaskEntity[];
 
   @OneToMany(
     () => CommentEntity,
     comment => comment.creator,
   )
-  @Exclude()
   comments: CommentEntity[];
 
   @OneToMany(
     () => FileEntity,
     file => file.owner,
   )
-  @Exclude()
   files: FileEntity[];
 
   @Column()
-  @Exclude()
   password: string;
 
   @Column()
-  @Exclude()
   salt: string;
 
   async validatePassowrd(password: string): Promise<boolean> {
