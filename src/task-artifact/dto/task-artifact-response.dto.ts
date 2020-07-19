@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { ArtifactUpdateResponseDTO } from './artifact-update-response.dto';
 
 export class TaskArtifactResponseDTO {
   @Expose()
@@ -8,8 +9,5 @@ export class TaskArtifactResponseDTO {
   description: string;
 
   @Expose()
-  update?: {
-    id: number;
-    title: string;
-  };
+  update: ArtifactUpdateResponseDTO | null;
 }

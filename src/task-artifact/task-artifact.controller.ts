@@ -16,6 +16,8 @@ import {
   CreateArtifactDTO,
   UpdateArtifactDTO,
   TaskArtifactResponseDTO,
+  AssignUpdateDTO,
+  ArtifactUpdateResponseDTO,
 } from './dto';
 import { TaskArtifactParamDTO, ProjectTaskParamDTO } from '../shared/dto';
 import { TransformResponse } from '../core/interceptor';
@@ -63,5 +65,25 @@ export class TaskArtifactController {
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<void> {
     return this.taskArtifactService.delete(param, employee);
+  }
+
+  @Put('/:artifactId/update')
+  @Auth(Role.MANAGER)
+  @TransformResponse(ArtifactUpdateResponseDTO)
+  async assignUpdate(
+    @Param() param: TaskArtifactParamDTO,
+    @Body() assignDto: AssignUpdateDTO,
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<ArtifactUpdateResponseDTO> {
+    return this.taskArtifactService.assignUpdate(param, assignDto, employee);
+  }
+
+  @Delete('/:artifactId/update')
+  @Auth(Role.MANAGER)
+  async removeUpdate(
+    @Param() param: TaskArtifactParamDTO,
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<void> {
+    return this.taskArtifactService.removeUpdate(param, employee);
   }
 }

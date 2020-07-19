@@ -128,6 +128,11 @@ class RepoHelper {
       }),
     );
   }
+
+  async assignUpdate(artifact: ArtifactEntity, update: UpdateEntity) {
+    artifact.update = update;
+    this.artifactRepo.save(artifact);
+  }
 }
 
 export { RepoHelper };

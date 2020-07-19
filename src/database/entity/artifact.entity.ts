@@ -27,8 +27,8 @@ export class ArtifactEntity {
   @OneToOne(
     () => UpdateEntity,
     update => update.artifact,
-    { onDelete: 'SET NULL' },
+    { eager: true, onDelete: 'SET NULL' },
   )
   @JoinColumn()
-  update?: UpdateEntity;
+  update: UpdateEntity | null;
 }
