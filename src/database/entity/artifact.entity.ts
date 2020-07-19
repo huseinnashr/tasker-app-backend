@@ -8,7 +8,6 @@ import {
 } from 'typeorm';
 import { UpdateEntity } from './';
 import { TaskEntity } from './task.entity';
-import { Exclude } from 'class-transformer';
 
 @Entity()
 export class ArtifactEntity {
@@ -23,7 +22,6 @@ export class ArtifactEntity {
     task => task.artifacts,
     { onDelete: 'CASCADE' },
   )
-  @Exclude()
   task: TaskEntity;
 
   @OneToOne(

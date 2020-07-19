@@ -85,7 +85,7 @@ describe('ProjectTaskController (e2e)', () => {
 
     // A.2. Return the newly created artifact, and the artifact can be found in db
     expect(res.body).toEqual(expected);
-    expect(await artifactRepo.findOne(res.body.id)).toEqual(expected);
+    expect(await artifactRepo.findOne(res.body.id)).toMatchObject(expected);
 
     await test.forbidden(mgtok2, 'POST', endpoint, createDto);
   });
@@ -120,7 +120,7 @@ describe('ProjectTaskController (e2e)', () => {
 
     // A.2. Return the updated artifact, and the update can be found in db
     expect(res.body).toEqual(expected);
-    expect(await artifactRepo.findOne(artifact.id)).toEqual(expected);
+    expect(await artifactRepo.findOne(artifact.id)).toMatchObject(expected);
 
     await test.forbidden(mgtok2, 'PUT', endpoint, updateDto);
   });

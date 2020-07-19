@@ -3,7 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ArtifactRepository, TaskRepository } from '../database/repository';
 import { AppService } from '../core/app.service';
 import { ArtifactEntity, EmployeeEntity } from '../database/entity';
-import { CreateArtifactDTO, UpdateArtifactDTO } from './dto';
+import {
+  CreateArtifactDTO,
+  UpdateArtifactDTO,
+  TaskArtifactResponseDTO,
+} from './dto';
 import { TaskArtifactParamDTO, ProjectTaskParamDTO } from '../shared/dto';
 
 @Injectable()
@@ -17,7 +21,7 @@ export class TaskArtifactService extends AppService {
     super();
   }
 
-  async getAll(param: ProjectTaskParamDTO): Promise<ArtifactEntity[]> {
+  async getAll(param: ProjectTaskParamDTO): Promise<TaskArtifactResponseDTO[]> {
     const task = await this.taskRepo.findOneOrException(param.taskId);
     return this.artifactRepo.find({ where: { task } });
   }
@@ -26,7 +30,7 @@ export class TaskArtifactService extends AppService {
     param: ProjectTaskParamDTO,
     createDto: CreateArtifactDTO,
     employee: EmployeeEntity,
-  ): Promise<ArtifactEntity> {
+  ): Promise<TaskArtifactResponseDTO> {
     const task = await this.taskRepo.findOneOrException(param.taskId, {
       relations: ['project'],
     });
@@ -44,7 +48,7 @@ export class TaskArtifactService extends AppService {
     param: TaskArtifactParamDTO,
     updateDto: UpdateArtifactDTO,
     employee: EmployeeEntity,
-  ): Promise<ArtifactEntity> {
+  ): Promise<TaskArtifactResponseDTO> {
     const where = { id: param.artifactId, task: { id: param.taskId } };
     const option = { relations: ['task', 'task.project'] };
     const artifact = await this.artifactRepo.findOneOrException(where, option);

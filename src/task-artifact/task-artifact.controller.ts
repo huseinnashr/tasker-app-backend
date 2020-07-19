@@ -11,9 +11,14 @@ import {
 import { TaskArtifactService } from './task-artifact.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { Role } from '../database/enum';
-import { ArtifactEntity, EmployeeEntity } from '../database/entity';
-import { CreateArtifactDTO, UpdateArtifactDTO } from './dto';
+import { EmployeeEntity } from '../database/entity';
+import {
+  CreateArtifactDTO,
+  UpdateArtifactDTO,
+  TaskArtifactResponseDTO,
+} from './dto';
 import { TaskArtifactParamDTO, ProjectTaskParamDTO } from '../shared/dto';
+import { TransformResponse } from '../core/interceptor';
 
 @Controller('project/:projectId/task/:taskId/artifact')
 @SerializeOptions({ groups: ['task-artifact'] })
@@ -22,27 +27,32 @@ export class TaskArtifactController {
 
   @Get('/')
   @Auth()
-  async getAll(@Param() param: ProjectTaskParamDTO): Promise<ArtifactEntity[]> {
+  @TransformResponse(TaskArtifactResponseDTO)
+  async getAll(
+    @Param() param: ProjectTaskParamDTO,
+  ): Promise<TaskArtifactResponseDTO[]> {
     return this.taskArtifactService.getAll(param);
   }
 
   @Post('/')
   @Auth(Role.MANAGER)
+  @TransformResponse(TaskArtifactResponseDTO)
   async create(
     @Param() param: ProjectTaskParamDTO,
     @Body() createDto: CreateArtifactDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<ArtifactEntity> {
+  ): Promise<TaskArtifactResponseDTO> {
     return this.taskArtifactService.create(param, createDto, employee);
   }
 
   @Put('/:artifactId')
   @Auth(Role.MANAGER)
+  @TransformResponse(TaskArtifactResponseDTO)
   async update(
     @Param() param: TaskArtifactParamDTO,
     @Body() updateDto: UpdateArtifactDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<ArtifactEntity> {
+  ): Promise<TaskArtifactResponseDTO> {
     return this.taskArtifactService.update(param, updateDto, employee);
   }
 
