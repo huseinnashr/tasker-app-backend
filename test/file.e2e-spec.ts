@@ -5,7 +5,6 @@ import { AppModule } from '../src/app.module';
 import { FileRepository } from '../src/database/repository';
 import { Role } from '../src/database/enum';
 import { AuthHelper, TestHelper, FileHelper, RepoHelper } from './helper';
-import { classToPlain } from 'class-transformer';
 
 describe('FileController (e2e)', () => {
   let app: INestApplication;
@@ -66,7 +65,7 @@ describe('FileController (e2e)', () => {
     // A.3. File entity is saved in the database
     const [files, count] = await fileRepo.findAndCount();
     expect(count).toEqual(1);
-    expect(classToPlain(files[0], { groups: ['file'] })).toEqual(expected);
+    expect(files[0]).toMatchObject(expected);
 
     const getRes = await request(app.getHttpServer())
       .get(`/file/${res.body.id}`)

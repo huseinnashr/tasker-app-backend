@@ -6,32 +6,34 @@ import {
   Get,
   Param,
   Res,
-  SerializeOptions,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileEntity, EmployeeEntity } from '../database/entity';
+import { EmployeeEntity } from '../database/entity';
 import { MulterFile } from '../core/interface';
 import { FileService } from './file.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { Response } from 'express';
+import { FileResponseDTO } from './dto';
+import { TransformResponse } from '../core/interceptor';
 
 @Controller('file')
-@SerializeOptions({ groups: ['file'] })
 export class FileController {
   constructor(private fileService: FileService) {}
 
   @Post('/')
   @Auth()
   @UseInterceptors(FileInterceptor('file'))
+  @TransformResponse(FileResponseDTO)
   async create(
     @UploadedFile() uploadedFile: MulterFile,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<FileEntity> {
+  ): Promise<FileResponseDTO> {
     return this.fileService.create(uploadedFile, employee);
   }
 
   @Get('/:id')
   @Auth()
+  // TODO: File buffer response dto fro swagger
   async get(
     @Param('id') fileId: number,
     @CurrentEmployee() employee: EmployeeEntity,

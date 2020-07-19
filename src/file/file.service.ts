@@ -7,6 +7,7 @@ import { FileEntity, EmployeeEntity } from '../database/entity';
 import { MimeType } from '../database/enum';
 import { promises as fs } from 'fs';
 import { Readable, Stream } from 'stream';
+import { FileResponseDTO } from './dto';
 
 @Injectable()
 export class FileService extends AppService {
@@ -19,7 +20,7 @@ export class FileService extends AppService {
   async create(
     uploadedFile: MulterFile,
     employee: EmployeeEntity,
-  ): Promise<FileEntity> {
+  ): Promise<FileResponseDTO> {
     if (!uploadedFile) throw new BadRequestException('File cannot be empty');
 
     const file = new FileEntity();

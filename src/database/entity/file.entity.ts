@@ -1,5 +1,4 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Exclude, Expose } from 'class-transformer';
 import { EmployeeEntity } from '.';
 import { MimeType } from '../enum';
 import { UpdateEntity } from './update.entity';
@@ -16,7 +15,6 @@ export class FileEntity {
   filename: string;
 
   @Column()
-  @Exclude()
   filepath: string;
 
   @ManyToOne(
@@ -24,7 +22,6 @@ export class FileEntity {
     employee => employee.files,
     { eager: true, onDelete: 'CASCADE' },
   )
-  @Expose({ groups: ['file'] })
   owner: EmployeeEntity;
 
   @ManyToOne(
@@ -32,7 +29,6 @@ export class FileEntity {
     update => update.files,
     { nullable: true, onDelete: 'CASCADE' },
   )
-  @Exclude()
   update: UpdateEntity;
 
   isOwner(employee: EmployeeEntity): boolean {
