@@ -20,7 +20,6 @@ import {
   ArtifactUpdateResponseDTO,
 } from './dto';
 import { TaskArtifactParamDTO, ProjectTaskParamDTO } from '../shared/dto';
-import { TransformResponse } from '../core/interceptor';
 
 @Controller('project/:projectId/task/:taskId/artifact')
 @SerializeOptions({ groups: ['task-artifact'] })
@@ -29,7 +28,6 @@ export class TaskArtifactController {
 
   @Get('/')
   @Auth()
-  @TransformResponse(TaskArtifactResponseDTO)
   async getAll(
     @Param() param: ProjectTaskParamDTO,
   ): Promise<TaskArtifactResponseDTO[]> {
@@ -38,7 +36,6 @@ export class TaskArtifactController {
 
   @Post('/')
   @Auth(Role.MANAGER)
-  @TransformResponse(TaskArtifactResponseDTO)
   async create(
     @Param() param: ProjectTaskParamDTO,
     @Body() createDto: CreateArtifactDTO,
@@ -49,7 +46,6 @@ export class TaskArtifactController {
 
   @Put('/:artifactId')
   @Auth(Role.MANAGER)
-  @TransformResponse(TaskArtifactResponseDTO)
   async update(
     @Param() param: TaskArtifactParamDTO,
     @Body() updateDto: UpdateArtifactDTO,
@@ -69,7 +65,6 @@ export class TaskArtifactController {
 
   @Put('/:artifactId/update')
   @Auth(Role.MANAGER)
-  @TransformResponse(ArtifactUpdateResponseDTO)
   async assignUpdate(
     @Param() param: TaskArtifactParamDTO,
     @Body() assignDto: AssignUpdateDTO,

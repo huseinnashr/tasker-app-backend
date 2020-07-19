@@ -1,9 +1,15 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmployeeRepository } from '../database/repository';
-import { SignInDTO, SignInResponseDTO, JwtPayload } from './dto';
+import {
+  SignInDTO,
+  SignInResponseDTO,
+  JwtPayload,
+  CurrentUserResponseDTO,
+} from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { AppService } from '../core/app.service';
+import { EmployeeEntity } from '../database/entity';
 
 @Injectable()
 export class AuthService extends AppService {
@@ -26,6 +32,10 @@ export class AuthService extends AppService {
     const payload: JwtPayload = { username };
     const accessToken = this.jwtService.sign(payload);
 
-    return { ...employee, accessToken };
+    return this.transform(SignInResponseDTO, { ...employee, accessToken });
+  }
+
+  currentUser(employee: EmployeeEntity): CurrentUserResponseDTO {
+    return this.transform(CurrentUserResponseDTO, employee);
   }
 }

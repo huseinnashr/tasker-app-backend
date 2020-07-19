@@ -31,7 +31,9 @@ export class TaskArtifactService extends AppService {
 
   async getAll(param: ProjectTaskParamDTO): Promise<TaskArtifactResponseDTO[]> {
     const task = await this.taskRepo.findOneOrException(param.taskId);
-    return this.artifactRepo.find({ where: { task } });
+    const artifacts = await this.artifactRepo.find({ where: { task } });
+
+    return this.transform(TaskArtifactResponseDTO, artifacts);
   }
 
   async create(
@@ -50,7 +52,9 @@ export class TaskArtifactService extends AppService {
     artifact.task = task;
     artifact.update = null;
 
-    return this.artifactRepo.save(artifact);
+    await this.artifactRepo.save(artifact);
+
+    return this.transform(TaskArtifactResponseDTO, artifact);
   }
 
   async update(
@@ -69,7 +73,9 @@ export class TaskArtifactService extends AppService {
 
     artifact.description = updateDto.description;
 
-    return this.artifactRepo.save(artifact);
+    await this.artifactRepo.save(artifact);
+
+    return this.transform(TaskArtifactResponseDTO, artifact);
   }
 
   async delete(
@@ -108,7 +114,7 @@ export class TaskArtifactService extends AppService {
     this.existOrUnprocessable(update, 'Update');
     await this.artifactRepo.save(artifact);
 
-    return update;
+    return this.transform(ArtifactUpdateResponseDTO, update);
   }
 
   async removeUpdate(

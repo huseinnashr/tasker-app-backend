@@ -3,7 +3,6 @@ import { SignInDTO, SignInResponseDTO, CurrentUserResponseDTO } from './dto';
 import { AuthService } from './auth.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { EmployeeEntity } from '../database/entity';
-import { TransformResponse } from '../core/interceptor';
 
 @Controller('auth')
 export class AuthController {
@@ -11,17 +10,15 @@ export class AuthController {
 
   @Post('/signin')
   @HttpCode(200)
-  @TransformResponse(SignInResponseDTO)
   async signIn(@Body() signInDto: SignInDTO): Promise<SignInResponseDTO> {
     return this.authService.signIn(signInDto);
   }
 
   @Get('/current')
   @Auth()
-  @TransformResponse(CurrentUserResponseDTO)
   currentUser(
     @CurrentEmployee() employee: EmployeeEntity,
   ): CurrentUserResponseDTO {
-    return employee;
+    return this.authService.currentUser(employee);
   }
 }

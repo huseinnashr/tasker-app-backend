@@ -14,7 +14,6 @@ import { FileService } from './file.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { Response } from 'express';
 import { FileResponseDTO } from './dto';
-import { TransformResponse } from '../core/interceptor';
 
 @Controller('file')
 export class FileController {
@@ -23,7 +22,6 @@ export class FileController {
   @Post('/')
   @Auth()
   @UseInterceptors(FileInterceptor('file'))
-  @TransformResponse(FileResponseDTO)
   async create(
     @UploadedFile() uploadedFile: MulterFile,
     @CurrentEmployee() employee: EmployeeEntity,

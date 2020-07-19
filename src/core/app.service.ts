@@ -2,6 +2,8 @@ import {
   UnprocessableEntityException,
   ForbiddenException,
 } from '@nestjs/common';
+import { ClassType } from 'class-transformer/ClassTransformer';
+import { plainToClass } from 'class-transformer';
 
 export abstract class AppService {
   /** if foreign entity does not exist return '422 Unprocessible Entity'  */
@@ -29,5 +31,11 @@ export abstract class AppService {
         `You don't have the permission to veiw this ${entityName}`,
       );
     }
+  }
+  protected transform<T, V>(cls: ClassType<T>, data: V[]): T[];
+  protected transform<T, V>(cls: ClassType<T>, data: V): T;
+
+  protected transform<T, V>(cls: ClassType<T>, data: V | V[]): T | T[] {
+    return plainToClass(cls, data, { excludeExtraneousValues: true });
   }
 }

@@ -29,7 +29,9 @@ export class FileService extends AppService {
     file.filepath = uploadedFile.path;
     file.owner = employee;
 
-    return this.fileRepo.save(file);
+    await this.fileRepo.save(file);
+
+    return this.transform(FileResponseDTO, file);
   }
 
   async get(

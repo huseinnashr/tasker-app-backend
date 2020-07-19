@@ -18,7 +18,9 @@ export class EmployeeService extends AppService {
   }
 
   async getAll(): Promise<EmployeeResponseDTO[]> {
-    return this.empRepo.find();
+    const employees = await this.empRepo.find();
+
+    return this.transform(EmployeeResponseDTO, employees);
   }
 
   async create(createDto: CreateEmployeeDTO): Promise<EmployeeResponseDTO> {
@@ -26,11 +28,15 @@ export class EmployeeService extends AppService {
     employee.username = createDto.username;
     employee.role = createDto.role;
     employee.password = createDto.password;
-    return this.empRepo.save(employee);
+    await this.empRepo.save(employee);
+
+    return this.transform(EmployeeResponseDTO, employee);
   }
 
   async get(id: number): Promise<EmployeeResponseDTO> {
-    return this.empRepo.findOneOrException(id);
+    const employee = await this.empRepo.findOneOrException(id);
+
+    return this.transform(EmployeeResponseDTO, employee);
   }
 
   async update(
@@ -50,7 +56,7 @@ export class EmployeeService extends AppService {
 
     await this.empRepo.save(employee);
 
-    return employee;
+    return this.transform(EmployeeResponseDTO, employee);
   }
 
   async delete(id: number): Promise<void> {

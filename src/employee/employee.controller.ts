@@ -16,7 +16,6 @@ import {
   EmployeeResponseDTO,
 } from './dto';
 import { Auth } from '../core/decorator';
-import { TransformResponse } from '../core/interceptor';
 
 @Controller('employee')
 @SerializeOptions({ groups: ['employee'] })
@@ -25,14 +24,12 @@ export class EmployeeController {
 
   @Get('/')
   @Auth(Role.ADMIN)
-  @TransformResponse(EmployeeResponseDTO)
   async getAll(): Promise<EmployeeResponseDTO[]> {
     return this.empService.getAll();
   }
 
   @Post('/')
   @Auth(Role.ADMIN)
-  @TransformResponse(EmployeeResponseDTO)
   async create(
     @Body() createDto: CreateEmployeeDTO,
   ): Promise<EmployeeResponseDTO> {
@@ -41,7 +38,6 @@ export class EmployeeController {
 
   @Put('/:id')
   @Auth(Role.ADMIN)
-  @TransformResponse(EmployeeResponseDTO)
   async update(
     @Param('id') id: number,
     @Body() employee: UpdateEmployeeDTO,
