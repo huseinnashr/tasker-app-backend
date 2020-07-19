@@ -6,7 +6,6 @@ import {
   OneToMany,
   OneToOne,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
 import { UpdateType } from '../enum';
 import { TaskEntity, CommentEntity, ArtifactEntity } from './';
 import { FileEntity } from './file.entity';
@@ -30,14 +29,12 @@ export class UpdateEntity {
     task => task.updates,
     { onDelete: 'CASCADE' },
   )
-  @Exclude()
   task: TaskEntity;
 
   @OneToMany(
     () => CommentEntity,
     comment => comment.update,
   )
-  @Exclude()
   comments: CommentEntity[];
 
   @OneToMany(
@@ -51,6 +48,5 @@ export class UpdateEntity {
     () => ArtifactEntity,
     artifact => artifact.update,
   )
-  @Exclude()
   artifact: ArtifactEntity;
 }

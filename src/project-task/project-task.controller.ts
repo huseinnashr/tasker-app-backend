@@ -10,8 +10,8 @@ import {
 import { ProjectTaskService } from './project-task.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { Role } from '../database/enum';
-import { CreateTaskDTO, UpdateTaskDTO } from './dto';
-import { EmployeeEntity, TaskEntity } from '../database/entity';
+import { CreateTaskDTO, UpdateTaskDTO, ProjectTaskResponseDTO } from './dto';
+import { EmployeeEntity } from '../database/entity';
 import { ProjectParamDTO, ProjectTaskParamDTO } from '../shared/dto';
 
 @Controller('project/:projectId/task')
@@ -20,7 +20,9 @@ export class ProjectTaskController {
 
   @Get('/')
   @Auth()
-  async getAll(@Param() param: ProjectParamDTO): Promise<TaskEntity[]> {
+  async getAll(
+    @Param() param: ProjectParamDTO,
+  ): Promise<ProjectTaskResponseDTO[]> {
     return this.proTaskService.getAll(param);
   }
 
@@ -30,13 +32,15 @@ export class ProjectTaskController {
     @Param() param: ProjectParamDTO,
     @Body() taskDto: CreateTaskDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<TaskEntity> {
+  ): Promise<ProjectTaskResponseDTO> {
     return this.proTaskService.create(param, taskDto, employee);
   }
 
   @Get('/:taskId')
   @Auth()
-  async get(@Param() param: ProjectTaskParamDTO): Promise<TaskEntity> {
+  async get(
+    @Param() param: ProjectTaskParamDTO,
+  ): Promise<ProjectTaskResponseDTO> {
     return this.proTaskService.get(param);
   }
 
@@ -46,7 +50,7 @@ export class ProjectTaskController {
     @Param() param: ProjectTaskParamDTO,
     @Body() taskDto: UpdateTaskDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<TaskEntity> {
+  ): Promise<ProjectTaskResponseDTO> {
     return this.proTaskService.update(param, taskDto, employee);
   }
 

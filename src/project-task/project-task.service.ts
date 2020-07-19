@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateTaskDTO, UpdateTaskDTO } from './dto';
+import { CreateTaskDTO, UpdateTaskDTO, ProjectTaskResponseDTO } from './dto';
 import { EmployeeEntity, TaskEntity } from '../database/entity';
 import {
   EmployeeRepository,
@@ -21,16 +21,18 @@ export class ProjectTaskService extends AppService {
     super();
   }
 
-  async getAll(param: ProjectParamDTO): Promise<TaskEntity[]> {
+  async getAll(param: ProjectParamDTO): Promise<ProjectTaskResponseDTO[]> {
     const project = await this.proRepo.findOneOrException(param.projectId);
-    return this.taskRepo.find({ where: { project } });
+    const tasks = await this.taskRepo.find({ where: { project } });
+
+    return this.transform(ProjectTaskResponseDTO, tasks);
   }
 
   async create(
     param: ProjectParamDTO,
     createDto: CreateTaskDTO,
     employee: EmployeeEntity,
-  ): Promise<TaskEntity> {
+  ): Promise<ProjectTaskResponseDTO> {
     const project = await this.proRepo.findOneOrException(param.projectId);
 
     this.canManage(project.isManager(employee), 'Project');
@@ -45,21 +47,25 @@ export class ProjectTaskService extends AppService {
     task.project = project;
     task.status = TaskStatus.IN_PROGRESS;
 
-    return this.taskRepo.save(task);
+    await this.taskRepo.save(task);
+
+    return this.transform(ProjectTaskResponseDTO, task);
   }
 
-  async get(param: ProjectTaskParamDTO): Promise<TaskEntity> {
-    return this.taskRepo.findOneOrException({
+  async get(param: ProjectTaskParamDTO): Promise<ProjectTaskResponseDTO> {
+    const task = await this.taskRepo.findOneOrException({
       id: param.taskId,
       project: { id: param.projectId },
     });
+
+    return this.transform(ProjectTaskResponseDTO, task);
   }
 
   async update(
     param: ProjectTaskParamDTO,
     updateTask: UpdateTaskDTO,
     employee: EmployeeEntity,
-  ): Promise<TaskEntity> {
+  ): Promise<ProjectTaskResponseDTO> {
     const taskWhere = { id: param.taskId, project: { id: param.projectId } };
     const taskOption = { relations: ['project'] };
     const task = await this.taskRepo.findOneOrException(taskWhere, taskOption);
@@ -76,7 +82,9 @@ export class ProjectTaskService extends AppService {
       task.staff = staff;
     }
 
-    return this.taskRepo.save(task);
+    await this.taskRepo.save(task);
+
+    return this.transform(ProjectTaskResponseDTO, task);
   }
 
   async delete(

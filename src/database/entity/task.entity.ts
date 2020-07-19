@@ -8,7 +8,6 @@ import {
 import { TaskStatus } from '../enum/task-status.enum';
 import { EmployeeEntity } from './employee.entity';
 import { ProjectEntity } from './project.entity';
-import { Exclude } from 'class-transformer';
 import { UpdateEntity } from './update.entity';
 import { ArtifactEntity } from '.';
 
@@ -38,21 +37,18 @@ export class TaskEntity {
     project => project.tasks,
     { onDelete: 'CASCADE' },
   )
-  @Exclude()
   project: ProjectEntity;
 
   @OneToMany(
     () => UpdateEntity,
     update => update.task,
   )
-  @Exclude()
   updates: UpdateEntity[];
 
   @OneToMany(
     () => ArtifactEntity,
     artifact => artifact.task,
   )
-  @Exclude()
   artifacts: ArtifactEntity[];
 
   isStaff(employee: EmployeeEntity): boolean {

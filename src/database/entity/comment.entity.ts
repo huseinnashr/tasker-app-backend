@@ -15,7 +15,6 @@ export class CommentEntity {
     update => update.comments,
     { onDelete: 'CASCADE' },
   )
-  @Exclude()
   update: UpdateEntity;
 
   @ManyToOne(
