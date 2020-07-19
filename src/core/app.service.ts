@@ -5,17 +5,12 @@ import {
 
 export abstract class AppService {
   /** if foreign entity does not exist return '422 Unprocessible Entity'  */
-  protected async existOrUnprocessable<T>(
-    entityPromise: Promise<T | undefined>,
-    entityName: string,
-  ): Promise<T> {
-    const entity = await entityPromise;
+  protected existOrUnprocessable<T>(entity: T, entityName: string): void {
     if (!entity) {
       throw new UnprocessableEntityException(
         `The referred ${entityName} does not exist`,
       );
     }
-    return entity;
   }
 
   /** if can not manage return '403 Forbidden' */

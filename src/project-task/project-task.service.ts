@@ -35,10 +35,8 @@ export class ProjectTaskService extends AppService {
 
     this.canManage(project.isManager(employee), 'Project');
 
-    const staff = await this.existOrUnprocessable(
-      this.empRepo.findOne(createDto.employeeId),
-      'staff',
-    );
+    const staff = await this.empRepo.findOne(createDto.employeeId);
+    this.existOrUnprocessable(staff, 'staff');
 
     const task = new TaskEntity();
     task.title = createDto.title;
@@ -72,10 +70,8 @@ export class ProjectTaskService extends AppService {
     task.body = updateTask.body;
 
     if (task.staff.id !== updateTask.employeeId) {
-      const staff = await this.existOrUnprocessable(
-        this.empRepo.findOne(updateTask.employeeId),
-        'staff',
-      );
+      const staff = await this.empRepo.findOne(updateTask.employeeId);
+      this.existOrUnprocessable(staff, 'staff');
 
       task.staff = staff;
     }
