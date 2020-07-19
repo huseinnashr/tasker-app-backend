@@ -6,7 +6,6 @@ import {
   Param,
   Put,
   Delete,
-  SerializeOptions,
 } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { Role } from '../database/enum';
@@ -18,7 +17,6 @@ import {
 import { Auth } from '../core/decorator';
 
 @Controller('employee')
-@SerializeOptions({ groups: ['employee'] })
 export class EmployeeController {
   constructor(private empService: EmployeeService) {}
 

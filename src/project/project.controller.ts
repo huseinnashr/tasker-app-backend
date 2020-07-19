@@ -6,23 +6,26 @@ import {
   Param,
   Put,
   Delete,
-  SerializeOptions,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
-import { EmployeeEntity, ProjectEntity } from '../database/entity';
+import { EmployeeEntity } from '../database/entity';
 import { Role } from '../database/enum';
-import { CreateProjectDTO, UpdateProjectDTO, ProjectStatusDTO } from './dto';
+import {
+  CreateProjectDTO,
+  UpdateProjectDTO,
+  ProjectStatusDTO,
+  ProjectResponseDTO,
+} from './dto';
 import { ProjectParamDTO } from '../shared/dto';
 
 @Controller('project')
-@SerializeOptions({ groups: ['project'] })
 export class ProjectController {
   constructor(private projectService: ProjectService) {}
 
   @Get('/')
   @Auth()
-  async getAll(): Promise<ProjectEntity[]> {
+  async getAll(): Promise<ProjectResponseDTO[]> {
     return this.projectService.getAll();
   }
 
@@ -31,13 +34,13 @@ export class ProjectController {
   async create(
     @Body() createDto: CreateProjectDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<ProjectEntity> {
+  ): Promise<ProjectResponseDTO> {
     return this.projectService.create(createDto, employee);
   }
 
   @Get('/:projectId')
   @Auth()
-  async get(@Param() param: ProjectParamDTO): Promise<ProjectEntity> {
+  async get(@Param() param: ProjectParamDTO): Promise<ProjectResponseDTO> {
     return this.projectService.get(param);
   }
 
@@ -46,7 +49,7 @@ export class ProjectController {
   async update(
     @Param() param: ProjectParamDTO,
     @Body() updateDto: UpdateProjectDTO,
-  ): Promise<ProjectEntity> {
+  ): Promise<ProjectResponseDTO> {
     return this.projectService.update(param, updateDto);
   }
 
@@ -55,7 +58,7 @@ export class ProjectController {
   async updateStatus(
     @Param() param: ProjectParamDTO,
     @Body() statusDto: ProjectStatusDTO,
-  ): Promise<ProjectEntity> {
+  ): Promise<ProjectResponseDTO> {
     return this.projectService.updateStatus(param, statusDto);
   }
 

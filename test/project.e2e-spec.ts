@@ -9,7 +9,6 @@ import {
   ProjectStatusDTO,
 } from '../src/project/dto';
 import { Role, ProjectStatus } from '../src/database/enum';
-import { classToPlain } from 'class-transformer';
 import { AuthHelper, TestHelper } from './helper';
 
 describe('ProjectController (e2e)', () => {
@@ -74,9 +73,7 @@ describe('ProjectController (e2e)', () => {
       expect(res.body).toEqual(expected);
 
       const [projects, count] = await proRepo.findAndCount();
-      expect(classToPlain(projects[0], { groups: ['project'] })).toEqual(
-        expected,
-      );
+      expect(projects[0]).toMatchObject(expected);
       expect(count).toBe(1);
     });
 

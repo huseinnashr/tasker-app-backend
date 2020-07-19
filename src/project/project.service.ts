@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectRepository } from '../database/repository';
-import { CreateProjectDTO, UpdateProjectDTO, ProjectStatusDTO } from './dto';
+import {
+  CreateProjectDTO,
+  UpdateProjectDTO,
+  ProjectStatusDTO,
+  ProjectResponseDTO,
+} from './dto';
 import { ProjectStatus } from '../database/enum';
 import { EmployeeEntity, ProjectEntity } from '../database/entity';
 import { AppService } from '../core/app.service';
@@ -16,21 +21,25 @@ export class ProjectService extends AppService {
     super();
   }
 
-  async getAll(): Promise<ProjectEntity[]> {
-    return this.proRepo.find();
+  async getAll(): Promise<ProjectResponseDTO[]> {
+    const projects = await this.proRepo.find();
+
+    return this.transform(ProjectResponseDTO, projects);
   }
 
   async create(
     createDto: CreateProjectDTO,
     employe: EmployeeEntity,
-  ): Promise<ProjectEntity> {
+  ): Promise<ProjectResponseDTO> {
     const project = new ProjectEntity();
     project.title = createDto.title;
     project.body = createDto.body;
     project.status = ProjectStatus.IN_PROGRESS;
     project.manager = employe;
 
-    return this.proRepo.save(project);
+    await this.proRepo.save(project);
+
+    return this.transform(ProjectResponseDTO, project);
   }
 
   async get(param: ProjectParamDTO): Promise<ProjectEntity> {
@@ -40,23 +49,27 @@ export class ProjectService extends AppService {
   async update(
     param: ProjectParamDTO,
     updateDto: UpdateProjectDTO,
-  ): Promise<ProjectEntity> {
+  ): Promise<ProjectResponseDTO> {
     const project = await this.proRepo.findOneOrException(param.projectId);
 
     project.title = updateDto.title;
     project.body = updateDto.body;
 
-    return this.proRepo.save(project);
+    await this.proRepo.save(project);
+
+    return this.transform(ProjectResponseDTO, project);
   }
 
   async updateStatus(
     param: ProjectParamDTO,
     statusDto: ProjectStatusDTO,
-  ): Promise<ProjectEntity> {
+  ): Promise<ProjectResponseDTO> {
     const project = await this.proRepo.findOneOrException(param.projectId);
     project.status = statusDto.status;
 
-    return this.proRepo.save(project);
+    await this.proRepo.save(project);
+
+    return this.transform(ProjectResponseDTO, project);
   }
 
   async delete(param: ProjectParamDTO): Promise<void> {

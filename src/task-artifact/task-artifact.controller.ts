@@ -1,6 +1,5 @@
 import {
   Controller,
-  SerializeOptions,
   Post,
   Param,
   Body,
@@ -22,7 +21,6 @@ import {
 import { TaskArtifactParamDTO, ProjectTaskParamDTO } from '../shared/dto';
 
 @Controller('project/:projectId/task/:taskId/artifact')
-@SerializeOptions({ groups: ['task-artifact'] })
 export class TaskArtifactController {
   constructor(private taskArtifactService: TaskArtifactService) {}
 
