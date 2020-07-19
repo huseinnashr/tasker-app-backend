@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { ArtifactUpdateResponseDTO } from './artifact-update-response.dto';
 
 export class TaskArtifactResponseDTO {
@@ -9,5 +9,6 @@ export class TaskArtifactResponseDTO {
   description: string;
 
   @Expose()
+  @Type(() => ArtifactUpdateResponseDTO)
   update: ArtifactUpdateResponseDTO | null;
 }
