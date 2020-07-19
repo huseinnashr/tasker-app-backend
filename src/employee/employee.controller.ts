@@ -5,15 +5,18 @@ import {
   Body,
   Param,
   Put,
-  HttpCode,
   Delete,
   SerializeOptions,
 } from '@nestjs/common';
-import { EmployeeEntity } from '../database/entity';
 import { EmployeeService } from './employee.service';
 import { Role } from '../database/enum';
-import { CreateEmployeeDTO, UpdateEmployeeDTO } from './dto';
+import {
+  CreateEmployeeDTO,
+  UpdateEmployeeDTO,
+  EmployeeResponseDTO,
+} from './dto';
 import { Auth } from '../core/decorator';
+import { TransformResponse } from '../core/interceptor';
 
 @Controller('employee')
 @SerializeOptions({ groups: ['employee'] })
@@ -22,23 +25,27 @@ export class EmployeeController {
 
   @Get('/')
   @Auth(Role.ADMIN)
-  async getAll(): Promise<EmployeeEntity[]> {
+  @TransformResponse(EmployeeResponseDTO)
+  async getAll(): Promise<EmployeeResponseDTO[]> {
     return this.empService.getAll();
   }
 
   @Post('/')
   @Auth(Role.ADMIN)
-  async create(@Body() createDto: CreateEmployeeDTO): Promise<EmployeeEntity> {
+  @TransformResponse(EmployeeResponseDTO)
+  async create(
+    @Body() createDto: CreateEmployeeDTO,
+  ): Promise<EmployeeResponseDTO> {
     return this.empService.create(createDto);
   }
 
   @Put('/:id')
   @Auth(Role.ADMIN)
-  @HttpCode(200)
+  @TransformResponse(EmployeeResponseDTO)
   async update(
     @Param('id') id: number,
     @Body() employee: UpdateEmployeeDTO,
-  ): Promise<EmployeeEntity> {
+  ): Promise<EmployeeResponseDTO> {
     return this.empService.update(id, employee);
   }
 

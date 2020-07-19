@@ -4,7 +4,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/database/repository';
 import { Role } from '../src/database/enum';
-import { CreateEmployeeDTO, UpdateEmployeeDTO } from '../src/employee/dto';
+import {
+  CreateEmployeeDTO,
+  UpdateEmployeeDTO,
+  EmployeeResponseDTO,
+} from '../src/employee/dto';
 import { AuthHelper, TestHelper } from './helper';
 
 describe('EmployeeController (e2e)', () => {
@@ -36,12 +40,20 @@ describe('EmployeeController (e2e)', () => {
 
   describe('/employee (GET)', () => {
     it('returns list of employee', async () => {
-      const [token] = await auth.signUp({ role: Role.ADMIN });
+      const [token, admin] = await auth.signUp({ role: Role.ADMIN });
 
-      await request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .get('/employee')
         .set({ Authorization: token })
         .expect(200);
+
+      const expectted: EmployeeResponseDTO = {
+        id: admin.id,
+        role: admin.role,
+        username: admin.username,
+      };
+
+      expect(res.body[0]).toEqual(expectted);
     });
 
     it('returns 403 Forbidden when not admin', async () =>
@@ -57,14 +69,22 @@ describe('EmployeeController (e2e)', () => {
         password: 'Test1234',
         role: Role.STAFF,
       };
-      await request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .post('/employee')
         .send(createDTO)
         .set({ Authorization: token })
         .expect(201);
 
+      const expected: EmployeeResponseDTO = {
+        id: res.body.id,
+        username: createDTO.username,
+        role: createDTO.role,
+      };
+
+      expect(res.body).toEqual(expected);
+
       const [employees, count] = await empRepo.findAndCount();
-      expect(employees[count - 1].username).toBe(createDTO.username);
+      expect(employees[count - 1]).toMatchObject(expected);
       expect(count).toBe(2);
     });
 
