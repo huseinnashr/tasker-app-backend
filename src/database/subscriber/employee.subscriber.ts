@@ -1,6 +1,5 @@
 import {
   EntitySubscriberInterface,
-  Connection,
   InsertEvent,
   UpdateEvent,
   EventSubscriber,
@@ -11,10 +10,6 @@ import * as bcrypt from 'bcrypt';
 @EventSubscriber()
 export class EmployeeSubscriber
   implements EntitySubscriberInterface<EmployeeEntity> {
-  constructor(connection: Connection) {
-    connection.subscribers.push(this);
-  }
-
   listenTo(): any {
     return EmployeeEntity;
   }
