@@ -2,7 +2,8 @@ import { AppSeeder } from '../../core/app.seeder';
 import { Connection } from 'typeorm';
 import { EmployeeFactory } from '../factory';
 import { Role } from '../enum';
-import { EmployeeRepository } from '../repository';
+import { EmployeeRepository, ProjectRepository } from '../repository';
+import { ProjectFactory } from '../factory/project.factory';
 
 export class DatabaseSeed extends AppSeeder {
   protected async _run(c: Connection): Promise<void> {
@@ -19,5 +20,11 @@ export class DatabaseSeed extends AppSeeder {
     await empRepo.save(admin);
     await empRepo.save(managers);
     await empRepo.save(staffs);
+
+    const proFactory = new ProjectFactory();
+    const projects = proFactory.makeMany(10, { managerPool: managers });
+
+    const proRepo = c.getCustomRepository(ProjectRepository);
+    await proRepo.save(projects);
   }
 }
