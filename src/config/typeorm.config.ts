@@ -1,7 +1,7 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import env from 'ts-get-env';
 
-export const TypeOrmConfig: TypeOrmModuleOptions = {
+const TypeOrmConfig: TypeOrmModuleOptions = {
   type: env.get('string', 'TYPEORM_TYPE') as any,
   host: env.get('string', 'DB_HOST'),
   port: env.get('number', 'DB_PORT'),
@@ -12,3 +12,5 @@ export const TypeOrmConfig: TypeOrmModuleOptions = {
   synchronize: env.get('boolean', 'TYPEORM_SYNCHRONIZE'),
   dropSchema: env.get('boolean', 'TYPEORM_DROP_SCHEMA', false),
 };
+
+export = TypeOrmConfig;

@@ -2,7 +2,7 @@ import { Module, ValidationPipe } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { EmployeeModule } from './employee/employee.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TypeOrmConfig } from './config/typeorm.config';
+import * as TypeOrmConfig from './config/typeorm.config';
 import { APP_PIPE } from '@nestjs/core';
 import { ProjectModule } from './project/project.module';
 import { ProjectTaskModule } from './project-task/project-task.module';
