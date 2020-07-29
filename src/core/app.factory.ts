@@ -1,16 +1,14 @@
 export abstract class AppFactory<T, U = unknown> {
-  constructor(private template: Partial<U> = {}) {}
+  protected abstract get(template: U): T;
 
-  protected abstract get(template: Partial<U>): T;
-
-  makeOne(): T {
-    return this.get(this.template);
+  makeOne(params: U): T {
+    return this.get(params);
   }
 
-  makeMany(many: number): T[] {
+  makeMany(many: number, params: U): T[] {
     const entities: T[] = [];
     for (let i = 0; i < many; i++) {
-      entities.push(this.get(this.template));
+      entities.push(this.get(params));
     }
     return entities;
   }

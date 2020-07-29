@@ -6,14 +6,18 @@ import { EmployeeRepository } from '../repository';
 
 export class DatabaseSeed extends AppSeeder {
   protected async _run(c: Connection): Promise<void> {
-    const empRepo = c.getCustomRepository(EmployeeRepository);
-
-    const admFactory = new EmployeeFactory({ role: Role.ADMIN });
-    const admin = admFactory.makeOne();
-    await empRepo.save(admin);
-
     const empFactory = new EmployeeFactory();
-    const employees = empFactory.makeMany(10);
-    await empRepo.save(employees);
+
+    const admin = empFactory.makeOne({
+      username: 'admin',
+      role: Role.ADMIN,
+    });
+    const managers = empFactory.makeMany(3, { role: Role.MANAGER });
+    const staffs = empFactory.makeMany(10, { role: Role.STAFF });
+
+    const empRepo = c.getCustomRepository(EmployeeRepository);
+    await empRepo.save(admin);
+    await empRepo.save(managers);
+    await empRepo.save(staffs);
   }
 }
