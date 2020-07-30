@@ -2,8 +2,13 @@ import { AppSeeder } from '../../core/app.seeder';
 import { Connection } from 'typeorm';
 import { EmployeeFactory } from '../factory';
 import { Role } from '../enum';
-import { EmployeeRepository, ProjectRepository } from '../repository';
+import {
+  EmployeeRepository,
+  ProjectRepository,
+  TaskRepository,
+} from '../repository';
 import { ProjectFactory } from '../factory/project.factory';
+import { TaskFactory } from '../factory/task.factory';
 
 export class DatabaseSeed extends AppSeeder {
   protected async _run(c: Connection): Promise<void> {
@@ -26,5 +31,14 @@ export class DatabaseSeed extends AppSeeder {
 
     const proRepo = c.getCustomRepository(ProjectRepository);
     await proRepo.save(projects);
+
+    const taskFactory = new TaskFactory();
+    const tasks = taskFactory.makeMany(40, {
+      projectPool: projects,
+      staffPool: staffs,
+    });
+
+    const taskRepo = c.getCustomRepository(TaskRepository);
+    await taskRepo.save(tasks);
   }
 }

@@ -1,5 +1,5 @@
 export abstract class AppFactory<T, U = unknown> {
-  protected abstract get(template: U): T;
+  protected abstract get(params: U): T;
 
   makeOne(params: U): T {
     return this.get(params);
