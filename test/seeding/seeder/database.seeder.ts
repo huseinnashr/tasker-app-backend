@@ -7,6 +7,7 @@ import {
   ArtifactFactory,
   UpdateFactory,
   FileFactory,
+  CommentFactory,
 } from '../factory';
 import { Role, UpdateType } from '../../../src/database/enum';
 import {
@@ -16,6 +17,7 @@ import {
   ArtifactRepository,
   UpdateRepository,
   FileRepository,
+  CommentRepository,
 } from '../../../src/database/repository';
 import { fileAttrs } from '../../file';
 
@@ -27,6 +29,7 @@ export class DatabaseSeeder extends Seeder {
     const artifactFactory = new ArtifactFactory();
     const updateFactory = new UpdateFactory();
     const fileFactory = new FileFactory();
+    const commentFactory = new CommentFactory();
 
     const empRepo = c.getCustomRepository(EmployeeRepository);
     const proRepo = c.getCustomRepository(ProjectRepository);
@@ -34,6 +37,7 @@ export class DatabaseSeeder extends Seeder {
     const artifactRepo = c.getCustomRepository(ArtifactRepository);
     const updateRepo = c.getCustomRepository(UpdateRepository);
     const fileRepo = c.getCustomRepository(FileRepository);
+    const commentRepo = c.getCustomRepository(CommentRepository);
 
     const admin = empFactory.makeOne({
       username: 'admin',
@@ -66,10 +70,13 @@ export class DatabaseSeeder extends Seeder {
 
     const progresses = updates.filter(u => u.type == UpdateType.PROGRESS);
 
-    const files = fileFactory.makeMany(120, {
+    const files = fileFactory.makeMany(80, {
       updatePool: progresses,
       fileAttrPool: fileAttrs,
     });
     await fileRepo.save(files);
+
+    const comments = commentFactory.makeMany(200, { updatePool: updates });
+    await commentRepo.save(comments);
   }
 }
