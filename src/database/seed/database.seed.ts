@@ -6,15 +6,18 @@ import {
   TaskFactory,
   ArtifactFactory,
   UpdateFactory,
+  FileFactory,
 } from '../factory';
-import { Role } from '../enum';
+import { Role, UpdateType } from '../enum';
 import {
   EmployeeRepository,
   ProjectRepository,
   TaskRepository,
   ArtifactRepository,
   UpdateRepository,
+  FileRepository,
 } from '../repository';
+import { fileAttrs } from '../../../test/file';
 
 export class DatabaseSeed extends AppSeeder {
   protected async _run(c: Connection): Promise<void> {
@@ -23,12 +26,14 @@ export class DatabaseSeed extends AppSeeder {
     const taskFactory = new TaskFactory();
     const artifactFactory = new ArtifactFactory();
     const updateFactory = new UpdateFactory();
+    const fileFactory = new FileFactory();
 
     const empRepo = c.getCustomRepository(EmployeeRepository);
     const proRepo = c.getCustomRepository(ProjectRepository);
     const taskRepo = c.getCustomRepository(TaskRepository);
     const artifactRepo = c.getCustomRepository(ArtifactRepository);
     const updateRepo = c.getCustomRepository(UpdateRepository);
+    const fileRepo = c.getCustomRepository(FileRepository);
 
     const admin = empFactory.makeOne({
       username: 'admin',
@@ -58,5 +63,13 @@ export class DatabaseSeed extends AppSeeder {
 
     const updates = updateFactory.makeMany(100, { taskPool: tasks });
     await updateRepo.save(updates);
+
+    const progresses = updates.filter(u => u.type == UpdateType.PROGRESS);
+
+    const files = fileFactory.makeMany(120, {
+      updatePool: progresses,
+      fileAttrPool: fileAttrs,
+    });
+    await fileRepo.save(files);
   }
 }
