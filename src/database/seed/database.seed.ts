@@ -19,46 +19,44 @@ import {
 export class DatabaseSeed extends AppSeeder {
   protected async _run(c: Connection): Promise<void> {
     const empFactory = new EmployeeFactory();
+    const proFactory = new ProjectFactory();
+    const taskFactory = new TaskFactory();
+    const artifactFactory = new ArtifactFactory();
+    const updateFactory = new UpdateFactory();
+
+    const empRepo = c.getCustomRepository(EmployeeRepository);
+    const proRepo = c.getCustomRepository(ProjectRepository);
+    const taskRepo = c.getCustomRepository(TaskRepository);
+    const artifactRepo = c.getCustomRepository(ArtifactRepository);
+    const updateRepo = c.getCustomRepository(UpdateRepository);
 
     const admin = empFactory.makeOne({
       username: 'admin',
       role: Role.ADMIN,
     });
-    const managers = empFactory.makeMany(3, { role: Role.MANAGER });
-    const staffs = empFactory.makeMany(10, { role: Role.STAFF });
-
-    const empRepo = c.getCustomRepository(EmployeeRepository);
     await empRepo.save(admin);
+
+    const managers = empFactory.makeMany(3, { role: Role.MANAGER });
     await empRepo.save(managers);
+
+    const staffs = empFactory.makeMany(10, { role: Role.STAFF });
     await empRepo.save(staffs);
 
-    const proFactory = new ProjectFactory();
     const projects = proFactory.makeMany(10, { managerPool: managers });
-
-    const proRepo = c.getCustomRepository(ProjectRepository);
     await proRepo.save(projects);
 
-    const taskFactory = new TaskFactory();
     const tasks = taskFactory.makeMany(40, {
       projectPool: projects,
       staffPool: staffs,
     });
-
-    const taskRepo = c.getCustomRepository(TaskRepository);
     await taskRepo.save(tasks);
 
-    const artifactFactory = new ArtifactFactory();
     const artifacts = artifactFactory.makeMany(60, {
       taskPool: tasks,
     });
-
-    const artifactRepo = c.getCustomRepository(ArtifactRepository);
     await artifactRepo.save(artifacts);
 
-    const updateFactory = new UpdateFactory();
     const updates = updateFactory.makeMany(100, { taskPool: tasks });
-
-    const updateRepo = c.getCustomRepository(UpdateRepository);
     await updateRepo.save(updates);
   }
 }
