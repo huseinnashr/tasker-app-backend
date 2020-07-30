@@ -10,8 +10,7 @@ const TypeOrmConfig: TypeOrmModuleOptions = {
   database: env.get('string', 'DB_NAME'),
   entities: [__dirname + '/../database/entity/*.entity{.ts,.js}'],
   subscribers: [__dirname + '/../database/subscriber/*.subscriber{.ts,.js}'],
-  synchronize: env.get('boolean', 'TYPEORM_SYNCHRONIZE'),
-  dropSchema: env.get('boolean', 'TYPEORM_DROP_SCHEMA', false),
+  synchronize: env.get('boolean', 'TYPEORM_SYNCHRONIZE', false),
 };
 
 export = TypeOrmConfig;
