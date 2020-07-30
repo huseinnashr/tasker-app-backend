@@ -26,7 +26,11 @@ export class ArtifactFactory extends Factory<ArtifactEntity, ArtifactParam> {
       progressPool.filter(p => p.task.id == task.id),
     );
     artifact.update = progress;
-    params.progressPool = progressPool.filter(p => p != progress);
+
+    this.setParams({
+      ...params,
+      progressPool: progressPool.filter(p => p != progress),
+    });
 
     return artifact;
   }
