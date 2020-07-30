@@ -1,4 +1,4 @@
-import { AppSeeder } from '../../core/app.seeder';
+import { Seeder } from '../core';
 import { Connection } from 'typeorm';
 import {
   EmployeeFactory,
@@ -8,7 +8,7 @@ import {
   UpdateFactory,
   FileFactory,
 } from '../factory';
-import { Role, UpdateType } from '../enum';
+import { Role, UpdateType } from '../../../src/database/enum';
 import {
   EmployeeRepository,
   ProjectRepository,
@@ -16,10 +16,10 @@ import {
   ArtifactRepository,
   UpdateRepository,
   FileRepository,
-} from '../repository';
-import { fileAttrs } from '../../../test/file';
+} from '../../../src/database/repository';
+import { fileAttrs } from '../../file';
 
-export class DatabaseSeed extends AppSeeder {
+export class DatabaseSeeder extends Seeder {
   protected async _run(c: Connection): Promise<void> {
     const empFactory = new EmployeeFactory();
     const proFactory = new ProjectFactory();

@@ -1,13 +1,13 @@
 import * as Faker from 'faker';
-import { AppFactory } from '../../core/app.factory';
-import { TaskEntity, UpdateEntity } from '../entity';
-import { UpdateType } from '../enum';
+import { Factory } from '../core';
+import { TaskEntity, UpdateEntity } from '../../../src/database/entity';
+import { UpdateType } from '../../../src/database/enum';
 
 interface UpdateParam {
   taskPool: TaskEntity[];
 }
 
-export class UpdateFactory extends AppFactory<UpdateEntity, UpdateParam> {
+export class UpdateFactory extends Factory<UpdateEntity, UpdateParam> {
   protected get(params: UpdateParam): UpdateEntity {
     const { taskPool } = params;
 

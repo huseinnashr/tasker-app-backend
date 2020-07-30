@@ -1,6 +1,6 @@
 import { Connection } from 'typeorm';
 
-export abstract class AppSeeder {
+export abstract class Seeder {
   private connection: Connection;
 
   setConnection(c: Connection): void {

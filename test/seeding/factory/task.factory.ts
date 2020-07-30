@@ -1,14 +1,18 @@
 import * as Faker from 'faker';
-import { AppFactory } from '../../core/app.factory';
-import { TaskEntity, EmployeeEntity, ProjectEntity } from '../entity';
-import { TaskStatus } from '../enum';
+import { Factory } from '../core';
+import {
+  TaskEntity,
+  EmployeeEntity,
+  ProjectEntity,
+} from '../../../src/database/entity';
+import { TaskStatus } from '../../../src/database/enum';
 
 interface TaskParam {
   projectPool: ProjectEntity[];
   staffPool: EmployeeEntity[];
 }
 
-export class TaskFactory extends AppFactory<TaskEntity, TaskParam> {
+export class TaskFactory extends Factory<TaskEntity, TaskParam> {
   protected get(params: TaskParam): TaskEntity {
     const { projectPool, staffPool } = params;
 

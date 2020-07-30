@@ -1,14 +1,14 @@
 import * as Faker from 'faker';
-import { AppFactory } from '../../core/app.factory';
-import { FileEntity, UpdateEntity } from '../entity';
-import { FileAttr } from '../../../test/file';
+import { Factory } from '../core';
+import { FileEntity, UpdateEntity } from '../../../src/database/entity';
+import { FileAttr } from '../../file';
 
 interface FileParam {
   updatePool: UpdateEntity[];
   fileAttrPool: FileAttr[];
 }
 
-export class FileFactory extends AppFactory<FileEntity, FileParam> {
+export class FileFactory extends Factory<FileEntity, FileParam> {
   protected get(params: FileParam): FileEntity {
     const { updatePool, fileAttrPool } = params;
 

@@ -1,14 +1,14 @@
 import * as Faker from 'faker';
-import { EmployeeEntity } from '../entity';
-import { Role } from '../enum';
-import { AppFactory } from '../../core/app.factory';
+import { EmployeeEntity } from '../../../src/database/entity';
+import { Role } from '../../../src/database/enum';
+import { Factory } from '../core';
 
 interface EmployeeParam {
   username?: string;
   role?: Role;
 }
 
-export class EmployeeFactory extends AppFactory<EmployeeEntity, EmployeeParam> {
+export class EmployeeFactory extends Factory<EmployeeEntity, EmployeeParam> {
   protected get(param: Partial<EmployeeParam>): EmployeeEntity {
     const { username, role } = param;
 

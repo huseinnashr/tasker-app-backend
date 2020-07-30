@@ -1,12 +1,12 @@
 import * as Faker from 'faker';
-import { AppFactory } from '../../core/app.factory';
-import { ArtifactEntity, TaskEntity } from '../entity';
+import { Factory } from '../core';
+import { ArtifactEntity, TaskEntity } from '../../../src/database/entity';
 
 interface ArtifactParam {
   taskPool: TaskEntity[];
 }
 
-export class ArtifactFactory extends AppFactory<ArtifactEntity, ArtifactParam> {
+export class ArtifactFactory extends Factory<ArtifactEntity, ArtifactParam> {
   protected get(params: ArtifactParam): ArtifactEntity {
     const { taskPool } = params;
 

@@ -1,4 +1,4 @@
-export abstract class AppFactory<T, U = unknown> {
+export abstract class Factory<T, U = unknown> {
   protected abstract get(params: U): T;
 
   makeOne(params: U): T {

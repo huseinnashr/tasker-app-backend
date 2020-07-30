@@ -21,7 +21,7 @@
     "test:e2e": "env-cmd -f ./.test.env jest --config ./test/jest-e2e.json",
     "typeorm": "env-cmd ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config src/config/typeorm.config.ts",
     "db:refresh": "npm run typeorm schema:drop && npm run typeorm schema:sync",
-    "db:seed": "npm run db:refresh && env-cmd ts-node src/database/seed.run.ts"
+    "db:seed": "npm run db:refresh && env-cmd ts-node test/seeding"
   },
   "dependencies": {
     "@nestjs/common": "^7.0.0",
