@@ -5,6 +5,7 @@ import {
   ProjectFactory,
   TaskFactory,
   ArtifactFactory,
+  UpdateFactory,
 } from '../factory';
 import { Role } from '../enum';
 import {
@@ -12,6 +13,7 @@ import {
   ProjectRepository,
   TaskRepository,
   ArtifactRepository,
+  UpdateRepository,
 } from '../repository';
 
 export class DatabaseSeed extends AppSeeder {
@@ -52,5 +54,11 @@ export class DatabaseSeed extends AppSeeder {
 
     const artifactRepo = c.getCustomRepository(ArtifactRepository);
     await artifactRepo.save(artifacts);
+
+    const updateFactory = new UpdateFactory();
+    const updates = updateFactory.makeMany(100, { taskPool: tasks });
+
+    const updateRepo = c.getCustomRepository(UpdateRepository);
+    await updateRepo.save(updates);
   }
 }
