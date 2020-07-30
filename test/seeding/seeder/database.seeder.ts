@@ -26,17 +26,17 @@ export class DatabaseSeeder extends Seeder {
     const empFactory = new EmployeeFactory();
     const proFactory = new ProjectFactory();
     const taskFactory = new TaskFactory();
-    const artifactFactory = new ArtifactFactory();
     const updateFactory = new UpdateFactory();
     const fileFactory = new FileFactory();
+    const artifactFactory = new ArtifactFactory();
     const commentFactory = new CommentFactory();
 
     const empRepo = c.getCustomRepository(EmployeeRepository);
     const proRepo = c.getCustomRepository(ProjectRepository);
     const taskRepo = c.getCustomRepository(TaskRepository);
-    const artifactRepo = c.getCustomRepository(ArtifactRepository);
     const updateRepo = c.getCustomRepository(UpdateRepository);
     const fileRepo = c.getCustomRepository(FileRepository);
+    const artifactRepo = c.getCustomRepository(ArtifactRepository);
     const commentRepo = c.getCustomRepository(CommentRepository);
 
     const admin = empFactory.makeOne({
@@ -60,12 +60,7 @@ export class DatabaseSeeder extends Seeder {
     });
     await taskRepo.save(tasks);
 
-    const artifacts = artifactFactory.makeMany(60, {
-      taskPool: tasks,
-    });
-    await artifactRepo.save(artifacts);
-
-    const updates = updateFactory.makeMany(100, { taskPool: tasks });
+    const updates = updateFactory.makeMany(120, { taskPool: tasks });
     await updateRepo.save(updates);
 
     const progresses = updates.filter(u => u.type == UpdateType.PROGRESS);
@@ -76,7 +71,15 @@ export class DatabaseSeeder extends Seeder {
     });
     await fileRepo.save(files);
 
-    const comments = commentFactory.makeMany(200, { updatePool: updates });
+    const artifacts = artifactFactory.makeMany(60, {
+      taskPool: tasks,
+      progressPool: progresses,
+    });
+    await artifactRepo.save(artifacts);
+
+    const comments = commentFactory.makeMany(200, {
+      updatePool: updates,
+    });
     await commentRepo.save(comments);
   }
 }
