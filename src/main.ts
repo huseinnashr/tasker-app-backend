@@ -10,6 +10,7 @@ async function bootstrap() {
     .setTitle('Tasker App')
     .setDescription('The Tasker App API Documentation')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
