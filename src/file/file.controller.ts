@@ -14,7 +14,9 @@ import { FileService } from './file.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { Response } from 'express';
 import { FileResponseDTO } from './dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiBody, ApiConsumes, ApiOkResponse } from '@nestjs/swagger';
+import { FileUploadDTO } from './dto/file-upload.dto';
+import { MimeType } from '../database/enum';
 
 @Controller('file')
 @ApiTags('File Upload')
@@ -24,6 +26,8 @@ export class FileController {
   @Post('/')
   @Auth()
   @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: FileUploadDTO })
   async create(
     @UploadedFile() uploadedFile: MulterFile,
     @CurrentEmployee() employee: EmployeeEntity,
@@ -33,7 +37,14 @@ export class FileController {
 
   @Get('/:id')
   @Auth()
-  // TODO: File buffer response dto fro swagger
+  @ApiOkResponse({
+    content: {
+      [MimeType.DOCX]: {},
+      [MimeType.JPEG]: {},
+      [MimeType.PNG]: {},
+      [MimeType.PDF]: {},
+    },
+  })
   async get(
     @Param('id') fileId: number,
     @CurrentEmployee() employee: EmployeeEntity,
