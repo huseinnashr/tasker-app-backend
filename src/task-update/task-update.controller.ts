@@ -13,8 +13,10 @@ import { EmployeeEntity } from '../database/entity';
 import { Role } from '../database/enum';
 import { CreateUpdateDTO, UpdateUpdateDTO, TaskUpdateResponseDTO } from './dto';
 import { TaskUpdateParamDTO, ProjectTaskParamDTO } from '../shared/dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('project/:projectId/task/:taskId/update')
+@ApiTags('Project.Task.Update')
 export class TaskUpdateController {
   constructor(private taskUpdService: TaskUpdateService) {}
 

@@ -16,8 +16,10 @@ import {
   UpdateCommentResponseDTO,
 } from './dto';
 import { UpdateCommentParamDTO, TaskUpdateParamDTO } from '../shared/dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('project/:projectId/task/:taskId/update/:updateId/comment')
+@ApiTags('Project.Task.Update.Comment')
 export class UpdateCommentController {
   constructor(private updateCommService: UpdateCommentService) {}
 

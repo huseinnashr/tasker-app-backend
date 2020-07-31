@@ -3,6 +3,7 @@ import { SignInDTO, SignInResponseDTO, CurrentUserResponseDTO } from './dto';
 import { AuthService } from './auth.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { EmployeeEntity } from '../database/entity';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -10,12 +11,14 @@ export class AuthController {
 
   @Post('/signin')
   @HttpCode(200)
+  @ApiTags('Authentication')
   async signIn(@Body() signInDto: SignInDTO): Promise<SignInResponseDTO> {
     return this.authService.signIn(signInDto);
   }
 
   @Get('/current')
   @Auth()
+  @ApiTags('Account')
   currentUser(
     @CurrentEmployee() employee: EmployeeEntity,
   ): CurrentUserResponseDTO {

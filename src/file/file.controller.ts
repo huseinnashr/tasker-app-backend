@@ -14,8 +14,10 @@ import { FileService } from './file.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { Response } from 'express';
 import { FileResponseDTO } from './dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('file')
+@ApiTags('File Upload')
 export class FileController {
   constructor(private fileService: FileService) {}
 

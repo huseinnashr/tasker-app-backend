@@ -19,8 +19,10 @@ import {
   ArtifactUpdateResponseDTO,
 } from './dto';
 import { TaskArtifactParamDTO, ProjectTaskParamDTO } from '../shared/dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('project/:projectId/task/:taskId/artifact')
+@ApiTags('Project.Task.Artifact')
 export class TaskArtifactController {
   constructor(private taskArtifactService: TaskArtifactService) {}
 

@@ -18,8 +18,10 @@ import {
   ProjectResponseDTO,
 } from './dto';
 import { ProjectParamDTO } from '../shared/dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('project')
+@ApiTags('Project')
 export class ProjectController {
   constructor(private projectService: ProjectService) {}
 

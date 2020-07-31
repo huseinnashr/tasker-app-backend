@@ -15,8 +15,10 @@ import {
   EmployeeResponseDTO,
 } from './dto';
 import { Auth } from '../core/decorator';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('employee')
+@ApiTags('Administration')
 export class EmployeeController {
   constructor(private empService: EmployeeService) {}
 
