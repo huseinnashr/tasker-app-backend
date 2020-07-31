@@ -16,4 +16,4 @@ const seedRun = async () => {
   console.debug('Seeding DONE!');
 };
 
-seedRun().then();
+seedRun().catch(e => console.error(e));
