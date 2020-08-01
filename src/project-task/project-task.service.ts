@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateTaskDTO, UpdateTaskDTO, ProjectTaskResponseDTO } from './dto';
+import {
+  CreateTaskDTO,
+  UpdateTaskDTO,
+  ProjectTaskResponseDTO,
+  ProjectTaskListResponseDTO,
+} from './dto';
 import { EmployeeEntity, TaskEntity } from '../database/entity';
 import {
   EmployeeRepository,
@@ -10,22 +15,35 @@ import {
 import { TaskStatus } from '../database/enum';
 import { AppService } from '../core/app.service';
 import { ProjectParamDTO, ProjectTaskParamDTO } from '../shared/dto';
+import { TaskPermission } from '../shared/permission/task.permission';
 
 @Injectable()
 export class ProjectTaskService extends AppService {
+  private taskPermission: TaskPermission;
+
   constructor(
     @InjectRepository(ProjectRepository) private proRepo: ProjectRepository,
     @InjectRepository(TaskRepository) private taskRepo: TaskRepository,
     @InjectRepository(EmployeeRepository) private empRepo: EmployeeRepository,
   ) {
     super();
+
+    this.taskPermission = new TaskPermission();
   }
 
-  async getAll(param: ProjectParamDTO): Promise<ProjectTaskResponseDTO[]> {
+  async getAll(
+    param: ProjectParamDTO,
+    employee: EmployeeEntity,
+  ): Promise<ProjectTaskListResponseDTO> {
     const project = await this.proRepo.findOneOrException(param.projectId);
     const tasks = await this.taskRepo.find({ where: { project } });
 
-    return this.transform(ProjectTaskResponseDTO, tasks);
+    const response: ProjectTaskListResponseDTO = {
+      data: tasks,
+      permission: this.taskPermission.getList(project, employee),
+    };
+
+    return this.transform(ProjectTaskListResponseDTO, response);
   }
 
   async create(

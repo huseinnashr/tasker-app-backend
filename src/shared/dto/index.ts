@@ -5,3 +5,4 @@ export * from './task-update-param.dto';
 export * from './update-comment-param.dto';
 export * from './unauthorized-response.dto';
 export * from './forbidden-response.dto';
+export * from './list-response.dto';

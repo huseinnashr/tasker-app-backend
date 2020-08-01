@@ -1,18 +1,18 @@
 import { EmployeeEntity } from '../database/entity';
 
-interface RepositoryPermission {
+class ListPermission {
   create: boolean;
 }
 
-interface EntityPermission {
+class EntityPermission {
   update: boolean;
   delete: boolean;
 }
 
 /** CRUD Model Permission, with type T and parent type U */
 export abstract class ModelPermission<T, U> {
-  /** Get Repository Level Permission */
-  getRepo(parent: U, emp: EmployeeEntity): RepositoryPermission {
+  /** Get List Level Permission */
+  getList(parent: U, emp: EmployeeEntity): ListPermission {
     return {
       create: this.create(parent, emp),
     };
