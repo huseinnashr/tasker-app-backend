@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateTaskDTO,
   UpdateTaskDTO,
-  ProjectTaskResponseDTO,
   ProjectTaskListResponseDTO,
+  ProjectTaskEntityResponseDTO,
 } from './dto';
 import { EmployeeEntity, TaskEntity } from '../database/entity';
 import {
@@ -38,19 +38,17 @@ export class ProjectTaskService extends AppService {
     const project = await this.proRepo.findOneOrException(param.projectId);
     const tasks = await this.taskRepo.find({ where: { project } });
 
-    const response: ProjectTaskListResponseDTO = {
+    return this.transform(ProjectTaskListResponseDTO, {
       data: tasks,
       permission: this.taskPermission.getList(project, employee),
-    };
-
-    return this.transform(ProjectTaskListResponseDTO, response);
+    });
   }
 
   async create(
     param: ProjectParamDTO,
     createDto: CreateTaskDTO,
     employee: EmployeeEntity,
-  ): Promise<ProjectTaskResponseDTO> {
+  ): Promise<ProjectTaskEntityResponseDTO> {
     const project = await this.proRepo.findOneOrException(param.projectId);
 
     this.canManage(project.isManager(employee), 'Project');
@@ -67,23 +65,31 @@ export class ProjectTaskService extends AppService {
 
     await this.taskRepo.save(task);
 
-    return this.transform(ProjectTaskResponseDTO, task);
+    return this.transform(ProjectTaskEntityResponseDTO, {
+      data: task,
+      permission: this.taskPermission.getEntity(task, employee),
+    });
   }
 
-  async get(param: ProjectTaskParamDTO): Promise<ProjectTaskResponseDTO> {
-    const task = await this.taskRepo.findOneOrException({
-      id: param.taskId,
-      project: { id: param.projectId },
-    });
+  async get(
+    param: ProjectTaskParamDTO,
+    employee: EmployeeEntity,
+  ): Promise<ProjectTaskEntityResponseDTO> {
+    const taskWhere = { id: param.taskId, project: { id: param.projectId } };
+    const taskOption = { relations: ['project'] };
+    const task = await this.taskRepo.findOneOrException(taskWhere, taskOption);
 
-    return this.transform(ProjectTaskResponseDTO, task);
+    return this.transform(ProjectTaskEntityResponseDTO, {
+      data: task,
+      permission: this.taskPermission.getEntity(task, employee),
+    });
   }
 
   async update(
     param: ProjectTaskParamDTO,
     updateTask: UpdateTaskDTO,
     employee: EmployeeEntity,
-  ): Promise<ProjectTaskResponseDTO> {
+  ): Promise<ProjectTaskEntityResponseDTO> {
     const taskWhere = { id: param.taskId, project: { id: param.projectId } };
     const taskOption = { relations: ['project'] };
     const task = await this.taskRepo.findOneOrException(taskWhere, taskOption);
@@ -102,7 +108,10 @@ export class ProjectTaskService extends AppService {
 
     await this.taskRepo.save(task);
 
-    return this.transform(ProjectTaskResponseDTO, task);
+    return this.transform(ProjectTaskEntityResponseDTO, {
+      data: task,
+      permission: this.taskPermission.getEntity(task, employee),
+    });
   }
 
   async delete(

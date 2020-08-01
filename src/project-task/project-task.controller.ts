@@ -13,8 +13,8 @@ import { Role } from '../database/enum';
 import {
   CreateTaskDTO,
   UpdateTaskDTO,
-  ProjectTaskResponseDTO,
   ProjectTaskListResponseDTO,
+  ProjectTaskEntityResponseDTO,
 } from './dto';
 import { EmployeeEntity } from '../database/entity';
 import { ProjectParamDTO, ProjectTaskParamDTO } from '../shared/dto';
@@ -40,7 +40,7 @@ export class ProjectTaskController {
     @Param() param: ProjectParamDTO,
     @Body() taskDto: CreateTaskDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<ProjectTaskResponseDTO> {
+  ): Promise<ProjectTaskEntityResponseDTO> {
     return this.proTaskService.create(param, taskDto, employee);
   }
 
@@ -48,8 +48,9 @@ export class ProjectTaskController {
   @Auth()
   async get(
     @Param() param: ProjectTaskParamDTO,
-  ): Promise<ProjectTaskResponseDTO> {
-    return this.proTaskService.get(param);
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<ProjectTaskEntityResponseDTO> {
+    return this.proTaskService.get(param, employee);
   }
 
   @Put('/:taskId')
@@ -58,7 +59,7 @@ export class ProjectTaskController {
     @Param() param: ProjectTaskParamDTO,
     @Body() taskDto: UpdateTaskDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<ProjectTaskResponseDTO> {
+  ): Promise<ProjectTaskEntityResponseDTO> {
     return this.proTaskService.update(param, taskDto, employee);
   }
 
