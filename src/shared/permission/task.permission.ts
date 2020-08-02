@@ -6,16 +6,19 @@ import {
 } from '../../database/entity';
 
 export class TaskPermission extends ModelPermission<TaskEntity, ProjectEntity> {
-  protected create(parent: ProjectEntity, emp: EmployeeEntity): boolean {
-    return parent.manager.id === emp.id;
+  create(parent: ProjectEntity, emp: EmployeeEntity): boolean {
+    return parent.isManager(emp);
   }
-  protected read(): boolean {
+  readAll(): boolean {
     return true;
   }
-  protected update(entity: TaskEntity, emp: EmployeeEntity): boolean {
-    return entity.project.manager.id === emp.id;
+  read(): boolean {
+    return true;
   }
-  protected delete(entity: TaskEntity, emp: EmployeeEntity): boolean {
-    return entity.project.manager.id === emp.id;
+  update(entity: TaskEntity, emp: EmployeeEntity): boolean {
+    return entity.project.isManager(emp);
+  }
+  delete(entity: TaskEntity, emp: EmployeeEntity): boolean {
+    return entity.project.isManager(emp);
   }
 }
