@@ -1,8 +1,8 @@
 import { Expose, Type } from 'class-transformer';
-import { EntityResponseDTO } from '../../shared/dto';
+import { EntityPermissionResponseDTO } from '../../shared/dto';
 import { ProjectTaskResponseDTO } from './project-task-response.dto';
 
-export class ProjectTaskEntityResponseDTO extends EntityResponseDTO<
+export class ProjectTaskEntityResponseDTO extends EntityPermissionResponseDTO<
   ProjectTaskResponseDTO
 > {
   @Expose()
