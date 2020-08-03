@@ -5,6 +5,7 @@ import {
   UpdateTaskDTO,
   ProjectTaskListResponseDTO,
   ProjectTaskEntityResponseDTO,
+  ProjectTaskListEntityResponseDTO,
 } from './dto';
 import { EmployeeEntity, TaskEntity } from '../database/entity';
 import {
@@ -15,20 +16,17 @@ import {
 import { TaskStatus } from '../database/enum';
 import { AppService } from '../core/app.service';
 import { ProjectParamDTO, ProjectTaskParamDTO } from '../shared/dto';
-import { TaskPermission } from '../shared/permission/task.permission';
+import { TaskPermission } from '../shared/permission';
 
 @Injectable()
 export class ProjectTaskService extends AppService {
-  private taskPermission: TaskPermission;
-
   constructor(
     @InjectRepository(ProjectRepository) private proRepo: ProjectRepository,
     @InjectRepository(TaskRepository) private taskRepo: TaskRepository,
     @InjectRepository(EmployeeRepository) private empRepo: EmployeeRepository,
+    private taskPermission: TaskPermission,
   ) {
     super();
-
-    this.taskPermission = new TaskPermission();
   }
 
   async getAll(
@@ -36,6 +34,10 @@ export class ProjectTaskService extends AppService {
     employee: EmployeeEntity,
   ): Promise<ProjectTaskListResponseDTO> {
     const project = await this.proRepo.findOneOrException(param.projectId);
+
+    const can = this.taskPermission.readAll(project, employee);
+    this.canView(can, "Project's Task");
+
     const tasks = await this.taskRepo.find({ where: { project } });
 
     return this.transform(ProjectTaskListResponseDTO, {
@@ -48,10 +50,11 @@ export class ProjectTaskService extends AppService {
     param: ProjectParamDTO,
     createDto: CreateTaskDTO,
     employee: EmployeeEntity,
-  ): Promise<ProjectTaskEntityResponseDTO> {
+  ): Promise<ProjectTaskListEntityResponseDTO> {
     const project = await this.proRepo.findOneOrException(param.projectId);
 
-    this.canManage(project.isManager(employee), 'Project');
+    const can = this.taskPermission.create(project, employee);
+    this.canManage(can, "Project's Task");
 
     const staff = await this.empRepo.findOne(createDto.employeeId);
     this.existOrUnprocessable(staff, 'staff');
@@ -65,10 +68,7 @@ export class ProjectTaskService extends AppService {
 
     await this.taskRepo.save(task);
 
-    return this.transform(ProjectTaskEntityResponseDTO, {
-      data: task,
-      permission: this.taskPermission.getEntity(task, employee),
-    });
+    return this.transform(ProjectTaskListEntityResponseDTO, { data: task });
   }
 
   async get(
@@ -78,6 +78,9 @@ export class ProjectTaskService extends AppService {
     const taskWhere = { id: param.taskId, project: { id: param.projectId } };
     const taskOption = { relations: ['project'] };
     const task = await this.taskRepo.findOneOrException(taskWhere, taskOption);
+
+    const can = this.taskPermission.read(task, employee);
+    this.canView(can, 'Task');
 
     return this.transform(ProjectTaskEntityResponseDTO, {
       data: task,
@@ -89,7 +92,7 @@ export class ProjectTaskService extends AppService {
     param: ProjectTaskParamDTO,
     updateTask: UpdateTaskDTO,
     employee: EmployeeEntity,
-  ): Promise<ProjectTaskEntityResponseDTO> {
+  ): Promise<ProjectTaskListEntityResponseDTO> {
     const taskWhere = { id: param.taskId, project: { id: param.projectId } };
     const taskOption = { relations: ['project'] };
     const task = await this.taskRepo.findOneOrException(taskWhere, taskOption);
@@ -108,10 +111,7 @@ export class ProjectTaskService extends AppService {
 
     await this.taskRepo.save(task);
 
-    return this.transform(ProjectTaskEntityResponseDTO, {
-      data: task,
-      permission: this.taskPermission.getEntity(task, employee),
-    });
+    return this.transform(ProjectTaskListEntityResponseDTO, { data: task });
   }
 
   async delete(
@@ -122,7 +122,8 @@ export class ProjectTaskService extends AppService {
     const taskOption = { relations: ['project'] };
     const task = await this.taskRepo.findOneOrException(taskWhere, taskOption);
 
-    this.canManage(task.project.isManager(employee), 'Task');
+    const can = this.taskPermission.delete(task, employee);
+    this.canManage(can, 'Task');
 
     await this.taskRepo.remove(task);
   }

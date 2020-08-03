@@ -15,6 +15,7 @@ import {
   UpdateTaskDTO,
   ProjectTaskListResponseDTO,
   ProjectTaskEntityResponseDTO,
+  ProjectTaskListEntityResponseDTO,
 } from './dto';
 import { EmployeeEntity } from '../database/entity';
 import { ProjectParamDTO, ProjectTaskParamDTO } from '../shared/dto';
@@ -40,7 +41,7 @@ export class ProjectTaskController {
     @Param() param: ProjectParamDTO,
     @Body() taskDto: CreateTaskDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<ProjectTaskEntityResponseDTO> {
+  ): Promise<ProjectTaskListEntityResponseDTO> {
     return this.proTaskService.create(param, taskDto, employee);
   }
 
@@ -59,7 +60,7 @@ export class ProjectTaskController {
     @Param() param: ProjectTaskParamDTO,
     @Body() taskDto: UpdateTaskDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<ProjectTaskEntityResponseDTO> {
+  ): Promise<ProjectTaskListEntityResponseDTO> {
     return this.proTaskService.update(param, taskDto, employee);
   }
 

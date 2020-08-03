@@ -8,6 +8,7 @@ import {
   ProjectRepository,
   TaskRepository,
 } from '../database/repository';
+import { TaskPermission } from '../shared/permission';
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import {
     AuthModule,
   ],
   controllers: [ProjectTaskController],
-  providers: [ProjectTaskService],
+  providers: [TaskPermission, ProjectTaskService],
 })
 export class ProjectTaskModule {}

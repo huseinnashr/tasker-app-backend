@@ -9,10 +9,10 @@ export class TaskPermission extends ModelPermission<TaskEntity, ProjectEntity> {
   create(parent: ProjectEntity, emp: EmployeeEntity): boolean {
     return parent.isManager(emp);
   }
-  readAll(): boolean {
+  readAll(parent: ProjectEntity, emp: EmployeeEntity): boolean {
     return true;
   }
-  read(): boolean {
+  read(entity: TaskEntity, emp: EmployeeEntity): boolean {
     return true;
   }
   update(entity: TaskEntity, emp: EmployeeEntity): boolean {

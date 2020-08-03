@@ -4,7 +4,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { TaskRepository } from '../src/database/repository';
 import { Role, TaskStatus } from '../src/database/enum';
-import { CreateTaskDTO, UpdateTaskDTO } from '../src/project-task/dto';
+import {
+  CreateTaskDTO,
+  UpdateTaskDTO,
+  ProjectTaskListResponseDTO,
+  ProjectTaskEntityResponseDTO,
+  ProjectTaskListEntityResponseDTO,
+} from '../src/project-task/dto';
 import { AuthHelper, TestHelper, RepoHelper } from './helper';
 
 describe('ProjectTaskController (e2e)', () => {
@@ -35,7 +41,7 @@ describe('ProjectTaskController (e2e)', () => {
 
   describe('/project/:projectId/task (GET)', () => {
     it('returns list of all task in a project given project id', async () => {
-      const [token, employee] = await auth.signUp({ role: Role.ADMIN });
+      const [token, employee] = await auth.signUp({ role: Role.MANAGER });
 
       const project = await repo.createAProject(employee);
       const task = await repo.createATask(project, employee);
@@ -45,13 +51,19 @@ describe('ProjectTaskController (e2e)', () => {
         .set({ Authorization: token })
         .expect(200);
 
-      expect(res.body[0]).toEqual({
-        id: task.id,
-        title: task.title,
-        body: task.body,
-        status: TaskStatus.IN_PROGRESS,
-        staff: { id: task.staff.id, username: task.staff.username },
-      });
+      const expected: ProjectTaskListResponseDTO = {
+        permission: { create: true },
+        data: [
+          {
+            id: task.id,
+            title: task.title,
+            body: task.body,
+            status: TaskStatus.IN_PROGRESS,
+            staff: { id: task.staff.id, username: task.staff.username },
+          },
+        ],
+      };
+      expect(res.body).toEqual(expected);
     });
 
     it('returns 404 Not Found when the project with given id was not found', async () =>
@@ -79,13 +91,16 @@ describe('ProjectTaskController (e2e)', () => {
         .set({ Authorization: token })
         .expect(201);
 
-      expect(res.body).toEqual({
-        id: res.body.id,
-        title: createDto.title,
-        body: createDto.body,
-        status: TaskStatus.IN_PROGRESS,
-        staff: { id: staff.id, username: staff.username },
-      });
+      const expected: ProjectTaskListEntityResponseDTO = {
+        data: {
+          id: res.body.data.id,
+          title: createDto.title,
+          body: createDto.body,
+          status: TaskStatus.IN_PROGRESS,
+          staff: { id: staff.id, username: staff.username },
+        },
+      };
+      expect(res.body).toEqual(expected);
     });
 
     it('returns 404 Not Found when the project with given id was not found', async () =>
@@ -111,13 +126,17 @@ describe('ProjectTaskController (e2e)', () => {
         .set({ Authorization: token })
         .expect(200);
 
-      expect(res.body).toEqual({
-        id: task.id,
-        title: task.title,
-        body: task.body,
-        status: TaskStatus.IN_PROGRESS,
-        staff: { id: task.staff.id, username: task.staff.username },
-      });
+      const expected: ProjectTaskEntityResponseDTO = {
+        permission: { update: true, delete: true },
+        data: {
+          id: task.id,
+          title: task.title,
+          body: task.body,
+          status: TaskStatus.IN_PROGRESS,
+          staff: { id: task.staff.id, username: task.staff.username },
+        },
+      };
+      expect(res.body).toEqual(expected);
     });
 
     it('returns 404 Not Found when the task with given id was not found', async () => {
@@ -151,13 +170,16 @@ describe('ProjectTaskController (e2e)', () => {
         .set({ Authorization: token })
         .expect(200);
 
-      expect(res.body).toEqual({
-        id: res.body.id,
-        title: updateTask.title,
-        body: updateTask.body,
-        status: TaskStatus.IN_PROGRESS,
-        staff: { id: staff.id, username: staff.username },
-      });
+      const expected: ProjectTaskListEntityResponseDTO = {
+        data: {
+          id: res.body.data.id,
+          title: updateTask.title,
+          body: updateTask.body,
+          status: TaskStatus.IN_PROGRESS,
+          staff: { id: staff.id, username: staff.username },
+        },
+      };
+      expect(res.body).toEqual(expected);
     });
 
     it('return 403 Forbidden if current employee not the task project manager', async () => {
