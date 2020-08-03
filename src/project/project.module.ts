@@ -4,10 +4,11 @@ import { ProjectService } from './project.service';
 import { AuthModule } from '../auth/auth.module';
 import { ProjectRepository } from '../database/repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProjectPermission } from '../shared/permission';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ProjectRepository]), AuthModule],
   controllers: [ProjectController],
-  providers: [ProjectService],
+  providers: [ProjectService, ProjectPermission],
 })
 export class ProjectModule {}

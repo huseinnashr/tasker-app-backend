@@ -7,15 +7,19 @@ import {
   CreateProjectDTO,
   UpdateProjectDTO,
   ProjectStatusDTO,
+  ProjectEntityResponseDTO,
+  ProjectListEntityResponseDTO,
+  ProjectListResponseDTO,
 } from '../src/project/dto';
 import { Role, ProjectStatus } from '../src/database/enum';
-import { AuthHelper, TestHelper } from './helper';
+import { AuthHelper, TestHelper, RepoHelper } from './helper';
 
 describe('ProjectController (e2e)', () => {
   let app: INestApplication;
   let proRepo: ProjectRepository;
   let auth: AuthHelper;
   let test: TestHelper;
+  let repo: RepoHelper;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -27,6 +31,7 @@ describe('ProjectController (e2e)', () => {
 
     auth = new AuthHelper(app);
     test = new TestHelper(app, auth);
+    repo = new RepoHelper(app, auth);
 
     await app.init();
   });
@@ -37,12 +42,31 @@ describe('ProjectController (e2e)', () => {
 
   describe('/project (GET)', () => {
     it('returns list of project', async () => {
-      const [token] = await auth.signUp({ role: Role.ADMIN });
+      const [token, manager] = await auth.signUp({ role: Role.MANAGER });
 
-      await request(app.getHttpServer())
+      const project = await repo.createAProject(manager);
+
+      const res = await request(app.getHttpServer())
         .get('/project')
         .set({ Authorization: token })
         .expect(200);
+
+      const expected: ProjectListResponseDTO = {
+        data: [
+          {
+            id: project.id,
+            title: project.title,
+            body: project.body,
+            status: project.status,
+            manager: {
+              id: project.manager.id,
+              username: project.manager.username,
+            },
+          },
+        ],
+        permission: { create: true },
+      };
+      expect(res.body).toEqual(expected);
     });
 
     it('returns 401 Unauthorized when not logged in', async () =>
@@ -51,7 +75,7 @@ describe('ProjectController (e2e)', () => {
 
   describe('/project (POST)', () => {
     it('creates new project & returns it', async () => {
-      const [token, employee] = await auth.signUp({ role: Role.MANAGER });
+      const [token, manager] = await auth.signUp({ role: Role.MANAGER });
 
       const createDto: CreateProjectDTO = {
         title: 'New Project',
@@ -63,17 +87,23 @@ describe('ProjectController (e2e)', () => {
         .set({ Authorization: token })
         .expect(201);
 
-      const expected = {
-        id: res.body.id,
-        ...createDto,
-        status: ProjectStatus.IN_PROGRESS,
-        manager: { id: employee.id, username: employee.username },
+      const expected: ProjectListEntityResponseDTO = {
+        data: {
+          id: res.body.data.id,
+          title: createDto.title,
+          body: createDto.body,
+          status: ProjectStatus.IN_PROGRESS,
+          manager: {
+            id: manager.id,
+            username: manager.username,
+          },
+        },
       };
 
       expect(res.body).toEqual(expected);
 
       const [projects, count] = await proRepo.findAndCount();
-      expect(projects[0]).toMatchObject(expected);
+      expect(projects[0]).toMatchObject(expected.data);
       expect(count).toBe(1);
     });
 
@@ -85,19 +115,27 @@ describe('ProjectController (e2e)', () => {
     it('returns a project with given id', async () => {
       const [token] = await auth.signUp({ role: Role.STAFF });
 
-      const project = await proRepo.save(
-        proRepo.create({
-          title: 'New Project',
-          body: 'project body',
-          status: ProjectStatus.IN_PROGRESS,
-        }),
-      );
+      const project = await repo.createAProject();
+
       const res = await request(app.getHttpServer())
         .get('/project/' + project.id)
         .set({ Authorization: token })
         .expect(200);
 
-      expect(res.body).toMatchObject(project);
+      const expected: ProjectEntityResponseDTO = {
+        data: {
+          id: project.id,
+          title: project.title,
+          body: project.body,
+          status: project.status,
+          manager: {
+            id: project.manager.id,
+            username: project.manager.username,
+          },
+        },
+        permission: { update: false, delete: false },
+      };
+      expect(res.body).toEqual(expected);
     });
 
     it('returns 404 Not found when the project does not exist', async () =>
@@ -111,13 +149,8 @@ describe('ProjectController (e2e)', () => {
     it('update the project with given id', async () => {
       const [token] = await auth.signUp({ role: Role.MANAGER });
 
-      const project = await proRepo.save(
-        proRepo.create({
-          title: 'New Project',
-          body: 'project body',
-          status: ProjectStatus.IN_PROGRESS,
-        }),
-      );
+      const project = await repo.createAProject();
+
       const updateDto: UpdateProjectDTO = {
         title: 'Project v2',
         body: 'updated project body',
@@ -128,7 +161,19 @@ describe('ProjectController (e2e)', () => {
         .set({ Authorization: token })
         .expect(200);
 
-      expect(res.body).toMatchObject(updateDto);
+      const expected: ProjectListEntityResponseDTO = {
+        data: {
+          id: project.id,
+          title: updateDto.title,
+          body: updateDto.body,
+          status: project.status,
+          manager: {
+            id: project.manager.id,
+            username: project.manager.username,
+          },
+        },
+      };
+      expect(res.body).toEqual(expected);
     });
 
     it('returns 404 Not found when the project does not exist', async () =>
@@ -145,13 +190,8 @@ describe('ProjectController (e2e)', () => {
     it('update the project status and returns updated project', async () => {
       const [token] = await auth.signUp({ role: Role.MANAGER });
 
-      const project = await proRepo.save(
-        proRepo.create({
-          title: 'New Project',
-          body: 'project body',
-          status: ProjectStatus.IN_PROGRESS,
-        }),
-      );
+      const project = await repo.createAProject();
+
       const statusDto: ProjectStatusDTO = {
         status: ProjectStatus.DONE,
       };
@@ -161,7 +201,19 @@ describe('ProjectController (e2e)', () => {
         .set({ Authorization: token })
         .expect(200);
 
-      expect(res.body).toMatchObject(statusDto);
+      const expected: ProjectListEntityResponseDTO = {
+        data: {
+          id: project.id,
+          title: project.title,
+          body: project.body,
+          status: statusDto.status,
+          manager: {
+            id: project.manager.id,
+            username: project.manager.username,
+          },
+        },
+      };
+      expect(res.body).toEqual(expected);
     });
 
     it('returns 404 Not found when the project does not exist', async () =>
@@ -177,11 +229,8 @@ describe('ProjectController (e2e)', () => {
     it('deletes the project', async () => {
       const [token] = await auth.signUp({ role: Role.MANAGER });
 
-      const project = await proRepo.save({
-        title: 'New Project',
-        body: 'project body',
-        status: ProjectStatus.IN_PROGRESS,
-      });
+      const project = await repo.createAProject();
+
       await request(app.getHttpServer())
         .delete('/project/' + project.id)
         .set({ Authorization: token })

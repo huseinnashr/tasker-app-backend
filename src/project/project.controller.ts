@@ -15,7 +15,9 @@ import {
   CreateProjectDTO,
   UpdateProjectDTO,
   ProjectStatusDTO,
-  ProjectResponseDTO,
+  ProjectListResponseDTO,
+  ProjectListEntityResponseDTO,
+  ProjectEntityResponseDTO,
 } from './dto';
 import { ProjectParamDTO } from '../shared/dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -27,8 +29,10 @@ export class ProjectController {
 
   @Get('/')
   @Auth()
-  async getAll(): Promise<ProjectResponseDTO[]> {
-    return this.projectService.getAll();
+  async getAll(
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<ProjectListResponseDTO> {
+    return this.projectService.getAll(employee);
   }
 
   @Post('/')
@@ -36,14 +40,17 @@ export class ProjectController {
   async create(
     @Body() createDto: CreateProjectDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<ProjectResponseDTO> {
+  ): Promise<ProjectListEntityResponseDTO> {
     return this.projectService.create(createDto, employee);
   }
 
   @Get('/:projectId')
   @Auth()
-  async get(@Param() param: ProjectParamDTO): Promise<ProjectResponseDTO> {
-    return this.projectService.get(param);
+  async get(
+    @Param() param: ProjectParamDTO,
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<ProjectEntityResponseDTO> {
+    return this.projectService.get(param, employee);
   }
 
   @Put('/:projectId')
@@ -51,7 +58,7 @@ export class ProjectController {
   async update(
     @Param() param: ProjectParamDTO,
     @Body() updateDto: UpdateProjectDTO,
-  ): Promise<ProjectResponseDTO> {
+  ): Promise<ProjectListEntityResponseDTO> {
     return this.projectService.update(param, updateDto);
   }
 
@@ -60,7 +67,7 @@ export class ProjectController {
   async updateStatus(
     @Param() param: ProjectParamDTO,
     @Body() statusDto: ProjectStatusDTO,
-  ): Promise<ProjectResponseDTO> {
+  ): Promise<ProjectListEntityResponseDTO> {
     return this.projectService.updateStatus(param, statusDto);
   }
 
