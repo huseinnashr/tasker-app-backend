@@ -5,38 +5,50 @@ import { CommentEntity, EmployeeEntity } from '../database/entity';
 import {
   CreateCommentDTO,
   UpdateCommentDTO,
-  UpdateCommentResponseDTO,
+  UpdateCommentListResponseDTO,
+  UpdateCommentListEntityResponseDTO,
+  UpdateCommentEntityResponseDTO,
 } from './dto';
 import { UpdateRepository, CommentRepository } from '../database/repository';
 import { UpdateCommentParamDTO, TaskUpdateParamDTO } from '../shared/dto';
+import { CommentPermission } from '../shared/permission';
 
 @Injectable()
 export class UpdateCommentService extends AppService {
   constructor(
     @InjectRepository(UpdateRepository) private updateRepo: UpdateRepository,
     @InjectRepository(CommentRepository) private commentRepo: CommentRepository,
+    private commentPermission: CommentPermission,
   ) {
     super();
   }
 
-  async getAll(param: TaskUpdateParamDTO): Promise<UpdateCommentResponseDTO[]> {
-    const update = await this.updateRepo.findOneOrException(param.updateId);
+  async getAll(
+    param: TaskUpdateParamDTO,
+    employee: EmployeeEntity,
+  ): Promise<UpdateCommentListResponseDTO> {
+    const where = param.updateId;
+    const options = { relations: ['task', 'task.project'] };
+    const update = await this.updateRepo.findOneOrException(where, options);
+
     const comments = await this.commentRepo.find({ where: { update } });
 
-    return this.transform(UpdateCommentResponseDTO, comments);
+    return this.transform(UpdateCommentListResponseDTO, {
+      data: comments,
+      permission: this.commentPermission.getList(update, employee),
+    });
   }
 
   async create(
     param: TaskUpdateParamDTO,
     createDto: CreateCommentDTO,
     employee: EmployeeEntity,
-  ): Promise<UpdateCommentResponseDTO> {
-    const update = await this.updateRepo.findOneOrException(param.updateId, {
-      relations: ['task', 'task.project'],
-    });
+  ): Promise<UpdateCommentListEntityResponseDTO> {
+    const where = param.updateId;
+    const options = { relations: ['task', 'task.project'] };
+    const update = await this.updateRepo.findOneOrException(where, options);
 
-    const can =
-      update.task.isStaff(employee) || update.task.project.isManager(employee);
+    const can = this.commentPermission.create(update, employee);
     this.canManage(can, 'Update');
 
     const comment = new CommentEntity();
@@ -46,33 +58,43 @@ export class UpdateCommentService extends AppService {
 
     await this.commentRepo.save(comment);
 
-    return this.transform(UpdateCommentResponseDTO, comment);
+    return this.transform(UpdateCommentListEntityResponseDTO, {
+      data: comment,
+    });
   }
 
-  async get(param: UpdateCommentParamDTO): Promise<UpdateCommentResponseDTO> {
+  async get(
+    param: UpdateCommentParamDTO,
+    employee: EmployeeEntity,
+  ): Promise<UpdateCommentEntityResponseDTO> {
     const comment = await this.commentRepo.findOneOrException({
       id: param.commentId,
       update: { id: param.updateId },
     });
 
-    return this.transform(UpdateCommentResponseDTO, comment);
+    return this.transform(UpdateCommentEntityResponseDTO, {
+      data: comment,
+      permission: this.commentPermission.getEntity(comment, employee),
+    });
   }
 
   async update(
     param: UpdateCommentParamDTO,
     commentDto: UpdateCommentDTO,
     employee: EmployeeEntity,
-  ): Promise<UpdateCommentResponseDTO> {
+  ): Promise<UpdateCommentListEntityResponseDTO> {
     const where = { id: param.commentId, update: { id: param.updateId } };
     const comment = await this.commentRepo.findOneOrException(where);
 
-    this.canManage(comment.isCreator(employee), 'Comment');
+    this.canManage(this.commentPermission.update(comment, employee), 'Comment');
 
     comment.body = commentDto.body;
 
     await this.commentRepo.save(comment);
 
-    return this.transform(UpdateCommentResponseDTO, comment);
+    return this.transform(UpdateCommentListEntityResponseDTO, {
+      data: comment,
+    });
   }
 
   async delete(
@@ -82,7 +104,7 @@ export class UpdateCommentService extends AppService {
     const where = { id: param.commentId, update: { id: param.updateId } };
     const comment = await this.commentRepo.findOneOrException(where);
 
-    this.canManage(comment.isCreator(employee), 'Comment');
+    this.canManage(this.commentPermission.update(comment, employee), 'Comment');
 
     await this.commentRepo.remove(comment);
   }

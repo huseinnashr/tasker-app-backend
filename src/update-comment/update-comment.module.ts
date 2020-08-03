@@ -4,6 +4,7 @@ import { UpdateCommentService } from './update-comment.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UpdateRepository, CommentRepository } from '../database/repository';
 import { AuthModule } from '../auth/auth.module';
+import { CommentPermission } from '../shared/permission';
 
 @Module({
   imports: [
@@ -12,6 +13,6 @@ import { AuthModule } from '../auth/auth.module';
     AuthModule,
   ],
   controllers: [UpdateCommentController],
-  providers: [UpdateCommentService],
+  providers: [UpdateCommentService, CommentPermission],
 })
 export class UpdateCommentModule {}

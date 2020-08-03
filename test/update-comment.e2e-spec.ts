@@ -5,7 +5,13 @@ import { AppModule } from '../src/app.module';
 import { CommentRepository } from '../src/database/repository';
 import { Role } from '../src/database/enum';
 import { AuthHelper, TestHelper, RepoHelper } from './helper';
-import { CreateCommentDTO, UpdateCommentDTO } from '../src/update-comment/dto';
+import {
+  CreateCommentDTO,
+  UpdateCommentDTO,
+  UpdateCommentListResponseDTO,
+  UpdateCommentEntityResponseDTO,
+  UpdateCommentListEntityResponseDTO,
+} from '../src/update-comment/dto';
 
 describe('ProjectTaskController (e2e)', () => {
   let app: INestApplication;
@@ -49,14 +55,19 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct get comments request
     expect(res.status).toEqual(200);
 
-    const expected = {
-      id: comment.id,
-      body: comment.body,
-      creator: { id: staff.id, username: staff.username },
+    const expected: UpdateCommentListResponseDTO = {
+      permission: { create: true },
+      data: [
+        {
+          id: comment.id,
+          body: comment.body,
+          creator: { id: staff.id, username: staff.username },
+        },
+      ],
     };
 
     // A.2. Return correct list of all comments in an update
-    expect(res.body[0]).toEqual(expected);
+    expect(res.body).toEqual(expected);
 
     // B. Return 404 Not Found when update was not found
     const endpoint404 = `/project/${task.project.id}/task/${task.id}/update/9999/comment`;
@@ -88,15 +99,19 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 201 Created on correct create request as task staff
     expect(res.status).toEqual(201);
 
-    const expected = {
-      id: res.body.id,
-      body: createDto.body,
-      creator: { id: staff.id, username: staff.username },
+    const expected: UpdateCommentListEntityResponseDTO = {
+      data: {
+        id: res.body.data.id,
+        body: createDto.body,
+        creator: { id: staff.id, username: staff.username },
+      },
     };
 
     // A.2. Return the newly created comment, and the updates can be found in db
     expect(res.body).toEqual(expected);
-    expect(await commRepo.findOne(res.body.id)).toMatchObject(expected);
+    expect(await commRepo.findOne(res.body.data.id)).toMatchObject(
+      expected.data,
+    );
 
     const res2 = await request(app.getHttpServer())
       .post(endpoint)
@@ -131,10 +146,13 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct get a comment request
     expect(res.status).toEqual(200);
 
-    const expected = {
-      id: comment.id,
-      body: comment.body,
-      creator: { id: staff.id, username: staff.username },
+    const expected: UpdateCommentEntityResponseDTO = {
+      permission: { update: true, delete: true },
+      data: {
+        id: comment.id,
+        body: comment.body,
+        creator: { id: staff.id, username: staff.username },
+      },
     };
 
     // A.2. Returns the correct comment with given id.
@@ -171,15 +189,17 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct update a comment request
     expect(res.status).toEqual(200);
 
-    const expected = {
-      id: res.body.id,
-      body: updateDto.body,
-      creator: { id: staff.id, username: staff.username },
+    const expected: UpdateCommentListEntityResponseDTO = {
+      data: {
+        id: res.body.data.id,
+        body: updateDto.body,
+        creator: { id: staff.id, username: staff.username },
+      },
     };
 
     // A.2. Return the updated comment, and the updates reflected in db
     expect(res.body).toEqual(expected);
-    expect(await commRepo.findOne(comment.id)).toMatchObject(expected);
+    expect(await commRepo.findOne(comment.id)).toMatchObject(expected.data);
 
     await test.forbidden(token2, 'PUT', endpoint, updateDto);
 
