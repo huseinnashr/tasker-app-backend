@@ -8,6 +8,7 @@ import {
   UpdateRepository,
   FileRepository,
 } from '../database/repository';
+import { UpdatePermission } from '../shared/permission';
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import {
     AuthModule,
   ],
   controllers: [TaskUpdateController],
-  providers: [TaskUpdateService],
+  providers: [TaskUpdateService, UpdatePermission],
 })
 export class TaskUpdateModule {}

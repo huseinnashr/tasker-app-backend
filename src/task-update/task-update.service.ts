@@ -7,8 +7,15 @@ import {
 } from '../database/repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateEntity, EmployeeEntity } from '../database/entity';
-import { CreateUpdateDTO, UpdateUpdateDTO, TaskUpdateResponseDTO } from './dto';
+import {
+  CreateUpdateDTO,
+  UpdateUpdateDTO,
+  TaskUpdateListResponseDTO,
+  TaskUpdateListEntityResponseDTO,
+  TaskUpdateEntityResponseDTO,
+} from './dto';
 import { ProjectTaskParamDTO, TaskUpdateParamDTO } from '../shared/dto';
+import { UpdatePermission } from '../shared/permission';
 
 @Injectable()
 export class TaskUpdateService extends AppService {
@@ -16,22 +23,29 @@ export class TaskUpdateService extends AppService {
     @InjectRepository(TaskRepository) private taskRepo: TaskRepository,
     @InjectRepository(UpdateRepository) private updateRepo: UpdateRepository,
     @InjectRepository(FileRepository) private fileRepo: FileRepository,
+    private updatePermission: UpdatePermission,
   ) {
     super();
   }
 
-  async getAll(param: ProjectTaskParamDTO): Promise<TaskUpdateResponseDTO[]> {
+  async getAll(
+    param: ProjectTaskParamDTO,
+    employee: EmployeeEntity,
+  ): Promise<TaskUpdateListResponseDTO> {
     const task = await this.taskRepo.findOneOrException(param.taskId);
     const updates = await this.updateRepo.find({ where: { task } });
 
-    return this.transform(TaskUpdateResponseDTO, updates);
+    return this.transform(TaskUpdateListResponseDTO, {
+      data: updates,
+      permission: this.updatePermission.getList(task, employee),
+    });
   }
 
   async create(
     param: ProjectTaskParamDTO,
     createDto: CreateUpdateDTO,
     employee: EmployeeEntity,
-  ): Promise<TaskUpdateResponseDTO> {
+  ): Promise<TaskUpdateListEntityResponseDTO> {
     const task = await this.taskRepo.findOneOrException(param.taskId);
 
     this.canManage(task.isStaff(employee), 'Task');
@@ -50,23 +64,28 @@ export class TaskUpdateService extends AppService {
 
     await this.updateRepo.save(update);
 
-    return this.transform(TaskUpdateResponseDTO, update);
+    return this.transform(TaskUpdateListEntityResponseDTO, { data: update });
   }
 
-  async get(param: TaskUpdateParamDTO): Promise<TaskUpdateResponseDTO> {
-    const update = await this.updateRepo.findOneOrException({
-      id: param.updateId,
-      task: { id: param.taskId },
-    });
+  async get(
+    param: TaskUpdateParamDTO,
+    employee: EmployeeEntity,
+  ): Promise<TaskUpdateEntityResponseDTO> {
+    const where = { id: param.updateId, task: { id: param.taskId } };
+    const option = { relations: ['task'] };
+    const update = await this.updateRepo.findOneOrException(where, option);
 
-    return this.transform(TaskUpdateResponseDTO, update);
+    return this.transform(TaskUpdateEntityResponseDTO, {
+      data: update,
+      permission: this.updatePermission.getEntity(update, employee),
+    });
   }
 
   async update(
     param: TaskUpdateParamDTO,
     updateDto: UpdateUpdateDTO,
     employee: EmployeeEntity,
-  ): Promise<TaskUpdateResponseDTO> {
+  ): Promise<TaskUpdateListEntityResponseDTO> {
     const where = { id: param.updateId, task: { id: param.taskId } };
     const option = { relations: ['task'] };
     const update = await this.updateRepo.findOneOrException(where, option);
@@ -85,7 +104,7 @@ export class TaskUpdateService extends AppService {
 
     await this.updateRepo.save(update);
 
-    return this.transform(TaskUpdateResponseDTO, update);
+    return this.transform(TaskUpdateListEntityResponseDTO, { data: update });
   }
 
   async delete(

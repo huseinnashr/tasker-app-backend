@@ -5,7 +5,13 @@ import { AppModule } from '../src/app.module';
 import { UpdateRepository } from '../src/database/repository';
 import { Role, UpdateType } from '../src/database/enum';
 import { AuthHelper, TestHelper, RepoHelper } from './helper';
-import { CreateUpdateDTO, UpdateUpdateDTO } from '../src/task-update/dto';
+import {
+  CreateUpdateDTO,
+  UpdateUpdateDTO,
+  TaskUpdateListResponseDTO,
+  TaskUpdateListEntityResponseDTO,
+  TaskUpdateEntityResponseDTO,
+} from '../src/task-update/dto';
 
 describe('ProjectTaskController (e2e)', () => {
   let app: INestApplication;
@@ -48,16 +54,21 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct get updates request
     expect(res.status).toEqual(200);
 
-    const expected = {
-      id: update.id,
-      title: update.title,
-      body: update.body,
-      type: update.type,
-      files: [],
+    const expected: TaskUpdateListResponseDTO = {
+      permission: { create: true },
+      data: [
+        {
+          id: update.id,
+          title: update.title,
+          body: update.body,
+          type: update.type,
+          files: [],
+        },
+      ],
     };
 
     // A.2. Return correct list of all updates in a task
-    expect(res.body[0]).toEqual(expected);
+    expect(res.body).toEqual(expected);
 
     // B. Return 404 Not Found when task was not found
     const endpoint404 = `/project/${task.project.id}/task/99999/update`;
@@ -90,17 +101,21 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 201 Created on correct create an update request
     expect(res.status).toEqual(201);
 
-    const expected = {
-      id: res.body.id,
-      title: createDto.title,
-      body: createDto.body,
-      type: createDto.type,
-      files: [{ id: file.id, filename: file.filename, mime: file.mime }],
+    const expected: TaskUpdateListEntityResponseDTO = {
+      data: {
+        id: res.body.data.id,
+        title: createDto.title,
+        body: createDto.body,
+        type: createDto.type,
+        files: [{ id: file.id, filename: file.filename, mime: file.mime }],
+      },
     };
 
     // A.2. Return the newly created update, and the update can be found in db
     expect(res.body).toEqual(expected);
-    expect(await updateRepo.findOne(res.body.id)).toMatchObject(expected);
+    expect(await updateRepo.findOne(res.body.data.id)).toMatchObject(
+      expected.data,
+    );
 
     // B. Return 404 Not Found when task was not found
     const endpoint404 = `/project/${task.project.id}/task/99999/update`;
@@ -125,12 +140,15 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct get an update request
     expect(res.status).toEqual(200);
 
-    const expected = {
-      id: update.id,
-      title: update.title,
-      body: update.body,
-      type: update.type,
-      files: [],
+    const expected: TaskUpdateEntityResponseDTO = {
+      permission: { update: true, delete: true },
+      data: {
+        id: update.id,
+        title: update.title,
+        body: update.body,
+        type: update.type,
+        files: [],
+      },
     };
 
     // A.2. Returns the correct update with given id.
@@ -168,17 +186,19 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct update an update request
     expect(res.status).toEqual(200);
 
-    const expected = {
-      id: res.body.id,
-      title: updateDto.title,
-      body: updateDto.body,
-      type: updateDto.type,
-      files: [{ id: file.id, filename: file.filename, mime: file.mime }],
+    const expected: TaskUpdateListEntityResponseDTO = {
+      data: {
+        id: res.body.data.id,
+        title: updateDto.title,
+        body: updateDto.body,
+        type: updateDto.type,
+        files: [{ id: file.id, filename: file.filename, mime: file.mime }],
+      },
     };
 
     // A.2. Return the updated update, and the updates reflected in db
     expect(res.body).toEqual(expected);
-    expect(await updateRepo.findOne(update.id)).toMatchObject(expected);
+    expect(await updateRepo.findOne(update.id)).toMatchObject(expected.data);
 
     const [token2] = await auth.signUp({ role: Role.STAFF });
     const forbiddenRes = await request(app.getHttpServer())

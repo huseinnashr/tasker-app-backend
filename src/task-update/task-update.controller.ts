@@ -11,7 +11,13 @@ import { TaskUpdateService } from './task-update.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { EmployeeEntity } from '../database/entity';
 import { Role } from '../database/enum';
-import { CreateUpdateDTO, UpdateUpdateDTO, TaskUpdateResponseDTO } from './dto';
+import {
+  CreateUpdateDTO,
+  UpdateUpdateDTO,
+  TaskUpdateListEntityResponseDTO,
+  TaskUpdateListResponseDTO,
+  TaskUpdateEntityResponseDTO,
+} from './dto';
 import { TaskUpdateParamDTO, ProjectTaskParamDTO } from '../shared/dto';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -24,8 +30,9 @@ export class TaskUpdateController {
   @Auth()
   async getAll(
     @Param() param: ProjectTaskParamDTO,
-  ): Promise<TaskUpdateResponseDTO[]> {
-    return this.taskUpdService.getAll(param);
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<TaskUpdateListResponseDTO> {
+    return this.taskUpdService.getAll(param, employee);
   }
 
   @Post('/')
@@ -34,7 +41,7 @@ export class TaskUpdateController {
     @Param() param: ProjectTaskParamDTO,
     @Body() createDto: CreateUpdateDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<TaskUpdateResponseDTO> {
+  ): Promise<TaskUpdateListEntityResponseDTO> {
     return this.taskUpdService.create(param, createDto, employee);
   }
 
@@ -42,8 +49,9 @@ export class TaskUpdateController {
   @Auth()
   async get(
     @Param() param: TaskUpdateParamDTO,
-  ): Promise<TaskUpdateResponseDTO> {
-    return this.taskUpdService.get(param);
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<TaskUpdateEntityResponseDTO> {
+    return this.taskUpdService.get(param, employee);
   }
 
   @Put('/:updateId')
@@ -52,7 +60,7 @@ export class TaskUpdateController {
     @Param() param: TaskUpdateParamDTO,
     @Body() updateDto: UpdateUpdateDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<TaskUpdateResponseDTO> {
+  ): Promise<TaskUpdateListEntityResponseDTO> {
     return this.taskUpdService.update(param, updateDto, employee);
   }
 
