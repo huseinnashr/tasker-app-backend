@@ -9,8 +9,9 @@ import {
   CreateArtifactDTO,
   UpdateArtifactDTO,
   AssignUpdateDTO,
-  ArtifactUpdateResponseDTO,
-  TaskArtifactResponseDTO,
+  TaskArtifactListResponseDTO,
+  TaskArtifactListEntityResponseDTO,
+  ArtifactUpdateEntityResponseDTO,
 } from '../src/task-artifact/dto';
 
 describe('ProjectTaskController (e2e)', () => {
@@ -55,15 +56,20 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct getall artifacts request
     expect(res.status).toEqual(200);
 
-    const expected: TaskArtifactResponseDTO = {
-      id: artifact.id,
-      description: artifact.description,
-      update: null,
+    const expected: TaskArtifactListResponseDTO = {
+      permission: { create: true },
+      data: [
+        {
+          id: artifact.id,
+          description: artifact.description,
+          update: null,
+        },
+      ],
     };
 
     // A.2. Return the list of artifacts
-    expect(res.body.length).toBe(1);
-    expect(res.body[0]).toEqual(expected);
+    expect(res.body.data.length).toBe(1);
+    expect(res.body).toEqual(expected);
   });
 
   it('test /project/:projectid/task/:taskId/artifact (POST) specs', async () => {
@@ -88,15 +94,19 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 201 Created on correct create an artifact request
     expect(res.status).toEqual(201);
 
-    const expected: TaskArtifactResponseDTO = {
-      id: res.body.id,
-      description: createDto.description,
-      update: null,
+    const expected: TaskArtifactListEntityResponseDTO = {
+      data: {
+        id: res.body.data.id,
+        description: createDto.description,
+        update: null,
+      },
     };
 
     // A.2. Return the newly created artifact, and the artifact can be found in db
     expect(res.body).toEqual(expected);
-    expect(await artifactRepo.findOne(res.body.id)).toMatchObject(expected);
+    expect(await artifactRepo.findOne(res.body.data.id)).toMatchObject(
+      expected.data,
+    );
 
     await test.forbidden(mgtok2, 'POST', endpoint, createDto);
   });
@@ -124,15 +134,19 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct update an artifact request
     expect(res.status).toEqual(200);
 
-    const expected: TaskArtifactResponseDTO = {
-      id: artifact.id,
-      description: updateDto.description,
-      update: null,
+    const expected: TaskArtifactListEntityResponseDTO = {
+      data: {
+        id: artifact.id,
+        description: updateDto.description,
+        update: null,
+      },
     };
 
     // A.2. Return the updated artifact, and the update can be found in db
     expect(res.body).toEqual(expected);
-    expect(await artifactRepo.findOne(artifact.id)).toMatchObject(expected);
+    expect(await artifactRepo.findOne(artifact.id)).toMatchObject(
+      expected.data,
+    );
 
     await test.forbidden(mgtok2, 'PUT', endpoint, updateDto);
   });
@@ -185,15 +199,17 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct assign update request
     expect(res.status).toEqual(200);
 
-    const expected: ArtifactUpdateResponseDTO = {
-      id: artifact.id,
-      title: update.title,
+    const expected: ArtifactUpdateEntityResponseDTO = {
+      data: {
+        id: artifact.id,
+        title: update.title,
+      },
     };
 
     // A.2. Return the assigned update, and the assigned update can be found in db
     expect(res.body).toEqual(expected);
     const artifactDB = await artifactRepo.findOne(artifact.id);
-    expect(artifactDB.update).toMatchObject(expected);
+    expect(artifactDB.update).toMatchObject(expected.data);
   });
 
   it('test /project/:projectid/task/:taskId/artifact/:artifactId/update (DELETE) specs', async () => {

@@ -10,11 +10,13 @@ import { ArtifactEntity, EmployeeEntity } from '../database/entity';
 import {
   CreateArtifactDTO,
   UpdateArtifactDTO,
-  TaskArtifactResponseDTO,
   AssignUpdateDTO,
-  ArtifactUpdateResponseDTO,
+  TaskArtifactListResponseDTO,
+  TaskArtifactListEntityResponseDTO,
+  ArtifactUpdateEntityResponseDTO,
 } from './dto';
 import { TaskArtifactParamDTO, ProjectTaskParamDTO } from '../shared/dto';
+import { ArtifactPermission } from '../shared/permission';
 
 @Injectable()
 export class TaskArtifactService extends AppService {
@@ -25,26 +27,40 @@ export class TaskArtifactService extends AppService {
     private artifactRepo: ArtifactRepository,
     @InjectRepository(UpdateRepository)
     private updateRepo: UpdateRepository,
+    private artifactPermission: ArtifactPermission,
   ) {
     super();
   }
 
-  async getAll(param: ProjectTaskParamDTO): Promise<TaskArtifactResponseDTO[]> {
-    const task = await this.taskRepo.findOneOrException(param.taskId);
+  async getAll(
+    param: ProjectTaskParamDTO,
+    employee: EmployeeEntity,
+  ): Promise<TaskArtifactListResponseDTO> {
+    const where = param.taskId;
+    const options = { relations: ['project'] };
+    const task = await this.taskRepo.findOneOrException(where, options);
+
     const artifacts = await this.artifactRepo.find({ where: { task } });
 
-    return this.transform(TaskArtifactResponseDTO, artifacts);
+    return this.transform(TaskArtifactListResponseDTO, {
+      data: artifacts,
+      permission: this.artifactPermission.getList(task, employee),
+    });
   }
 
   async create(
     param: ProjectTaskParamDTO,
     createDto: CreateArtifactDTO,
     employee: EmployeeEntity,
-  ): Promise<TaskArtifactResponseDTO> {
-    const task = await this.taskRepo.findOneOrException(param.taskId, {
-      relations: ['project'],
-    });
-    this.canManage(task.project.isManager(employee), "task's entities");
+  ): Promise<TaskArtifactListEntityResponseDTO> {
+    const where = param.taskId;
+    const options = { relations: ['project'] };
+    const task = await this.taskRepo.findOneOrException(where, options);
+
+    this.canManage(
+      this.artifactPermission.create(task, employee),
+      "task's entities",
+    );
 
     const artifact = new ArtifactEntity();
 
@@ -54,20 +70,22 @@ export class TaskArtifactService extends AppService {
 
     await this.artifactRepo.save(artifact);
 
-    return this.transform(TaskArtifactResponseDTO, artifact);
+    return this.transform(TaskArtifactListEntityResponseDTO, {
+      data: artifact,
+    });
   }
 
   async update(
     param: TaskArtifactParamDTO,
     updateDto: UpdateArtifactDTO,
     employee: EmployeeEntity,
-  ): Promise<TaskArtifactResponseDTO> {
+  ): Promise<TaskArtifactListEntityResponseDTO> {
     const where = { id: param.artifactId, task: { id: param.taskId } };
     const option = { relations: ['task', 'task.project'] };
     const artifact = await this.artifactRepo.findOneOrException(where, option);
 
     this.canManage(
-      artifact.task.project.isManager(employee),
+      this.artifactPermission.update(artifact, employee),
       "task's artifact",
     );
 
@@ -75,7 +93,9 @@ export class TaskArtifactService extends AppService {
 
     await this.artifactRepo.save(artifact);
 
-    return this.transform(TaskArtifactResponseDTO, artifact);
+    return this.transform(TaskArtifactListEntityResponseDTO, {
+      data: artifact,
+    });
   }
 
   async delete(
@@ -87,7 +107,7 @@ export class TaskArtifactService extends AppService {
     const artifact = await this.artifactRepo.findOneOrException(where, option);
 
     this.canManage(
-      artifact.task.project.isManager(employee),
+      this.artifactPermission.delete(artifact, employee),
       "task's artifact",
     );
 
@@ -98,13 +118,13 @@ export class TaskArtifactService extends AppService {
     param: TaskArtifactParamDTO,
     assignDto: AssignUpdateDTO,
     employee: EmployeeEntity,
-  ): Promise<ArtifactUpdateResponseDTO> {
+  ): Promise<ArtifactUpdateEntityResponseDTO> {
     const where = { id: param.artifactId, task: { id: param.taskId } };
     const option = { relations: ['task', 'task.project'] };
     const artifact = await this.artifactRepo.findOneOrException(where, option);
 
     this.canManage(
-      artifact.task.project.isManager(employee),
+      this.artifactPermission.update(artifact, employee),
       "artifact's update",
     );
 
@@ -114,7 +134,7 @@ export class TaskArtifactService extends AppService {
     this.existOrUnprocessable(update, 'Update');
     await this.artifactRepo.save(artifact);
 
-    return this.transform(ArtifactUpdateResponseDTO, update);
+    return this.transform(ArtifactUpdateEntityResponseDTO, { data: update });
   }
 
   async removeUpdate(
@@ -126,7 +146,7 @@ export class TaskArtifactService extends AppService {
     const artifact = await this.artifactRepo.findOneOrException(where, option);
 
     this.canManage(
-      artifact.task.project.isManager(employee),
+      this.artifactPermission.update(artifact, employee),
       "artifact's update",
     );
 

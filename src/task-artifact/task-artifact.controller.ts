@@ -14,9 +14,10 @@ import { EmployeeEntity } from '../database/entity';
 import {
   CreateArtifactDTO,
   UpdateArtifactDTO,
-  TaskArtifactResponseDTO,
   AssignUpdateDTO,
-  ArtifactUpdateResponseDTO,
+  TaskArtifactListResponseDTO,
+  TaskArtifactListEntityResponseDTO,
+  ArtifactUpdateEntityResponseDTO,
 } from './dto';
 import { TaskArtifactParamDTO, ProjectTaskParamDTO } from '../shared/dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -30,8 +31,9 @@ export class TaskArtifactController {
   @Auth()
   async getAll(
     @Param() param: ProjectTaskParamDTO,
-  ): Promise<TaskArtifactResponseDTO[]> {
-    return this.taskArtifactService.getAll(param);
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<TaskArtifactListResponseDTO> {
+    return this.taskArtifactService.getAll(param, employee);
   }
 
   @Post('/')
@@ -40,7 +42,7 @@ export class TaskArtifactController {
     @Param() param: ProjectTaskParamDTO,
     @Body() createDto: CreateArtifactDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<TaskArtifactResponseDTO> {
+  ): Promise<TaskArtifactListEntityResponseDTO> {
     return this.taskArtifactService.create(param, createDto, employee);
   }
 
@@ -50,7 +52,7 @@ export class TaskArtifactController {
     @Param() param: TaskArtifactParamDTO,
     @Body() updateDto: UpdateArtifactDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<TaskArtifactResponseDTO> {
+  ): Promise<TaskArtifactListEntityResponseDTO> {
     return this.taskArtifactService.update(param, updateDto, employee);
   }
 
@@ -69,7 +71,7 @@ export class TaskArtifactController {
     @Param() param: TaskArtifactParamDTO,
     @Body() assignDto: AssignUpdateDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<ArtifactUpdateResponseDTO> {
+  ): Promise<ArtifactUpdateEntityResponseDTO> {
     return this.taskArtifactService.assignUpdate(param, assignDto, employee);
   }
 

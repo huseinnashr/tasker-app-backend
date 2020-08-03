@@ -8,6 +8,7 @@ import {
   UpdateRepository,
 } from '../database/repository';
 import { AuthModule } from '../auth/auth.module';
+import { ArtifactPermission } from '../shared/permission';
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import { AuthModule } from '../auth/auth.module';
     AuthModule,
   ],
   controllers: [TaskArtifactController],
-  providers: [TaskArtifactService],
+  providers: [TaskArtifactService, ArtifactPermission],
 })
 export class TaskArtifactModule {}
