@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EmployeeRepository } from '../database/repository';
 import {
   SignInDTO,
-  SignInResponseDTO,
   JwtPayload,
-  CurrentUserResponseDTO,
+  CurrentUserEntityResponseDTO,
+  SignInEntityResponseDTO,
 } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { AppService } from '../core/app.service';
@@ -21,7 +21,7 @@ export class AuthService extends AppService {
     super();
   }
 
-  async signIn(signInDto: SignInDTO): Promise<SignInResponseDTO> {
+  async signIn(signInDto: SignInDTO): Promise<SignInEntityResponseDTO> {
     const { username, password } = signInDto;
     const employee = await this.employeeRepository.findOne({ username });
 
@@ -32,10 +32,15 @@ export class AuthService extends AppService {
     const payload: JwtPayload = { username };
     const accessToken = this.jwtService.sign(payload);
 
-    return this.transform(SignInResponseDTO, { ...employee, accessToken });
+    return this.transform(SignInEntityResponseDTO, {
+      data: {
+        ...employee,
+        accessToken,
+      },
+    });
   }
 
-  currentUser(employee: EmployeeEntity): CurrentUserResponseDTO {
-    return this.transform(CurrentUserResponseDTO, employee);
+  currentUser(employee: EmployeeEntity): CurrentUserEntityResponseDTO {
+    return this.transform(CurrentUserEntityResponseDTO, { data: employee });
   }
 }

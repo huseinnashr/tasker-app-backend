@@ -1,12 +1,13 @@
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SignInDTO, CurrentUserResponseDTO } from '../src/auth/dto';
+import { SignInDTO, CurrentUserEntityResponseDTO } from '../src/auth/dto';
 import { AppModule } from '../src/app.module';
 import { EmployeeRepository } from '../src/database/repository';
 import { CreateEmployeeDTO } from '../src/employee/dto';
 import { Role } from '../src/database/enum';
 import { AuthHelper } from './helper';
+import { CurrentUserResponseDTO } from '../src/auth/dto/current-user-response.dto';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -51,7 +52,7 @@ describe('AuthController (e2e)', () => {
         role: admin.role,
       };
 
-      const { accessToken, ...employee } = res.body;
+      const { accessToken, ...employee } = res.body.data;
       expect(accessToken).toBeDefined();
       expect(employee).toEqual(expected);
     });
@@ -86,10 +87,12 @@ describe('AuthController (e2e)', () => {
         .set({ Authorization: token })
         .expect(200);
 
-      const expected: CurrentUserResponseDTO = {
-        id: admin.id,
-        username: admin.username,
-        role: admin.role,
+      const expected: CurrentUserEntityResponseDTO = {
+        data: {
+          id: admin.id,
+          username: admin.username,
+          role: admin.role,
+        },
       };
 
       expect(res.body).toEqual(expected);
