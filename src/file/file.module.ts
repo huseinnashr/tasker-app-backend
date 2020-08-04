@@ -6,6 +6,7 @@ import { FileRepository } from '../database/repository';
 import { AuthModule } from '../auth/auth.module';
 import { MulterConfig } from '../config/multer.config';
 import { MulterModule } from '@nestjs/platform-express';
+import { FilePermission } from '../shared/permission/file.permission';
 
 @Module({
   imports: [
@@ -14,6 +15,6 @@ import { MulterModule } from '@nestjs/platform-express';
     AuthModule,
   ],
   controllers: [FileController],
-  providers: [FileService],
+  providers: [FileService, FilePermission],
 })
 export class FileModule {}

@@ -13,10 +13,10 @@ import { MulterFile } from '../core/interface';
 import { FileService } from './file.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { Response } from 'express';
-import { FileResponseDTO } from './dto';
 import { ApiTags, ApiBody, ApiConsumes, ApiOkResponse } from '@nestjs/swagger';
 import { FileUploadDTO } from './dto/file-upload.dto';
 import { MimeType } from '../database/enum';
+import { FileEntityResponseDTO } from './dto';
 
 @Controller('file')
 @ApiTags('File Upload')
@@ -31,7 +31,7 @@ export class FileController {
   async create(
     @UploadedFile() uploadedFile: MulterFile,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<FileResponseDTO> {
+  ): Promise<FileEntityResponseDTO> {
     return this.fileService.create(uploadedFile, employee);
   }
 

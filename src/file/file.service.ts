@@ -7,12 +7,14 @@ import { FileEntity, EmployeeEntity } from '../database/entity';
 import { MimeType } from '../database/enum';
 import { promises as fs } from 'fs';
 import { Readable, Stream } from 'stream';
-import { FileResponseDTO } from './dto';
+import { FileEntityResponseDTO } from './dto';
+import { FilePermission } from '../shared/permission';
 
 @Injectable()
 export class FileService extends AppService {
   constructor(
     @InjectRepository(FileRepository) private fileRepo: FileRepository,
+    private filePermission: FilePermission,
   ) {
     super();
   }
@@ -20,7 +22,7 @@ export class FileService extends AppService {
   async create(
     uploadedFile: MulterFile,
     employee: EmployeeEntity,
-  ): Promise<FileResponseDTO> {
+  ): Promise<FileEntityResponseDTO> {
     if (!uploadedFile) throw new BadRequestException('File cannot be empty');
 
     const file = new FileEntity();
@@ -31,7 +33,7 @@ export class FileService extends AppService {
 
     await this.fileRepo.save(file);
 
-    return this.transform(FileResponseDTO, file);
+    return this.transform(FileEntityResponseDTO, { data: file });
   }
 
   async get(
@@ -47,18 +49,7 @@ export class FileService extends AppService {
       ],
     });
 
-    let can = file.isOwner(employee);
-
-    if (!can && file.update) {
-      const project = file.update.task.project;
-      can = can || project.isManager(employee);
-
-      // TODO: use query builder, - more efficient way to get employeeIds.
-      const employeeIds = project.tasks.map(({ staff: { id } }) => id);
-      can = can || employeeIds.includes(employee.id);
-    }
-
-    this.canView(can, 'file');
+    this.canView(this.filePermission.read(file, employee), 'file');
 
     const buffer = await fs.readFile(file.filepath);
     const stream = new Readable();
