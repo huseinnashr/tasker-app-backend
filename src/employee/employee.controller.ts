@@ -12,10 +12,13 @@ import { Role } from '../database/enum';
 import {
   CreateEmployeeDTO,
   UpdateEmployeeDTO,
-  EmployeeResponseDTO,
+  EmployeeListResponseDTO,
+  EmployeeListEntityResponseDTO,
+  EmployeeEntityResponseDTO,
 } from './dto';
-import { Auth } from '../core/decorator';
+import { Auth, CurrentEmployee } from '../core/decorator';
 import { ApiTags } from '@nestjs/swagger';
+import { EmployeeEntity } from '../database/entity';
 
 @Controller('employee')
 @ApiTags('Administration')
@@ -24,16 +27,27 @@ export class EmployeeController {
 
   @Get('/')
   @Auth(Role.ADMIN)
-  async getAll(): Promise<EmployeeResponseDTO[]> {
-    return this.empService.getAll();
+  async getAll(
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<EmployeeListResponseDTO> {
+    return this.empService.getAll(employee);
   }
 
   @Post('/')
   @Auth(Role.ADMIN)
   async create(
     @Body() createDto: CreateEmployeeDTO,
-  ): Promise<EmployeeResponseDTO> {
+  ): Promise<EmployeeListEntityResponseDTO> {
     return this.empService.create(createDto);
+  }
+
+  @Get('/:id')
+  @Auth(Role.ADMIN)
+  async get(
+    @Param('id') id: number,
+    @CurrentEmployee() employee: EmployeeEntity,
+  ): Promise<EmployeeEntityResponseDTO> {
+    return this.empService.get(id, employee);
   }
 
   @Put('/:id')
@@ -41,7 +55,7 @@ export class EmployeeController {
   async update(
     @Param('id') id: number,
     @Body() employee: UpdateEmployeeDTO,
-  ): Promise<EmployeeResponseDTO> {
+  ): Promise<EmployeeListEntityResponseDTO> {
     return this.empService.update(id, employee);
   }
 

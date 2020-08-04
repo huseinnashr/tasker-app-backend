@@ -7,7 +7,9 @@ import { Role } from '../src/database/enum';
 import {
   CreateEmployeeDTO,
   UpdateEmployeeDTO,
-  EmployeeResponseDTO,
+  EmployeeListResponseDTO,
+  EmployeeListEntityResponseDTO,
+  EmployeeEntityResponseDTO,
 } from '../src/employee/dto';
 import { AuthHelper, TestHelper } from './helper';
 
@@ -47,13 +49,18 @@ describe('EmployeeController (e2e)', () => {
         .set({ Authorization: token })
         .expect(200);
 
-      const expectted: EmployeeResponseDTO = {
-        id: admin.id,
-        role: admin.role,
-        username: admin.username,
+      const expectted: EmployeeListResponseDTO = {
+        permission: { create: true },
+        data: [
+          {
+            id: admin.id,
+            role: admin.role,
+            username: admin.username,
+          },
+        ],
       };
 
-      expect(res.body[0]).toEqual(expectted);
+      expect(res.body).toEqual(expectted);
     });
 
     it('returns 403 Forbidden when not admin', async () =>
@@ -75,16 +82,18 @@ describe('EmployeeController (e2e)', () => {
         .set({ Authorization: token })
         .expect(201);
 
-      const expected: EmployeeResponseDTO = {
-        id: res.body.id,
-        username: createDTO.username,
-        role: createDTO.role,
+      const expected: EmployeeListEntityResponseDTO = {
+        data: {
+          id: res.body.data.id,
+          username: createDTO.username,
+          role: createDTO.role,
+        },
       };
 
       expect(res.body).toEqual(expected);
 
       const [employees, count] = await empRepo.findAndCount();
-      expect(employees[count - 1]).toMatchObject(expected);
+      expect(employees[count - 1]).toMatchObject(expected.data);
       expect(count).toBe(2);
     });
 
@@ -92,15 +101,33 @@ describe('EmployeeController (e2e)', () => {
       test.forbidden(Role.STAFF, 'POST', '/employee'));
   });
 
+  describe('/employee/:employeeId (GET)', () => {
+    it('returns an employee', async () => {
+      const [token, admin] = await auth.signUp({ role: Role.ADMIN });
+
+      const res = await request(app.getHttpServer())
+        .get('/employee/' + admin.id)
+        .set({ Authorization: token })
+        .expect(200);
+
+      const expectted: EmployeeEntityResponseDTO = {
+        permission: { update: true, delete: true },
+        data: {
+          id: admin.id,
+          role: admin.role,
+          username: admin.username,
+        },
+      };
+
+      expect(res.body).toEqual(expectted);
+    });
+  });
+
   describe('/employee/:id (PUT)', () => {
     it('updates the employee', async () => {
       const [token] = await auth.signUp({ role: Role.ADMIN });
-      const createDTO: CreateEmployeeDTO = {
-        username: 'John',
-        password: 'Test1234',
-        role: Role.STAFF,
-      };
-      const employee = await empRepo.save(empRepo.create(createDTO));
+      const [, employee] = await auth.signUp({ role: Role.STAFF });
+
       const updateDto: UpdateEmployeeDTO = {
         role: Role.MANAGER,
         username: 'Jane',
@@ -129,13 +156,8 @@ describe('EmployeeController (e2e)', () => {
   describe('/employee/:id (DELETE)', () => {
     it('deletes the employee', async () => {
       const [token] = await auth.signUp({ role: Role.ADMIN });
+      const [, employee] = await auth.signUp({ role: Role.STAFF });
 
-      const createDTO: CreateEmployeeDTO = {
-        username: 'John',
-        password: 'Test1234',
-        role: Role.STAFF,
-      };
-      const employee = await empRepo.save(createDTO);
       await request(app.getHttpServer())
         .delete('/employee/' + employee.id)
         .set({ Authorization: token })
