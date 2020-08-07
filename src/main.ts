@@ -5,6 +5,7 @@ import env from 'ts-get-env';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
 
   const options = new DocumentBuilder()
     .setTitle('Tasker App')
