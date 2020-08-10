@@ -19,7 +19,6 @@ export class ErrorsInterceptor implements NestInterceptor {
             .match(/\(.*?\)/g)
             .map((x: string) => x.replace(/[()]/g, ''));
           const message = `${column}: ${value} is already exist`;
-          console.log();
           return throwError(new BadRequestException(message));
         } else {
           return throwError(err);
