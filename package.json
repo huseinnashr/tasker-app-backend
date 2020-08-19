@@ -19,6 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "env-cmd -f ./.test.env jest --config ./test/jest-e2e.json",
+    "test:e2e:debug": "env-cmd -f ./.test.env node --inspect ./node_modules/jest/bin/jest.js --config ./test/jest-e2e.json",
     "typeorm": "env-cmd ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config src/config/typeorm.config.ts",
     "db:refresh": "npm run typeorm schema:drop && npm run typeorm schema:sync",
     "db:seed": "npm run db:refresh && env-cmd ts-node test/seeding"
@@ -32,7 +33,7 @@
     "@nestjs/swagger": "^4.5.12",
     "@nestjs/typeorm": "^7.1.0",
     "bcrypt": "^5.0.0",
-    "class-transformer": "^0.3.1",
+    "class-transformer": "^0.2.3",
     "class-validator": "^0.12.2",
     "env-cmd": "^10.1.0",
     "passport": "^0.4.1",
