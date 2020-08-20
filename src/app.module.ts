@@ -11,10 +11,16 @@ import { UpdateCommentModule } from './update-comment/update-comment.module';
 import { FileModule } from './file/file.module';
 import { TaskArtifactModule } from './task-artifact/task-artifact.module';
 import { ErrorsInterceptor } from './core/interceptor';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(TypeOrmConfig),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'upload', 'profile-picture'),
+      serveRoot: '/profile-picture',
+    }),
     AuthModule,
     EmployeeModule,
     ProjectModule,
