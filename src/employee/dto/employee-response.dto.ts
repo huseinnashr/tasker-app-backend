@@ -15,5 +15,5 @@ export class EmployeeResponseDTO {
   email: string;
 
   @Expose()
-  profile_picture: string;
+  profilePicture: string;
 }

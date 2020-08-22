@@ -72,7 +72,7 @@ describe('EmployeeController (e2e)', () => {
         password: 'Test1234',
         role: Role.STAFF,
         email: 'test@test.com',
-        profile_picture: 'pp1.jpg',
+        profilePicture: 'pp1.jpg',
       };
       const res = await request(app.getHttpServer())
         .post('/employee')
@@ -125,7 +125,7 @@ describe('EmployeeController (e2e)', () => {
         role: Role.MANAGER,
         username: 'Jane',
         email: 'update@test.com',
-        profile_picture: 'pp2.jpg',
+        profilePicture: 'pp2.jpg',
       };
       await request(app.getHttpServer())
         .put('/employee/' + employee.id)
@@ -143,7 +143,7 @@ describe('EmployeeController (e2e)', () => {
         role: Role.STAFF,
         password: 'Test1234',
         email: 'test@test.com',
-        profile_picture: 'pp1.jpg',
+        profilePicture: 'pp1.jpg',
       };
       test.notfound(Role.ADMIN, 'PUT', '/employee/99999', updateDto);
     });
@@ -190,7 +190,7 @@ describe('EmployeeController (e2e)', () => {
 
     const res = await request(app.getHttpServer())
       .post(endpoint)
-      .attach('profile_picture', testFile.filepath)
+      .attach('profilePicture', testFile.filepath)
       .set({ Authorization: token });
     expect(res.status).toEqual(201);
     expect(res.body.data.url).toBeDefined();

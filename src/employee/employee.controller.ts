@@ -74,7 +74,7 @@ export class EmployeeController {
 
   @Post('/profile-picture')
   @Auth()
-  @UseInterceptors(FileInterceptor('profile_picture', ProfilePictureMulter))
+  @UseInterceptors(FileInterceptor('profilePicture', ProfilePictureMulter))
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: ProfilePictureUploadDTO })
   uploadProfilePicture(

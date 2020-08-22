@@ -28,5 +28,5 @@ export abstract class ManageEmployeeDTO {
   email: string;
 
   @IsString()
-  profile_picture: string;
+  profilePicture: string;
 }

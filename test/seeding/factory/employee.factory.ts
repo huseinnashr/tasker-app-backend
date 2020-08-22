@@ -23,7 +23,7 @@ export class EmployeeFactory extends Factory<EmployeeEntity, EmployeeParam> {
     employee.email = this.counter + Faker.internet.email();
 
     const profilePictures = ['pp1.jpg', 'pp2.jpg', 'pp3.jpg'];
-    employee.profile_picture = Faker.random.arrayElement(profilePictures);
+    employee.profilePicture = Faker.random.arrayElement(profilePictures);
 
     employee.password = password ?? 'password';
 
