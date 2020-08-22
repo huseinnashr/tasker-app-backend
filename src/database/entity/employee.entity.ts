@@ -27,7 +27,7 @@ export class EmployeeEntity {
   @Column()
   email: string;
 
-  @Column({ name: 'profile-picture' })
+  @Column({ name: 'profile_picture' })
   profilePicture: string;
 
   @OneToMany(
