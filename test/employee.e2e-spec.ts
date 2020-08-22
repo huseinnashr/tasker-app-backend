@@ -159,6 +159,8 @@ describe('EmployeeController (e2e)', () => {
         username: 'Jane',
         role: Role.STAFF,
         password: 'Test1234',
+        email: 'test@test.com',
+        profile_picture: 'pp1.jpg',
       }));
 
     it('returns 403 Forbidden when not admin', async () =>
@@ -208,8 +210,6 @@ describe('EmployeeController (e2e)', () => {
     expect(res.status).toEqual(201);
     expect(res.body.data.url).toBeDefined();
 
-    await file.emptyFolder('./upload/profile-picture', [
-      'pp1.jpg, pp2.jpg, pp3.jpg',
-    ]);
+    await file.emptyFolder('./upload/profile-picture', file.DEFAULT_PP);
   });
 });
