@@ -3,6 +3,9 @@ import * as path from 'path';
 import env from 'ts-get-env';
 
 export class FileHelper {
+  DEFAULT_PP = ['pp1.jpg', 'pp2.jpg', 'pp3.jpg'];
+  GIT_IGNORE = ['.gitignore'];
+
   constructor() {
     if (env.get('string', 'NODE_ENV', 'development') === 'production') {
       throw new Error("CAN'T USE FILE HELPER IN PRODUCTION MODE");
