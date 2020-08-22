@@ -10,4 +10,10 @@ export class CurrentUserResponseDTO {
 
   @Expose()
   role: Role;
+
+  @Expose()
+  email: string;
+
+  @Expose()
+  profile_picture: string;
 }

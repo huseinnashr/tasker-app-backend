@@ -10,4 +10,10 @@ export class EmployeeResponseDTO {
 
   @Expose()
   role: Role;
+
+  @Expose()
+  email: string;
+
+  @Expose()
+  profile_picture: string;
 }

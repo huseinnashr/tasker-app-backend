@@ -13,7 +13,7 @@ import { CommentEntity } from './comment.entity';
 import { FileEntity } from './file.entity';
 
 @Entity()
-@Unique(['username'])
+@Unique(['username', 'email'])
 export class EmployeeEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -23,6 +23,12 @@ export class EmployeeEntity {
 
   @Column()
   role: Role;
+
+  @Column()
+  email: string;
+
+  @Column()
+  profile_picture: string;
 
   @OneToMany(
     () => ProjectEntity,

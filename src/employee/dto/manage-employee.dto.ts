@@ -4,6 +4,7 @@ import {
   MaxLength,
   Matches,
   IsEnum,
+  IsEmail,
 } from 'class-validator';
 import { Role } from '../../database/enum';
 export abstract class ManageEmployeeDTO {
@@ -22,4 +23,10 @@ export abstract class ManageEmployeeDTO {
 
   @IsEnum(Role)
   role: Role;
+
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  profile_picture: string;
 }

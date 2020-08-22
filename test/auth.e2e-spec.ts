@@ -3,15 +3,12 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SignInDTO, CurrentUserEntityResponseDTO } from '../src/auth/dto';
 import { AppModule } from '../src/app.module';
-import { EmployeeRepository } from '../src/database/repository';
-import { CreateEmployeeDTO } from '../src/employee/dto';
 import { Role } from '../src/database/enum';
 import { AuthHelper } from './helper';
 import { CurrentUserResponseDTO } from '../src/auth/dto/current-user-response.dto';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
-  let empRepo: EmployeeRepository;
   let auth: AuthHelper;
 
   beforeEach(async () => {
@@ -19,7 +16,6 @@ describe('AuthController (e2e)', () => {
       imports: [AppModule],
     }).compile();
 
-    empRepo = moduleRef.get<EmployeeRepository>(EmployeeRepository);
     app = moduleRef.createNestApplication();
 
     auth = new AuthHelper(app);
@@ -33,12 +29,12 @@ describe('AuthController (e2e)', () => {
 
   describe('/auth/signin (POST)', () => {
     it('returns employee and access token', async () => {
-      const password = 'Secret1234@';
-      const [, admin] = await auth.signUp({ password, role: Role.ADMIN });
+      const password = 'password';
+      const [, admin] = await auth.signUp({ role: Role.ADMIN, password });
 
       const signInDto: SignInDTO = {
         username: admin.username,
-        password,
+        password: password,
       };
 
       const res = await request(app.getHttpServer())
@@ -50,6 +46,8 @@ describe('AuthController (e2e)', () => {
         id: admin.id,
         username: admin.username,
         role: admin.role,
+        email: admin.email,
+        profile_picture: admin.profile_picture,
       };
 
       const { accessToken, ...employee } = res.body.data;
@@ -58,22 +56,27 @@ describe('AuthController (e2e)', () => {
     });
 
     it('returns 401 Unauthorized when account was not found / wrong password', async () => {
-      const signInDto: SignInDTO = { username: 'test', password: 'Test1234' };
-
-      await request(app.getHttpServer())
-        .post('/auth/signin')
-        .send(signInDto)
-        .expect(401);
-
-      const createEmployeeDto: CreateEmployeeDTO = {
-        ...signInDto,
-        role: Role.STAFF,
+      const unknownEmployeeDTO: SignInDTO = {
+        username: 'test',
+        password: 'Test1234',
       };
 
-      await empRepo.save(empRepo.create(createEmployeeDto));
       await request(app.getHttpServer())
         .post('/auth/signin')
-        .send({ ...signInDto, password: 'Wrong1234' })
+        .send(unknownEmployeeDTO)
+        .expect(401);
+
+      const password = 'password';
+      const [, admin] = await auth.signUp({ role: Role.STAFF, password });
+
+      const wrongPasswordDTO: SignInDTO = {
+        username: admin.username,
+        password: 'wrong_password',
+      };
+
+      await request(app.getHttpServer())
+        .post('/auth/signin')
+        .send(wrongPasswordDTO)
         .expect(401);
     });
   });
@@ -92,6 +95,8 @@ describe('AuthController (e2e)', () => {
           id: admin.id,
           username: admin.username,
           role: admin.role,
+          email: admin.email,
+          profile_picture: admin.profile_picture,
         },
       };
 

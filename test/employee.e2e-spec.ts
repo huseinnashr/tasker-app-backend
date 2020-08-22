@@ -58,6 +58,8 @@ describe('EmployeeController (e2e)', () => {
             id: admin.id,
             role: admin.role,
             username: admin.username,
+            email: admin.email,
+            profile_picture: admin.profile_picture,
           },
         ],
       };
@@ -77,6 +79,8 @@ describe('EmployeeController (e2e)', () => {
         username: 'John',
         password: 'Test1234',
         role: Role.STAFF,
+        email: 'test@test.com',
+        profile_picture: 'pp1.jpg',
       };
       const res = await request(app.getHttpServer())
         .post('/employee')
@@ -89,6 +93,8 @@ describe('EmployeeController (e2e)', () => {
           id: res.body.data.id,
           username: createDTO.username,
           role: createDTO.role,
+          email: createDTO.email,
+          profile_picture: createDTO.profile_picture,
         },
       };
 
@@ -118,6 +124,8 @@ describe('EmployeeController (e2e)', () => {
           id: admin.id,
           role: admin.role,
           username: admin.username,
+          email: admin.email,
+          profile_picture: admin.profile_picture,
         },
       };
 
@@ -133,6 +141,8 @@ describe('EmployeeController (e2e)', () => {
       const updateDto: UpdateEmployeeDTO = {
         role: Role.MANAGER,
         username: 'Jane',
+        email: 'update@test.com',
+        profile_picture: 'pp2.jpg',
       };
       await request(app.getHttpServer())
         .put('/employee/' + employee.id)
@@ -176,7 +186,7 @@ describe('EmployeeController (e2e)', () => {
       test.forbidden(Role.STAFF, 'DELETE', '/employee/999999'));
   });
 
-  it.only('test /employe/profile-picture (POST, GET)', async () => {
+  it('test /employe/profile-picture (POST, GET)', async () => {
     const [token] = await auth.signUp({ role: Role.ADMIN });
 
     const endpoint = '/employee/profile-picture';
@@ -198,6 +208,8 @@ describe('EmployeeController (e2e)', () => {
     expect(res.status).toEqual(201);
     expect(res.body.data.url).toBeDefined();
 
-    await file.emptyFolder('./upload/profile-picture', ['.gitignore']);
+    await file.emptyFolder('./upload/profile-picture', [
+      'pp1.jpg, pp2.jpg, pp3.jpg',
+    ]);
   });
 });
