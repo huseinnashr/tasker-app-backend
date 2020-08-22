@@ -11,7 +11,7 @@ import {
   EmployeeListEntityResponseDTO,
   EmployeeEntityResponseDTO,
 } from '../src/employee/dto';
-import { AuthHelper, TestHelper, FileHelper } from './helper';
+import { AuthHelper, TestHelper, FileHelper, convertTo } from './helper';
 
 describe('EmployeeController (e2e)', () => {
   let app: INestApplication;
@@ -51,18 +51,10 @@ describe('EmployeeController (e2e)', () => {
         .set({ Authorization: token })
         .expect(200);
 
-      const expectted: EmployeeListResponseDTO = {
+      const expectted = convertTo(EmployeeListResponseDTO, {
         permission: { create: true },
-        data: [
-          {
-            id: admin.id,
-            role: admin.role,
-            username: admin.username,
-            email: admin.email,
-            profile_picture: admin.profile_picture,
-          },
-        ],
-      };
+        data: [admin],
+      });
 
       expect(res.body).toEqual(expectted);
     });
@@ -88,15 +80,12 @@ describe('EmployeeController (e2e)', () => {
         .set({ Authorization: token })
         .expect(201);
 
-      const expected: EmployeeListEntityResponseDTO = {
+      const expected = convertTo(EmployeeListEntityResponseDTO, {
         data: {
           id: res.body.data.id,
-          username: createDTO.username,
-          role: createDTO.role,
-          email: createDTO.email,
-          profile_picture: createDTO.profile_picture,
+          ...createDTO,
         },
-      };
+      });
 
       expect(res.body).toEqual(expected);
 
@@ -118,18 +107,12 @@ describe('EmployeeController (e2e)', () => {
         .set({ Authorization: token })
         .expect(200);
 
-      const expectted: EmployeeEntityResponseDTO = {
+      const expected = convertTo(EmployeeEntityResponseDTO, {
         permission: { update: true, delete: true },
-        data: {
-          id: admin.id,
-          role: admin.role,
-          username: admin.username,
-          email: admin.email,
-          profile_picture: admin.profile_picture,
-        },
-      };
+        data: admin,
+      });
 
-      expect(res.body).toEqual(expectted);
+      expect(res.body).toEqual(expected);
     });
   });
 
@@ -154,14 +137,16 @@ describe('EmployeeController (e2e)', () => {
       expect(updatedEmployee).toMatchObject(updateDto);
     });
 
-    it('return 404 NotFound when the employee does not exist', async () =>
-      test.notfound(Role.ADMIN, 'PUT', '/employee/99999', {
+    it('return 404 NotFound when the employee does not exist', async () => {
+      const updateDto: UpdateEmployeeDTO = {
         username: 'Jane',
         role: Role.STAFF,
         password: 'Test1234',
         email: 'test@test.com',
         profile_picture: 'pp1.jpg',
-      }));
+      };
+      test.notfound(Role.ADMIN, 'PUT', '/employee/99999', updateDto);
+    });
 
     it('returns 403 Forbidden when not admin', async () =>
       test.forbidden(Role.STAFF, 'PUT', '/employee/999999'));

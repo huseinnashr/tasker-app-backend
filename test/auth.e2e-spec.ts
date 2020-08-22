@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SignInDTO, CurrentUserEntityResponseDTO } from '../src/auth/dto';
 import { AppModule } from '../src/app.module';
 import { Role } from '../src/database/enum';
-import { AuthHelper } from './helper';
+import { AuthHelper, convertTo } from './helper';
 import { CurrentUserResponseDTO } from '../src/auth/dto/current-user-response.dto';
 
 describe('AuthController (e2e)', () => {
@@ -42,13 +42,7 @@ describe('AuthController (e2e)', () => {
         .send(signInDto)
         .expect(200);
 
-      const expected: CurrentUserResponseDTO = {
-        id: admin.id,
-        username: admin.username,
-        role: admin.role,
-        email: admin.email,
-        profile_picture: admin.profile_picture,
-      };
+      const expected = convertTo(CurrentUserResponseDTO, admin);
 
       const { accessToken, ...employee } = res.body.data;
       expect(accessToken).toBeDefined();
@@ -90,15 +84,9 @@ describe('AuthController (e2e)', () => {
         .set({ Authorization: token })
         .expect(200);
 
-      const expected: CurrentUserEntityResponseDTO = {
-        data: {
-          id: admin.id,
-          username: admin.username,
-          role: admin.role,
-          email: admin.email,
-          profile_picture: admin.profile_picture,
-        },
-      };
+      const expected = convertTo(CurrentUserEntityResponseDTO, {
+        data: admin,
+      });
 
       expect(res.body).toEqual(expected);
     });
