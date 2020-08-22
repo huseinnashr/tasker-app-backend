@@ -91,7 +91,7 @@ export class EmployeeService extends AppService {
   ): ProfilePictureEntityResponseDTO {
     if (!uploadedFile) throw new BadRequestException('File cannot be empty');
 
-    const url = `/profile-picture/${uploadedFile.filename}`;
+    const url = uploadedFile.filename;
 
     return this.transform(ProfilePictureEntityResponseDTO, { data: { url } });
   }
