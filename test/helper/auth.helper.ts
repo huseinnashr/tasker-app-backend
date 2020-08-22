@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import { EmployeeRepository } from '../../src/database/repository';
 import { Role } from '../../src/database/enum';
 import { EmployeeEntity } from '../../src/database/entity';
+import { EmployeeFactory } from '../seeding/factory';
 
 interface SignUpDTO {
   username?: string;
@@ -11,10 +12,9 @@ interface SignUpDTO {
 }
 
 class AuthHelper {
+  private empFactory: EmployeeFactory;
   private empRepo: EmployeeRepository;
   private jwtService: JwtService;
-
-  private employeeCounter = 0;
 
   /** Employee creation helper. This helper uses increment username to avoid conflict.
    * Please keep this to only an instance per db truncate
@@ -22,16 +22,11 @@ class AuthHelper {
   constructor(app: INestApplication) {
     this.empRepo = app.get(EmployeeRepository);
     this.jwtService = app.get(JwtService);
+    this.empFactory = new EmployeeFactory();
   }
 
   signUp = async (data: SignUpDTO): Promise<[string, EmployeeEntity]> => {
-    this.employeeCounter += 1;
-    let { username, password } = data;
-
-    username = username ? username : 'employee' + this.employeeCounter;
-    password = password ? password : 'SecretPassword1234';
-
-    const employee = this.empRepo.create({ ...data, username, password });
+    const employee = this.empFactory.makeOne(data);
 
     await this.empRepo.save(employee);
     const accessToken = this.jwtService.sign({ username: employee.username });
