@@ -17,10 +17,20 @@ export class EmployeeFactory extends Factory<EmployeeEntity, EmployeeParam> {
     this.counter += 1;
 
     const employee = new EmployeeEntity();
-    employee.username = username || Faker.internet.userName() + this.counter;
+    employee.firstName = Faker.name.firstName();
+    employee.lastName = Faker.name.lastName();
+
+    employee.username =
+      username ||
+      Faker.internet.userName(employee.firstName, employee.lastName) +
+        this.counter;
+
     employee.role =
       role || Faker.random.arrayElement([Role.MANAGER, Role.STAFF]);
-    employee.email = this.counter + Faker.internet.email();
+
+    employee.email =
+      this.counter +
+      Faker.internet.email(employee.firstName, employee.lastName);
 
     const profilePictures = ['pp1.jpg', 'pp2.jpg', 'pp3.jpg'];
     employee.profilePicture = Faker.random.arrayElement(profilePictures);

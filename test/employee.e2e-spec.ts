@@ -70,6 +70,8 @@ describe('EmployeeController (e2e)', () => {
       const createDTO: CreateEmployeeDTO = {
         username: 'John',
         password: 'Test1234',
+        firstName: 'John',
+        lastName: 'Doe',
         role: Role.STAFF,
         email: 'test@test.com',
         profilePicture: 'pp1.jpg',
@@ -124,6 +126,8 @@ describe('EmployeeController (e2e)', () => {
       const updateDto: UpdateEmployeeDTO = {
         role: Role.MANAGER,
         username: 'Jane',
+        firstName: 'Jane',
+        lastName: 'Doe',
         email: 'update@test.com',
         profilePicture: 'pp2.jpg',
       };
@@ -142,10 +146,12 @@ describe('EmployeeController (e2e)', () => {
         username: 'Jane',
         role: Role.STAFF,
         password: 'Test1234',
+        firstName: 'Jane',
+        lastName: 'Doe',
         email: 'test@test.com',
         profilePicture: 'pp1.jpg',
       };
-      test.notfound(Role.ADMIN, 'PUT', '/employee/99999', updateDto);
+      await test.notfound(Role.ADMIN, 'PUT', '/employee/99999', updateDto);
     });
 
     it('returns 403 Forbidden when not admin', async () =>

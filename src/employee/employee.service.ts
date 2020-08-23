@@ -37,10 +37,12 @@ export class EmployeeService extends AppService {
   ): Promise<EmployeeListEntityResponseDTO> {
     const employee = new EmployeeEntity();
     employee.username = createDto.username;
-    employee.role = createDto.role;
-    employee.password = createDto.password;
+    employee.firstName = createDto.firstName;
+    employee.lastName = createDto.lastName;
     employee.email = createDto.email;
     employee.profilePicture = createDto.profilePicture;
+    employee.role = createDto.role;
+    employee.password = createDto.password;
     await this.empRepo.save(employee);
 
     return this.transform(EmployeeListEntityResponseDTO, { data: employee });
@@ -64,15 +66,15 @@ export class EmployeeService extends AppService {
   ): Promise<EmployeeListEntityResponseDTO> {
     const employee = await this.empRepo.findOneOrException(id);
 
-    const { username, role, password, email, profilePicture } = updateDto;
+    employee.username = updateDto.username;
+    employee.firstName = updateDto.firstName;
+    employee.lastName = updateDto.lastName;
+    employee.email = updateDto.email;
+    employee.profilePicture = updateDto.profilePicture;
+    employee.role = updateDto.role;
 
-    employee.username = username;
-    employee.role = role;
-    employee.email = email;
-    employee.profilePicture = profilePicture;
-
-    if (password) {
-      employee.password = password;
+    if (updateDto.password) {
+      employee.password = updateDto.password;
     }
 
     await this.empRepo.save(employee);

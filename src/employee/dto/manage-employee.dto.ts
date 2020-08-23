@@ -24,6 +24,12 @@ export abstract class ManageEmployeeDTO {
   @IsEnum(Role)
   role: Role;
 
+  @IsString()
+  firstName: string;
+
+  @IsString()
+  lastName: string;
+
   @IsEmail()
   email: string;
 

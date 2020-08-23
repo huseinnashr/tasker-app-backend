@@ -12,6 +12,12 @@ export class EmployeeResponseDTO {
   role: Role;
 
   @Expose()
+  firstName: string;
+
+  @Expose()
+  lastName: string;
+
+  @Expose()
   email: string;
 
   @Expose()
