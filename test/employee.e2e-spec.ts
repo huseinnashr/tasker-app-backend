@@ -39,144 +39,126 @@ describe('EmployeeController (e2e)', () => {
     await app.close();
   });
 
-  it('returns 401 Unauthorized when not logged in', async () =>
-    test.unauthorized('GET', '/employee'));
+  it('test /employee (GET) specs', async () => {
+    const [token, admin] = await auth.signUp({ role: Role.ADMIN });
+    const [sttok, staff] = await auth.signUp({ role: Role.STAFF });
 
-  describe('/employee (GET)', () => {
-    it('returns list of employee', async () => {
-      const [token, admin] = await auth.signUp({ role: Role.ADMIN });
+    const endpoint = '/employee';
 
-      const res = await request(app.getHttpServer())
-        .get('/employee')
-        .set({ Authorization: token })
-        .expect(200);
+    await test.unauthorized('GET', endpoint);
+    await test.forbidden(sttok, 'GET', endpoint);
 
-      const expectted = convertTo(EmployeeListResponseDTO, {
-        permission: { create: true },
-        data: [admin],
-      });
+    const res = await request(app.getHttpServer())
+      .get(endpoint)
+      .set({ Authorization: token })
+      .expect(200);
 
-      expect(res.body).toEqual(expectted);
+    const expected = convertTo(EmployeeListResponseDTO, {
+      permission: { create: true },
+      data: [admin, staff],
     });
 
-    it('returns 403 Forbidden when not admin', async () =>
-      test.forbidden(Role.STAFF, 'GET', '/employee'));
+    expect(res.body).toEqual(expected);
   });
 
-  describe('/employee (POST)', () => {
-    it('create new employee', async () => {
-      const [token] = await auth.signUp({ role: Role.ADMIN });
+  it('test /employee (POST) specs', async () => {
+    const [token] = await auth.signUp({ role: Role.ADMIN });
+    const [sttok] = await auth.signUp({ role: Role.STAFF });
 
-      const createDTO: CreateEmployeeDTO = {
-        username: 'John',
-        password: 'Test1234',
-        firstName: 'John',
-        lastName: 'Doe',
-        role: Role.STAFF,
-        email: 'test@test.com',
-        profilePicture: 'pp1.jpg',
-      };
-      const res = await request(app.getHttpServer())
-        .post('/employee')
-        .send(createDTO)
-        .set({ Authorization: token })
-        .expect(201);
+    const endpoint = '/employee';
 
-      const expected = convertTo(EmployeeListEntityResponseDTO, {
-        data: {
-          id: res.body.data.id,
-          ...createDTO,
-        },
-      });
+    await test.forbidden(sttok, 'POST', endpoint);
 
-      expect(res.body).toEqual(expected);
+    const createDTO: CreateEmployeeDTO = {
+      username: 'John',
+      password: 'Test1234',
+      firstName: 'John',
+      lastName: 'Doe',
+      role: Role.STAFF,
+      email: 'test@test.com',
+      profilePicture: 'pp1.jpg',
+    };
+    const res = await request(app.getHttpServer())
+      .post(endpoint)
+      .send(createDTO)
+      .set({ Authorization: token })
+      .expect(201);
 
-      const [employees, count] = await empRepo.findAndCount();
-      expect(employees[count - 1]).toMatchObject(expected.data);
-      expect(count).toBe(2);
+    const expected = convertTo(EmployeeListEntityResponseDTO, {
+      data: {
+        id: res.body.data.id,
+        ...createDTO,
+      },
     });
 
-    it('returns 403 Forbidden when not admin', async () =>
-      test.forbidden(Role.STAFF, 'POST', '/employee'));
+    expect(res.body).toEqual(expected);
+
+    const [employees, count] = await empRepo.findAndCount();
+    expect(employees[count - 1]).toMatchObject(expected.data);
+    expect(count).toBe(3);
   });
 
-  describe('/employee/:employeeId (GET)', () => {
-    it('returns an employee', async () => {
-      const [token, admin] = await auth.signUp({ role: Role.ADMIN });
+  it('test /employee/:employeeId (GET) specs', async () => {
+    const [token, admin] = await auth.signUp({ role: Role.ADMIN });
 
-      const res = await request(app.getHttpServer())
-        .get('/employee/' + admin.id)
-        .set({ Authorization: token })
-        .expect(200);
+    const res = await request(app.getHttpServer())
+      .get('/employee/' + admin.id)
+      .set({ Authorization: token })
+      .expect(200);
 
-      const expected = convertTo(EmployeeEntityResponseDTO, {
-        permission: { update: true, delete: true },
-        data: admin,
-      });
-
-      expect(res.body).toEqual(expected);
+    const expected = convertTo(EmployeeEntityResponseDTO, {
+      permission: { update: true, delete: true },
+      data: admin,
     });
+
+    expect(res.body).toEqual(expected);
   });
 
-  describe('/employee/:id (PUT)', () => {
-    it('updates the employee', async () => {
-      const [token] = await auth.signUp({ role: Role.ADMIN });
-      const [, employee] = await auth.signUp({ role: Role.STAFF });
+  it('test /employee/:id (PUT) specs', async () => {
+    const [token] = await auth.signUp({ role: Role.ADMIN });
+    const [, employee] = await auth.signUp({ role: Role.STAFF });
 
-      const updateDto: UpdateEmployeeDTO = {
-        role: Role.MANAGER,
-        username: 'Jane',
-        firstName: 'Jane',
-        lastName: 'Doe',
-        email: 'update@test.com',
-        profilePicture: 'pp2.jpg',
-      };
-      await request(app.getHttpServer())
-        .put('/employee/' + employee.id)
-        .send(updateDto)
-        .set({ Authorization: token })
-        .expect(200);
+    const endpoint = '/employee/' + employee.id;
 
-      const updatedEmployee = await empRepo.findOne(employee.id);
-      expect(updatedEmployee).toMatchObject(updateDto);
-    });
+    await test.forbidden(Role.STAFF, 'PUT', endpoint);
 
-    it('return 404 NotFound when the employee does not exist', async () => {
-      const updateDto: UpdateEmployeeDTO = {
-        username: 'Jane',
-        role: Role.STAFF,
-        password: 'Test1234',
-        firstName: 'Jane',
-        lastName: 'Doe',
-        email: 'test@test.com',
-        profilePicture: 'pp1.jpg',
-      };
-      await test.notfound(Role.ADMIN, 'PUT', '/employee/99999', updateDto);
-    });
+    const updateDto: UpdateEmployeeDTO = {
+      role: Role.MANAGER,
+      username: 'Jane',
+      firstName: 'Jane',
+      lastName: 'Doe',
+      email: 'update@test.com',
+      profilePicture: 'pp2.jpg',
+    };
 
-    it('returns 403 Forbidden when not admin', async () =>
-      test.forbidden(Role.STAFF, 'PUT', '/employee/999999'));
+    await test.notfound(token, 'PUT', endpoint + 'NF', updateDto);
+
+    await request(app.getHttpServer())
+      .put(endpoint)
+      .send(updateDto)
+      .set({ Authorization: token })
+      .expect(200);
+
+    const updatedEmployee = await empRepo.findOne(employee.id);
+    expect(updatedEmployee).toMatchObject(updateDto);
   });
 
-  describe('/employee/:id (DELETE)', () => {
-    it('deletes the employee', async () => {
-      const [token] = await auth.signUp({ role: Role.ADMIN });
-      const [, employee] = await auth.signUp({ role: Role.STAFF });
+  it('/employee/:id (DELETE)', async () => {
+    const [token] = await auth.signUp({ role: Role.ADMIN });
+    const [, employee] = await auth.signUp({ role: Role.STAFF });
 
-      await request(app.getHttpServer())
-        .delete('/employee/' + employee.id)
-        .set({ Authorization: token })
-        .expect(200);
+    const endpoint = '/employee/' + employee.id;
 
-      const deletedEmployee = await empRepo.findOne(employee.id);
-      expect(deletedEmployee).toBeUndefined();
-    });
+    await test.forbidden(Role.STAFF, 'DELETE', endpoint);
+    await test.notfound(token, 'DELETE', endpoint + 'NF');
 
-    it('return 404 NotFound when the employee does not exist', async () =>
-      test.notfound(Role.ADMIN, 'DELETE', '/employee/99999'));
+    await request(app.getHttpServer())
+      .delete(endpoint)
+      .set({ Authorization: token })
+      .expect(200);
 
-    it('returns 403 Forbidden when not admin', async () =>
-      test.forbidden(Role.STAFF, 'DELETE', '/employee/999999'));
+    const deletedEmployee = await empRepo.findOne(employee.id);
+    expect(deletedEmployee).toBeUndefined();
   });
 
   it('test /employe/profile-picture (POST, GET)', async () => {
@@ -184,7 +166,7 @@ describe('EmployeeController (e2e)', () => {
 
     const endpoint = '/employee/profile-picture';
 
-    test.unauthorized('POST', endpoint);
+    await test.unauthorized('POST', endpoint);
 
     const filepath = './test/file/image.jpg';
     const testFile = {
