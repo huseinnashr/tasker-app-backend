@@ -1,7 +1,7 @@
 import { IsEnum } from 'class-validator';
 import { ProjectStatus } from '../../database/enum';
 
-export class ProjectStatusDTO {
+export class ManagerProjectStatusDTO {
   @IsEnum(ProjectStatus)
   status: ProjectStatus;
 }

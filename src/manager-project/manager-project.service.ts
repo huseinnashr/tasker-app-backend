@@ -4,10 +4,10 @@ import { ProjectRepository } from '../database/repository';
 import {
   CreateProjectDTO,
   UpdateProjectDTO,
-  ProjectStatusDTO,
-  ProjectListEntityResponseDTO,
-  ProjectListResponseDTO,
-  ProjectEntityResponseDTO,
+  ManagerProjectStatusDTO,
+  ManagerProjectListEntityResponseDTO,
+  ManagerProjectListResponseDTO,
+  ManagerProjectEntityResponseDTO,
 } from './dto';
 import { ProjectStatus } from '../database/enum';
 import { EmployeeEntity, ProjectEntity } from '../database/entity';
@@ -16,7 +16,7 @@ import { ProjectParamDTO } from '../shared/dto';
 import { ProjectPermission } from '../shared/permission';
 
 @Injectable()
-export class ProjectService extends AppService {
+export class ManagerProjectService extends AppService {
   constructor(
     @InjectRepository(ProjectRepository)
     private proRepo: ProjectRepository,
@@ -25,10 +25,12 @@ export class ProjectService extends AppService {
     super();
   }
 
-  async getAll(employee: EmployeeEntity): Promise<ProjectListResponseDTO> {
+  async getAll(
+    employee: EmployeeEntity,
+  ): Promise<ManagerProjectListResponseDTO> {
     const projects = await this.proRepo.find();
 
-    return this.transform(ProjectListResponseDTO, {
+    return this.transform(ManagerProjectListResponseDTO, {
       data: projects,
       permission: this.projectPermission.getList(null, employee),
     });
@@ -37,7 +39,7 @@ export class ProjectService extends AppService {
   async create(
     createDto: CreateProjectDTO,
     employe: EmployeeEntity,
-  ): Promise<ProjectListEntityResponseDTO> {
+  ): Promise<ManagerProjectListEntityResponseDTO> {
     const project = new ProjectEntity();
     project.title = createDto.title;
     project.body = createDto.body;
@@ -46,16 +48,18 @@ export class ProjectService extends AppService {
 
     await this.proRepo.save(project);
 
-    return this.transform(ProjectListEntityResponseDTO, { data: project });
+    return this.transform(ManagerProjectListEntityResponseDTO, {
+      data: project,
+    });
   }
 
   async get(
     param: ProjectParamDTO,
     employee: EmployeeEntity,
-  ): Promise<ProjectEntityResponseDTO> {
+  ): Promise<ManagerProjectEntityResponseDTO> {
     const project = await this.proRepo.findOneOrException(param.projectId);
 
-    return this.transform(ProjectEntityResponseDTO, {
+    return this.transform(ManagerProjectEntityResponseDTO, {
       data: project,
       permission: this.projectPermission.getEntity(project, employee),
     });
@@ -64,7 +68,7 @@ export class ProjectService extends AppService {
   async update(
     param: ProjectParamDTO,
     updateDto: UpdateProjectDTO,
-  ): Promise<ProjectListEntityResponseDTO> {
+  ): Promise<ManagerProjectListEntityResponseDTO> {
     const project = await this.proRepo.findOneOrException(param.projectId);
 
     project.title = updateDto.title;
@@ -72,19 +76,23 @@ export class ProjectService extends AppService {
 
     await this.proRepo.save(project);
 
-    return this.transform(ProjectListEntityResponseDTO, { data: project });
+    return this.transform(ManagerProjectListEntityResponseDTO, {
+      data: project,
+    });
   }
 
   async updateStatus(
     param: ProjectParamDTO,
-    statusDto: ProjectStatusDTO,
-  ): Promise<ProjectListEntityResponseDTO> {
+    statusDto: ManagerProjectStatusDTO,
+  ): Promise<ManagerProjectListEntityResponseDTO> {
     const project = await this.proRepo.findOneOrException(param.projectId);
     project.status = statusDto.status;
 
     await this.proRepo.save(project);
 
-    return this.transform(ProjectListEntityResponseDTO, { data: project });
+    return this.transform(ManagerProjectListEntityResponseDTO, {
+      data: project,
+    });
   }
 
   async delete(param: ProjectParamDTO): Promise<void> {

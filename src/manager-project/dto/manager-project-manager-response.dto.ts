@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 
-export class ProjectManagerResponseDTO {
+export class ManagerProjectManagerResponseDTO {
   @Expose()
   id: number;
 

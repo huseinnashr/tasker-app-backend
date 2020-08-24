@@ -6,11 +6,11 @@ import { ProjectRepository } from '../src/database/repository';
 import {
   CreateProjectDTO,
   UpdateProjectDTO,
-  ProjectStatusDTO,
-  ProjectEntityResponseDTO,
-  ProjectListEntityResponseDTO,
-  ProjectListResponseDTO,
-} from '../src/project/dto';
+  ManagerProjectStatusDTO,
+  ManagerProjectEntityResponseDTO,
+  ManagerProjectListEntityResponseDTO,
+  ManagerProjectListResponseDTO,
+} from '../src/manager-project/dto';
 import { Role, ProjectStatus } from '../src/database/enum';
 import { AuthHelper, TestHelper, RepoHelper } from './helper';
 
@@ -54,7 +54,7 @@ describe('ProjectController (e2e)', () => {
       .set({ Authorization: token })
       .expect(200);
 
-    const expected: ProjectListResponseDTO = {
+    const expected: ManagerProjectListResponseDTO = {
       data: [
         {
           id: project.id,
@@ -90,7 +90,7 @@ describe('ProjectController (e2e)', () => {
       .set({ Authorization: token })
       .expect(201);
 
-    const expected: ProjectListEntityResponseDTO = {
+    const expected: ManagerProjectListEntityResponseDTO = {
       data: {
         id: res.body.data.id,
         title: createDto.title,
@@ -125,7 +125,7 @@ describe('ProjectController (e2e)', () => {
       .set({ Authorization: token })
       .expect(200);
 
-    const expected: ProjectEntityResponseDTO = {
+    const expected: ManagerProjectEntityResponseDTO = {
       data: {
         id: project.id,
         title: project.title,
@@ -162,7 +162,7 @@ describe('ProjectController (e2e)', () => {
       .set({ Authorization: token })
       .expect(200);
 
-    const expected: ProjectListEntityResponseDTO = {
+    const expected: ManagerProjectListEntityResponseDTO = {
       data: {
         id: project.id,
         title: updateDto.title,
@@ -185,7 +185,7 @@ describe('ProjectController (e2e)', () => {
     const endpoint = '/project/' + project.id + '/status';
     const endpoint404 = '/project/' + '99' + '/status';
 
-    const statusDto: ProjectStatusDTO = {
+    const statusDto: ManagerProjectStatusDTO = {
       status: ProjectStatus.DONE,
     };
 
@@ -198,7 +198,7 @@ describe('ProjectController (e2e)', () => {
       .set({ Authorization: token })
       .expect(200);
 
-    const expected: ProjectListEntityResponseDTO = {
+    const expected: ManagerProjectListEntityResponseDTO = {
       data: {
         id: project.id,
         title: project.title,

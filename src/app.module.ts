@@ -4,7 +4,7 @@ import { EmployeeModule } from './employee/employee.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as TypeOrmConfig from './config/typeorm.config';
 import { APP_PIPE, APP_INTERCEPTOR } from '@nestjs/core';
-import { ProjectModule } from './project/project.module';
+import { ManagerProjectModule } from './manager-project/manager-project.module';
 import { ProjectTaskModule } from './project-task/project-task.module';
 import { TaskUpdateModule } from './task-update/task-update.module';
 import { UpdateCommentModule } from './update-comment/update-comment.module';
@@ -23,7 +23,7 @@ import { join } from 'path';
     }),
     AuthModule,
     EmployeeModule,
-    ProjectModule,
+    ManagerProjectModule,
     ProjectTaskModule,
     TaskUpdateModule,
     UpdateCommentModule,

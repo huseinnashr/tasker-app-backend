@@ -7,31 +7,31 @@ import {
   Put,
   Delete,
 } from '@nestjs/common';
-import { ProjectService } from './project.service';
+import { ManagerProjectService } from './manager-project.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { EmployeeEntity } from '../database/entity';
 import { Role } from '../database/enum';
 import {
   CreateProjectDTO,
   UpdateProjectDTO,
-  ProjectStatusDTO,
-  ProjectListResponseDTO,
-  ProjectListEntityResponseDTO,
-  ProjectEntityResponseDTO,
+  ManagerProjectStatusDTO,
+  ManagerProjectListResponseDTO,
+  ManagerProjectListEntityResponseDTO,
+  ManagerProjectEntityResponseDTO,
 } from './dto';
 import { ProjectParamDTO } from '../shared/dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('project')
-@ApiTags('Project')
-export class ProjectController {
-  constructor(private projectService: ProjectService) {}
+@ApiTags('Manager.Project')
+export class ManagerProjectController {
+  constructor(private projectService: ManagerProjectService) {}
 
   @Get('/')
   @Auth()
   async getAll(
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<ProjectListResponseDTO> {
+  ): Promise<ManagerProjectListResponseDTO> {
     return this.projectService.getAll(employee);
   }
 
@@ -40,7 +40,7 @@ export class ProjectController {
   async create(
     @Body() createDto: CreateProjectDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<ProjectListEntityResponseDTO> {
+  ): Promise<ManagerProjectListEntityResponseDTO> {
     return this.projectService.create(createDto, employee);
   }
 
@@ -49,7 +49,7 @@ export class ProjectController {
   async get(
     @Param() param: ProjectParamDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<ProjectEntityResponseDTO> {
+  ): Promise<ManagerProjectEntityResponseDTO> {
     return this.projectService.get(param, employee);
   }
 
@@ -58,7 +58,7 @@ export class ProjectController {
   async update(
     @Param() param: ProjectParamDTO,
     @Body() updateDto: UpdateProjectDTO,
-  ): Promise<ProjectListEntityResponseDTO> {
+  ): Promise<ManagerProjectListEntityResponseDTO> {
     return this.projectService.update(param, updateDto);
   }
 
@@ -66,8 +66,8 @@ export class ProjectController {
   @Auth(Role.MANAGER)
   async updateStatus(
     @Param() param: ProjectParamDTO,
-    @Body() statusDto: ProjectStatusDTO,
-  ): Promise<ProjectListEntityResponseDTO> {
+    @Body() statusDto: ManagerProjectStatusDTO,
+  ): Promise<ManagerProjectListEntityResponseDTO> {
     return this.projectService.updateStatus(param, statusDto);
   }
 
