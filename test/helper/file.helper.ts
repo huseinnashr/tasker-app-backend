@@ -13,7 +13,8 @@ export class FileHelper {
   }
 
   async emptyFolder(folderDir: string, except?: string[]): Promise<void> {
-    const files = await fs.readdir(folderDir);
+    const dirents = await fs.readdir(folderDir, { withFileTypes: true });
+    const files = dirents.filter(d => d.isFile()).map(d => d.name);
     const deletePromise: Promise<void>[] = [];
     for (const file of files) {
       if (except.includes(file)) continue;
