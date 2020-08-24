@@ -1,13 +1,15 @@
 import { ModelPermission } from '../../core/model-permission';
 import { ProjectEntity, EmployeeEntity } from '../../database/entity';
-import { Role } from '../../database/enum';
 
-export class ProjectPermission extends ModelPermission<ProjectEntity, null> {
-  create(parent: null, emp: EmployeeEntity): boolean {
-    return emp.role === Role.MANAGER;
+export class ProjectPermission extends ModelPermission<
+  ProjectEntity,
+  EmployeeEntity
+> {
+  create(parent: EmployeeEntity, emp: EmployeeEntity): boolean {
+    return parent.id === emp.id;
   }
-  readAll(parent: null, emp: EmployeeEntity): boolean {
-    return true;
+  readAll(parent: EmployeeEntity, emp: EmployeeEntity): boolean {
+    return parent.id === emp.id;
   }
   read(entity: ProjectEntity, emp: EmployeeEntity): boolean {
     return (

@@ -19,10 +19,10 @@ import {
   ManagerProjectListEntityResponseDTO,
   ManagerProjectEntityResponseDTO,
 } from './dto';
-import { ProjectParamDTO } from '../shared/dto';
+import { ProjectParamDTO, ManagerParamDTO } from '../shared/dto';
 import { ApiTags } from '@nestjs/swagger';
 
-@Controller('project')
+@Controller('manager/:managerId/project')
 @ApiTags('Manager.Project')
 export class ManagerProjectController {
   constructor(private projectService: ManagerProjectService) {}
@@ -30,18 +30,20 @@ export class ManagerProjectController {
   @Get('/')
   @Auth()
   async getAll(
+    @Param() param: ManagerParamDTO,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<ManagerProjectListResponseDTO> {
-    return this.projectService.getAll(employee);
+    return this.projectService.getAll(param, employee);
   }
 
   @Post('/')
   @Auth(Role.MANAGER)
   async create(
+    @Param() param: ManagerParamDTO,
     @Body() createDto: CreateProjectDTO,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<ManagerProjectListEntityResponseDTO> {
-    return this.projectService.create(createDto, employee);
+    return this.projectService.create(param, createDto, employee);
   }
 
   @Get('/:projectId')

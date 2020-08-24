@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProjectRepository } from '../database/repository';
+import { ProjectRepository, EmployeeRepository } from '../database/repository';
 import {
   CreateProjectDTO,
   UpdateProjectDTO,
@@ -9,15 +9,17 @@ import {
   ManagerProjectListResponseDTO,
   ManagerProjectEntityResponseDTO,
 } from './dto';
-import { ProjectStatus } from '../database/enum';
+import { ProjectStatus, Role } from '../database/enum';
 import { EmployeeEntity, ProjectEntity } from '../database/entity';
 import { AppService } from '../core/app.service';
-import { ProjectParamDTO } from '../shared/dto';
+import { ProjectParamDTO, ManagerParamDTO } from '../shared/dto';
 import { ProjectPermission } from '../shared/permission';
 
 @Injectable()
 export class ManagerProjectService extends AppService {
   constructor(
+    @InjectRepository(EmployeeRepository)
+    private empRepo: EmployeeRepository,
     @InjectRepository(ProjectRepository)
     private proRepo: ProjectRepository,
     private projectPermission: ProjectPermission,
@@ -26,25 +28,39 @@ export class ManagerProjectService extends AppService {
   }
 
   async getAll(
+    param: ManagerParamDTO,
     employee: EmployeeEntity,
   ): Promise<ManagerProjectListResponseDTO> {
-    const projects = await this.proRepo.find();
+    const managerWhere = { id: param.managerId, role: Role.MANAGER };
+    const manager = await this.empRepo.findOneOrException(managerWhere);
+
+    const can = this.projectPermission.readAll(manager, employee);
+    this.canView(can, "Manager's Project");
+
+    const projects = await this.proRepo.find({ where: { manager } });
 
     return this.transform(ManagerProjectListResponseDTO, {
       data: projects,
-      permission: this.projectPermission.getList(null, employee),
+      permission: this.projectPermission.getList(manager, employee),
     });
   }
 
   async create(
+    param: ManagerParamDTO,
     createDto: CreateProjectDTO,
-    employe: EmployeeEntity,
+    employee: EmployeeEntity,
   ): Promise<ManagerProjectListEntityResponseDTO> {
+    const managerWhere = { id: param.managerId, role: Role.MANAGER };
+    const manager = await this.empRepo.findOneOrException(managerWhere);
+
+    const can = this.projectPermission.create(manager, employee);
+    this.canManage(can, "Manager's Project");
+
     const project = new ProjectEntity();
     project.title = createDto.title;
     project.body = createDto.body;
     project.status = ProjectStatus.IN_PROGRESS;
-    project.manager = employe;
+    project.manager = manager;
 
     await this.proRepo.save(project);
 
@@ -57,7 +73,8 @@ export class ManagerProjectService extends AppService {
     param: ProjectParamDTO,
     employee: EmployeeEntity,
   ): Promise<ManagerProjectEntityResponseDTO> {
-    const project = await this.proRepo.findOneOrException(param.projectId);
+    const where = { id: param.projectId, manager: { id: param.managerId } };
+    const project = await this.proRepo.findOneOrException(where);
 
     return this.transform(ManagerProjectEntityResponseDTO, {
       data: project,
@@ -69,7 +86,8 @@ export class ManagerProjectService extends AppService {
     param: ProjectParamDTO,
     updateDto: UpdateProjectDTO,
   ): Promise<ManagerProjectListEntityResponseDTO> {
-    const project = await this.proRepo.findOneOrException(param.projectId);
+    const where = { id: param.projectId, manager: { id: param.managerId } };
+    const project = await this.proRepo.findOneOrException(where);
 
     project.title = updateDto.title;
     project.body = updateDto.body;
@@ -85,7 +103,8 @@ export class ManagerProjectService extends AppService {
     param: ProjectParamDTO,
     statusDto: ManagerProjectStatusDTO,
   ): Promise<ManagerProjectListEntityResponseDTO> {
-    const project = await this.proRepo.findOneOrException(param.projectId);
+    const where = { id: param.projectId, manager: { id: param.managerId } };
+    const project = await this.proRepo.findOneOrException(where);
     project.status = statusDto.status;
 
     await this.proRepo.save(project);
@@ -96,7 +115,8 @@ export class ManagerProjectService extends AppService {
   }
 
   async delete(param: ProjectParamDTO): Promise<void> {
-    const project = await this.proRepo.findOneOrException(param.projectId);
+    const where = { id: param.projectId, manager: { id: param.managerId } };
+    const project = await this.proRepo.findOneOrException(where);
 
     await this.proRepo.remove(project);
   }

@@ -40,12 +40,12 @@ describe('ProjectController (e2e)', () => {
     await app.close();
   });
 
-  it('test /project (GET) specs', async () => {
+  it('test /manager/:managerId/project (GET) specs', async () => {
     const [token, manager] = await auth.signUp({ role: Role.MANAGER });
 
     const project = await repo.createAProject(manager);
 
-    const endpoint = '/project';
+    const endpoint = `/manager/${manager.id}/project`;
 
     await test.unauthorized('GET', endpoint);
 
@@ -72,10 +72,10 @@ describe('ProjectController (e2e)', () => {
     expect(res.body).toEqual(expected);
   });
 
-  it('test /project (POST) specs', async () => {
+  it('test /manager/:managerId/project (POST) specs', async () => {
     const [token, manager] = await auth.signUp({ role: Role.MANAGER });
 
-    const endpoint = '/project';
+    const endpoint = `/manager/${manager.id}/project`;
 
     const createDto: CreateProjectDTO = {
       title: 'New Project',
@@ -110,12 +110,12 @@ describe('ProjectController (e2e)', () => {
     expect(count).toBe(1);
   });
 
-  it('test /project/:id (GET) specs', async () => {
+  it('test /manager/:managerId/project/:projectId (GET) specs', async () => {
     const [token] = await auth.signUp({ role: Role.STAFF });
 
     const project = await repo.createAProject();
 
-    const endpoint = '/project/' + project.id;
+    const endpoint = `/manager/${project.manager.id}/project/${project.id}`;
 
     await test.unauthorized('GET', endpoint);
     await test.notfound(token, 'GET', endpoint + '99');
@@ -141,12 +141,12 @@ describe('ProjectController (e2e)', () => {
     expect(res.body).toEqual(expected);
   });
 
-  it('test /project/:id (PUT) specs', async () => {
+  it('test /manager/:managerId/project/:projectId (PUT) specs', async () => {
     const [token] = await auth.signUp({ role: Role.MANAGER });
 
     const project = await repo.createAProject();
 
-    const endpoint = '/project/' + project.id;
+    const endpoint = `/manager/${project.manager.id}/project/${project.id}`;
 
     const updateDto: UpdateProjectDTO = {
       title: 'Project v2',
@@ -177,13 +177,13 @@ describe('ProjectController (e2e)', () => {
     expect(res.body).toEqual(expected);
   });
 
-  it('test /project/:id/status (PUT) specs', async () => {
+  it('test /manager/:managerId/project/:projectId/status (PUT) specs', async () => {
     const [token] = await auth.signUp({ role: Role.MANAGER });
 
     const project = await repo.createAProject();
 
-    const endpoint = '/project/' + project.id + '/status';
-    const endpoint404 = '/project/' + '99' + '/status';
+    const endpoint = `/manager/${project.manager.id}/project/${project.id}/status`;
+    const endpoint404 = `/manager/${project.manager.id}/project/99/status`;
 
     const statusDto: ManagerProjectStatusDTO = {
       status: ProjectStatus.DONE,
@@ -213,12 +213,12 @@ describe('ProjectController (e2e)', () => {
     expect(res.body).toEqual(expected);
   });
 
-  it('test /project/:id (DELETE) specs', async () => {
+  it('test /manager/:managerId/project/:projectId (DELETE) specs', async () => {
     const [token] = await auth.signUp({ role: Role.MANAGER });
 
     const project = await repo.createAProject();
 
-    const endpoint = '/project/' + project.id;
+    const endpoint = `/manager/${project.manager.id}/project/${project.id}`;
 
     await test.forbidden(Role.STAFF, 'DELETE', endpoint);
     await test.notfound(token, 'DELETE', endpoint + '99');
