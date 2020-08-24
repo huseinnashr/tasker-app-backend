@@ -39,228 +39,171 @@ describe('ProjectTaskController (e2e)', () => {
     await app.close();
   });
 
-  describe('/project/:projectId/task (GET)', () => {
-    it('returns list of all task in a project given project id', async () => {
-      const [token, employee] = await auth.signUp({ role: Role.MANAGER });
+  it('test /project/:projectId/task (GET) specs', async () => {
+    const [token, employee] = await auth.signUp({ role: Role.MANAGER });
 
-      const project = await repo.createAProject(employee);
-      const task = await repo.createATask(project, employee);
+    const project = await repo.createAProject(employee);
+    const task = await repo.createATask(project, employee);
 
-      const res = await request(app.getHttpServer())
-        .get(`/project/${project.id}/task`)
-        .set({ Authorization: token })
-        .expect(200);
+    const endpoint = `/project/${project.id}/task`;
+    const endpoint404 = `/project/99/task`;
 
-      const expected: ProjectTaskListResponseDTO = {
-        permission: { create: true },
-        data: [
-          {
-            id: task.id,
-            title: task.title,
-            body: task.body,
-            status: TaskStatus.IN_PROGRESS,
-            staff: { id: task.staff.id, username: task.staff.username },
-          },
-        ],
-      };
-      expect(res.body).toEqual(expected);
-    });
+    const res = await request(app.getHttpServer())
+      .get(endpoint)
+      .set({ Authorization: token })
+      .expect(200);
 
-    it('returns 404 Not Found when the project with given id was not found', async () =>
-      test.notfound(Role.MANAGER, 'GET', '/project/999999/task'));
+    await test.unauthorized('GET', endpoint);
+    await test.notfound(token, 'GET', endpoint404);
 
-    it('returns 401 Unauthorized when not logged in', async () =>
-      test.unauthorized('GET', '/project/1/task'));
-  });
-
-  describe('/project/:projectId/task (POST)', () => {
-    it('returns list of all task in a project given project id', async () => {
-      const [token, manager] = await auth.signUp({ role: Role.MANAGER });
-      const [, staff] = await auth.signUp({ role: Role.STAFF });
-
-      const project = await repo.createAProject(manager);
-
-      const createDto: CreateTaskDTO = {
-        title: 'New Task',
-        body: 'task body',
-        employeeId: staff.id,
-      };
-      const res = await request(app.getHttpServer())
-        .post(`/project/${project.id}/task`)
-        .send(createDto)
-        .set({ Authorization: token })
-        .expect(201);
-
-      const expected: ProjectTaskListEntityResponseDTO = {
-        data: {
-          id: res.body.data.id,
-          title: createDto.title,
-          body: createDto.body,
-          status: TaskStatus.IN_PROGRESS,
-          staff: { id: staff.id, username: staff.username },
-        },
-      };
-      expect(res.body).toEqual(expected);
-    });
-
-    it('returns 404 Not Found when the project with given id was not found', async () =>
-      await test.notfound(Role.MANAGER, 'POST', `/project/99999/task`, {
-        title: 'New Task',
-        body: 'task body',
-        employeeId: 1,
-      }));
-
-    it('returns 401 Unauthorized when not logged in', async () =>
-      test.unauthorized('POST', '/project/1/task'));
-  });
-
-  describe('/project/:projectId/task/:taskId (GET)', () => {
-    it('returns a task within a project', async () => {
-      const [token, employee] = await auth.signUp({ role: Role.ADMIN });
-
-      const project = await repo.createAProject(employee);
-      const task = await repo.createATask(project, employee);
-
-      const res = await request(app.getHttpServer())
-        .get(`/project/${project.id}/task/${task.id}`)
-        .set({ Authorization: token })
-        .expect(200);
-
-      const expected: ProjectTaskEntityResponseDTO = {
-        permission: { update: true, delete: true },
-        data: {
+    const expected: ProjectTaskListResponseDTO = {
+      permission: { create: true },
+      data: [
+        {
           id: task.id,
           title: task.title,
           body: task.body,
           status: TaskStatus.IN_PROGRESS,
           staff: { id: task.staff.id, username: task.staff.username },
         },
-      };
-      expect(res.body).toEqual(expected);
-    });
-
-    it('returns 404 Not Found when the task with given id was not found', async () => {
-      const [token, employee] = await auth.signUp({ role: Role.MANAGER });
-
-      const project = await repo.createAProject(employee);
-
-      await test.notfound(token, 'GET', `/project/${project.id}/task/999999`);
-    });
-
-    it('returns 401 Unauthorized when not logged in', async () =>
-      test.unauthorized('GET', '/project/1/task/1'));
+      ],
+    };
+    expect(res.body).toEqual(expected);
   });
 
-  describe('/project/:projectId/task/:taskId (PUT)', () => {
-    it('update the task and return it', async () => {
-      const [token, manager] = await auth.signUp({ role: Role.MANAGER });
-      const [, staff] = await auth.signUp({ role: Role.STAFF });
+  it('test /project/:projectId/task (POST) specs', async () => {
+    const [token, manager] = await auth.signUp({ role: Role.MANAGER });
+    const [, staff] = await auth.signUp({ role: Role.STAFF });
 
-      const project = await repo.createAProject(manager);
-      const task = await repo.createATask(project, staff);
+    const project = await repo.createAProject(manager);
 
-      const updateTask: UpdateTaskDTO = {
-        title: 'Updated Task',
-        body: 'updated task body',
-        employeeId: task.staff.id,
-      };
-      const res = await request(app.getHttpServer())
-        .put(`/project/${project.id}/task/${task.id}`)
-        .send(updateTask)
-        .set({ Authorization: token })
-        .expect(200);
+    const endpoint = `/project/${project.id}/task`;
+    const endpoint404 = `/project/99/task`;
 
-      const expected: ProjectTaskListEntityResponseDTO = {
-        data: {
-          id: res.body.data.id,
-          title: updateTask.title,
-          body: updateTask.body,
-          status: TaskStatus.IN_PROGRESS,
-          staff: { id: staff.id, username: staff.username },
-        },
-      };
-      expect(res.body).toEqual(expected);
-    });
+    const createDto: CreateTaskDTO = {
+      title: 'New Task',
+      body: 'task body',
+      employeeId: staff.id,
+    };
 
-    it('return 403 Forbidden if current employee not the task project manager', async () => {
-      const [, manager1] = await auth.signUp({ role: Role.MANAGER });
-      const [token2] = await auth.signUp({ role: Role.MANAGER });
-      const [, staff] = await auth.signUp({ role: Role.STAFF });
+    await test.unauthorized('POST', endpoint);
+    await test.notfound(token, 'POST', endpoint404, createDto);
 
-      const project = await repo.createAProject(manager1);
-      const task = await repo.createATask(project, staff);
+    const res = await request(app.getHttpServer())
+      .post(endpoint)
+      .send(createDto)
+      .set({ Authorization: token })
+      .expect(201);
 
-      const updateTask: UpdateTaskDTO = {
-        title: 'Updated Task',
-        body: 'updated task body',
-        employeeId: task.staff.id,
-      };
-      await request(app.getHttpServer())
-        .put(`/project/${project.id}/task/${task.id}`)
-        .send(updateTask)
-        .set({ Authorization: token2 })
-        .expect(403);
-    });
-
-    it('returns 404 Not Found when the task with given id was not found', async () => {
-      const [token, employee] = await auth.signUp({ role: Role.MANAGER });
-
-      const project = await repo.createAProject(employee);
-
-      await test.notfound(token, 'PUT', `/project/${project.id}/task/999999`, {
-        title: 'New Task',
-        body: 'task body',
-        employeeId: 1,
-      });
-    });
-
-    it('returns 401 Unauthorized when not logged in', async () =>
-      test.unauthorized('PUT', '/project/1/task/1'));
+    const expected: ProjectTaskListEntityResponseDTO = {
+      data: {
+        id: res.body.data.id,
+        title: createDto.title,
+        body: createDto.body,
+        status: TaskStatus.IN_PROGRESS,
+        staff: { id: staff.id, username: staff.username },
+      },
+    };
+    expect(res.body).toEqual(expected);
   });
 
-  describe('/project/:projectId/task/:taskId (DELETE)', () => {
-    it('delete the task', async () => {
-      const [token, manager] = await auth.signUp({ role: Role.MANAGER });
-      const [, staff] = await auth.signUp({ role: Role.STAFF });
+  it('test /project/:projectId/task/:taskId (GET) specs', async () => {
+    const [token, employee] = await auth.signUp({ role: Role.ADMIN });
 
-      const project = await repo.createAProject(manager);
-      const task = await repo.createATask(project, staff);
+    const project = await repo.createAProject(employee);
+    const task = await repo.createATask(project, employee);
 
-      await request(app.getHttpServer())
-        .delete(`/project/${project.id}/task/${task.id}`)
-        .set({ Authorization: token })
-        .expect(200);
+    const endpoint = `/project/${project.id}/task/${task.id}`;
 
-      expect(await taskRepo.findOne(task.id)).toBeUndefined();
-    });
+    await test.unauthorized('GET', endpoint);
+    await test.notfound(token, 'GET', endpoint + '99');
 
-    it('return 403 Forbidden if current employee not the task project manager', async () => {
-      const [, manager1] = await auth.signUp({ role: Role.MANAGER });
-      const [token2] = await auth.signUp({ role: Role.MANAGER });
-      const [, staff] = await auth.signUp({ role: Role.STAFF });
+    const res = await request(app.getHttpServer())
+      .get(endpoint)
+      .set({ Authorization: token })
+      .expect(200);
 
-      const project = await repo.createAProject(manager1);
-      const task = await repo.createATask(project, staff);
+    const expected: ProjectTaskEntityResponseDTO = {
+      permission: { update: true, delete: true },
+      data: {
+        id: task.id,
+        title: task.title,
+        body: task.body,
+        status: TaskStatus.IN_PROGRESS,
+        staff: { id: task.staff.id, username: task.staff.username },
+      },
+    };
+    expect(res.body).toEqual(expected);
+  });
 
-      await request(app.getHttpServer())
-        .delete(`/project/${project.id}/task/${task.id}`)
-        .set({ Authorization: token2 })
-        .expect(403);
-    });
+  it('test /project/:projectId/task/:taskId (PUT) specs', async () => {
+    const [token, manager] = await auth.signUp({ role: Role.MANAGER });
+    const [token2] = await auth.signUp({ role: Role.MANAGER });
+    const [, staff] = await auth.signUp({ role: Role.STAFF });
 
-    it('returns 404 Not Found when the task with given id was not found', async () => {
-      const [token, employee] = await auth.signUp({ role: Role.MANAGER });
+    const project = await repo.createAProject(manager);
+    const task = await repo.createATask(project, staff);
 
-      const project = await repo.createAProject(employee);
+    const endpoint = `/project/${project.id}/task/${task.id}`;
 
-      await test.notfound(
-        token,
-        'DELETE',
-        `/project/${project.id}/task/999999`,
-      );
-    });
+    const updateTask: UpdateTaskDTO = {
+      title: 'Updated Task',
+      body: 'updated task body',
+      employeeId: task.staff.id,
+    };
 
-    it('returns 401 Unauthorized when not logged in', async () =>
-      test.unauthorized('DELETE', '/project/1/task/1'));
+    await test.unauthorized('PUT', endpoint);
+    await test.notfound(token, 'PUT', endpoint + '99', updateTask);
+
+    //return 403 Forbidden if current employee not the task project manager
+    await request(app.getHttpServer())
+      .put(`/project/${project.id}/task/${task.id}`)
+      .send(updateTask)
+      .set({ Authorization: token2 })
+      .expect(403);
+
+    const res = await request(app.getHttpServer())
+      .put(endpoint)
+      .send(updateTask)
+      .set({ Authorization: token })
+      .expect(200);
+
+    const expected: ProjectTaskListEntityResponseDTO = {
+      data: {
+        id: res.body.data.id,
+        title: updateTask.title,
+        body: updateTask.body,
+        status: TaskStatus.IN_PROGRESS,
+        staff: { id: staff.id, username: staff.username },
+      },
+    };
+    expect(res.body).toEqual(expected);
+  });
+
+  it('test /project/:projectId/task/:taskId (DELETE) specs', async () => {
+    const [token, manager] = await auth.signUp({ role: Role.MANAGER });
+    const [token2] = await auth.signUp({ role: Role.MANAGER });
+    const [, staff] = await auth.signUp({ role: Role.STAFF });
+
+    const project = await repo.createAProject(manager);
+    const task = await repo.createATask(project, staff);
+
+    const endpooint = `/project/${project.id}/task/${task.id}`;
+
+    await test.unauthorized('DELETE', endpooint);
+    await test.notfound(token, 'DELETE', endpooint + '99');
+
+    // return 403 Forbidden if current employee not the task project manager
+    await request(app.getHttpServer())
+      .delete(`/project/${project.id}/task/${task.id}`)
+      .set({ Authorization: token2 })
+      .expect(403);
+
+    await request(app.getHttpServer())
+      .delete(endpooint)
+      .set({ Authorization: token })
+      .expect(200);
+
+    expect(await taskRepo.findOne(task.id)).toBeUndefined();
   });
 });
