@@ -12,10 +12,10 @@ import { Auth, CurrentEmployee } from '../core/decorator';
 import { EmployeeEntity } from '../database/entity';
 import {
   CreateCommentDTO,
-  UpdateCommentDTO,
-  UpdateCommentEntityResponseDTO,
-  UpdateCommentListEntityResponseDTO,
-  UpdateCommentListResponseDTO,
+  PutCommentDTO,
+  UpdateCommentEntityDTO,
+  UpdateCommentListEntityDTO,
+  UpdateCommentListDTO,
 } from './dto';
 import { UpdateCommentParamDTO, TaskUpdateParamDTO } from '../shared/dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -30,7 +30,7 @@ export class UpdateCommentController {
   async getAll(
     @Param() param: TaskUpdateParamDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<UpdateCommentListResponseDTO> {
+  ): Promise<UpdateCommentListDTO> {
     return this.updateCommService.getAll(param, employee);
   }
 
@@ -40,7 +40,7 @@ export class UpdateCommentController {
     @Param() param: TaskUpdateParamDTO,
     @Body() createDto: CreateCommentDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<UpdateCommentListEntityResponseDTO> {
+  ): Promise<UpdateCommentListEntityDTO> {
     return this.updateCommService.create(param, createDto, employee);
   }
 
@@ -49,7 +49,7 @@ export class UpdateCommentController {
   async get(
     @Param() param: UpdateCommentParamDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<UpdateCommentEntityResponseDTO> {
+  ): Promise<UpdateCommentEntityDTO> {
     return this.updateCommService.get(param, employee);
   }
 
@@ -57,9 +57,9 @@ export class UpdateCommentController {
   @Auth()
   async update(
     @Param() param: UpdateCommentParamDTO,
-    @Body() commentDto: UpdateCommentDTO,
+    @Body() commentDto: PutCommentDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<UpdateCommentListEntityResponseDTO> {
+  ): Promise<UpdateCommentListEntityDTO> {
     return this.updateCommService.update(param, commentDto, employee);
   }
 

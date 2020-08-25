@@ -7,10 +7,10 @@ import { Role } from '../src/database/enum';
 import { AuthHelper, TestHelper, RepoHelper } from './helper';
 import {
   CreateCommentDTO,
-  UpdateCommentDTO,
-  UpdateCommentListResponseDTO,
-  UpdateCommentEntityResponseDTO,
-  UpdateCommentListEntityResponseDTO,
+  PutCommentDTO,
+  UpdateCommentListDTO,
+  UpdateCommentEntityDTO,
+  UpdateCommentListEntityDTO,
 } from '../src/update-comment/dto';
 
 describe('ProjectTaskController (e2e)', () => {
@@ -55,7 +55,7 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct get comments request
     expect(res.status).toEqual(200);
 
-    const expected: UpdateCommentListResponseDTO = {
+    const expected: UpdateCommentListDTO = {
       permission: { create: true },
       data: [
         {
@@ -99,7 +99,7 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 201 Created on correct create request as task staff
     expect(res.status).toEqual(201);
 
-    const expected: UpdateCommentListEntityResponseDTO = {
+    const expected: UpdateCommentListEntityDTO = {
       data: {
         id: res.body.data.id,
         body: createDto.body,
@@ -146,7 +146,7 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct get a comment request
     expect(res.status).toEqual(200);
 
-    const expected: UpdateCommentEntityResponseDTO = {
+    const expected: UpdateCommentEntityDTO = {
       permission: { update: true, delete: true },
       data: {
         id: comment.id,
@@ -177,7 +177,7 @@ describe('ProjectTaskController (e2e)', () => {
 
     const endpoint = `/project/${project.id}/task/${task.id}/update/${update.id}/comment/${comment.id}`;
 
-    const updateDto: UpdateCommentDTO = {
+    const updateDto: PutCommentDTO = {
       body: 'updated comment body',
     };
 
@@ -189,7 +189,7 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct update a comment request
     expect(res.status).toEqual(200);
 
-    const expected: UpdateCommentListEntityResponseDTO = {
+    const expected: UpdateCommentListEntityDTO = {
       data: {
         id: res.body.data.id,
         body: updateDto.body,

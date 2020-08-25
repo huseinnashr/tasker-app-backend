@@ -4,10 +4,10 @@ import { AppService } from '../core/app.service';
 import { CommentEntity, EmployeeEntity } from '../database/entity';
 import {
   CreateCommentDTO,
-  UpdateCommentDTO,
-  UpdateCommentListResponseDTO,
-  UpdateCommentListEntityResponseDTO,
-  UpdateCommentEntityResponseDTO,
+  PutCommentDTO,
+  UpdateCommentListDTO,
+  UpdateCommentListEntityDTO,
+  UpdateCommentEntityDTO,
 } from './dto';
 import { UpdateRepository, CommentRepository } from '../database/repository';
 import { UpdateCommentParamDTO, TaskUpdateParamDTO } from '../shared/dto';
@@ -26,14 +26,14 @@ export class UpdateCommentService extends AppService {
   async getAll(
     param: TaskUpdateParamDTO,
     employee: EmployeeEntity,
-  ): Promise<UpdateCommentListResponseDTO> {
+  ): Promise<UpdateCommentListDTO> {
     const where = param.updateId;
     const options = { relations: ['task', 'task.project'] };
     const update = await this.updateRepo.findOneOrException(where, options);
 
     const comments = await this.commentRepo.find({ where: { update } });
 
-    return this.transform(UpdateCommentListResponseDTO, {
+    return this.transform(UpdateCommentListDTO, {
       data: comments,
       permission: this.commentPermission.getList(update, employee),
     });
@@ -43,7 +43,7 @@ export class UpdateCommentService extends AppService {
     param: TaskUpdateParamDTO,
     createDto: CreateCommentDTO,
     employee: EmployeeEntity,
-  ): Promise<UpdateCommentListEntityResponseDTO> {
+  ): Promise<UpdateCommentListEntityDTO> {
     const where = param.updateId;
     const options = { relations: ['task', 'task.project'] };
     const update = await this.updateRepo.findOneOrException(where, options);
@@ -58,7 +58,7 @@ export class UpdateCommentService extends AppService {
 
     await this.commentRepo.save(comment);
 
-    return this.transform(UpdateCommentListEntityResponseDTO, {
+    return this.transform(UpdateCommentListEntityDTO, {
       data: comment,
     });
   }
@@ -66,13 +66,13 @@ export class UpdateCommentService extends AppService {
   async get(
     param: UpdateCommentParamDTO,
     employee: EmployeeEntity,
-  ): Promise<UpdateCommentEntityResponseDTO> {
+  ): Promise<UpdateCommentEntityDTO> {
     const comment = await this.commentRepo.findOneOrException({
       id: param.commentId,
       update: { id: param.updateId },
     });
 
-    return this.transform(UpdateCommentEntityResponseDTO, {
+    return this.transform(UpdateCommentEntityDTO, {
       data: comment,
       permission: this.commentPermission.getEntity(comment, employee),
     });
@@ -80,9 +80,9 @@ export class UpdateCommentService extends AppService {
 
   async update(
     param: UpdateCommentParamDTO,
-    commentDto: UpdateCommentDTO,
+    commentDto: PutCommentDTO,
     employee: EmployeeEntity,
-  ): Promise<UpdateCommentListEntityResponseDTO> {
+  ): Promise<UpdateCommentListEntityDTO> {
     const where = { id: param.commentId, update: { id: param.updateId } };
     const comment = await this.commentRepo.findOneOrException(where);
 
@@ -92,7 +92,7 @@ export class UpdateCommentService extends AppService {
 
     await this.commentRepo.save(comment);
 
-    return this.transform(UpdateCommentListEntityResponseDTO, {
+    return this.transform(UpdateCommentListEntityDTO, {
       data: comment,
     });
   }
