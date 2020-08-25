@@ -7,9 +7,9 @@ import { Role, TaskStatus } from '../src/database/enum';
 import {
   CreateTaskDTO,
   UpdateTaskDTO,
-  ProjectTaskListResponseDTO,
-  ProjectTaskEntityResponseDTO,
-  ProjectTaskListEntityResponseDTO,
+  ProjectTaskListDTO,
+  ProjectTaskEntityDTO,
+  ProjectTaskListEntityDTO,
 } from '../src/project-task/dto';
 import { AuthHelper, TestHelper, RepoHelper } from './helper';
 
@@ -39,7 +39,7 @@ describe('ProjectTaskController (e2e)', () => {
     await app.close();
   });
 
-  it('test /project/:projectId/task (GET) specs', async () => {
+  it.only('test /project/:projectId/task (GET) specs', async () => {
     const [token, employee] = await auth.signUp({ role: Role.MANAGER });
 
     const project = await repo.createAProject(employee);
@@ -50,13 +50,12 @@ describe('ProjectTaskController (e2e)', () => {
 
     const res = await request(app.getHttpServer())
       .get(endpoint)
-      .set({ Authorization: token })
-      .expect(200);
+      .set({ Authorization: token });
 
     await test.unauthorized('GET', endpoint);
     await test.notfound(token, 'GET', endpoint404);
 
-    const expected: ProjectTaskListResponseDTO = {
+    const expected: ProjectTaskListDTO = {
       permission: { create: true },
       data: [
         {
@@ -95,7 +94,7 @@ describe('ProjectTaskController (e2e)', () => {
       .set({ Authorization: token })
       .expect(201);
 
-    const expected: ProjectTaskListEntityResponseDTO = {
+    const expected: ProjectTaskListEntityDTO = {
       data: {
         id: res.body.data.id,
         title: createDto.title,
@@ -123,7 +122,7 @@ describe('ProjectTaskController (e2e)', () => {
       .set({ Authorization: token })
       .expect(200);
 
-    const expected: ProjectTaskEntityResponseDTO = {
+    const expected: ProjectTaskEntityDTO = {
       permission: { update: true, delete: true },
       data: {
         id: task.id,
@@ -168,7 +167,7 @@ describe('ProjectTaskController (e2e)', () => {
       .set({ Authorization: token })
       .expect(200);
 
-    const expected: ProjectTaskListEntityResponseDTO = {
+    const expected: ProjectTaskListEntityDTO = {
       data: {
         id: res.body.data.id,
         title: updateTask.title,

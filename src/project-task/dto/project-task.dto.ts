@@ -1,8 +1,8 @@
 import { Expose, Type } from 'class-transformer';
 import { TaskStatus } from '../../database/enum';
-import { ProjectTaskStaffResponseDTO } from './project-task-staff-response.dto';
+import { ProjectTaskStaffDTO } from './project-task-staff.dto';
 
-export class ProjectTaskResponseDTO {
+export class ProjectTaskDTO {
   @Expose()
   id: number;
 
@@ -16,6 +16,6 @@ export class ProjectTaskResponseDTO {
   status: TaskStatus;
 
   @Expose()
-  @Type(() => ProjectTaskStaffResponseDTO)
-  staff: ProjectTaskStaffResponseDTO;
+  @Type(() => ProjectTaskStaffDTO)
+  staff: ProjectTaskStaffDTO;
 }
