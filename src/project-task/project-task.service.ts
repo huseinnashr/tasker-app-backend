@@ -15,7 +15,7 @@ import {
 } from '../database/repository';
 import { TaskStatus } from '../database/enum';
 import { AppService } from '../core/app.service';
-import { ProjectParamDTO, ProjectTaskParamDTO } from '../shared/dto';
+import { ProjectTaskParamDTO, ProjectTaskListParamDTO } from '../shared/dto';
 import { TaskPermission } from '../shared/permission';
 
 @Injectable()
@@ -30,7 +30,7 @@ export class ProjectTaskService extends AppService {
   }
 
   async getAll(
-    param: ProjectParamDTO,
+    param: ProjectTaskListParamDTO,
     employee: EmployeeEntity,
   ): Promise<ProjectTaskListDTO> {
     const project = await this.proRepo.findOneOrException(param.projectId);
@@ -47,7 +47,7 @@ export class ProjectTaskService extends AppService {
   }
 
   async create(
-    param: ProjectParamDTO,
+    param: ProjectTaskListParamDTO,
     createDto: CreateTaskDTO,
     employee: EmployeeEntity,
   ): Promise<ProjectTaskListEntityDTO> {

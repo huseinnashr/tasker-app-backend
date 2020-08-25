@@ -1,7 +1,11 @@
 import { IsNumberString } from 'class-validator';
-import { ProjectParamDTO } from '.';
 
-export class ProjectTaskParamDTO extends ProjectParamDTO {
+export class ProjectTaskListParamDTO {
+  @IsNumberString()
+  projectId: number;
+}
+
+export class ProjectTaskParamDTO extends ProjectTaskListParamDTO {
   @IsNumberString()
   taskId: number;
 }

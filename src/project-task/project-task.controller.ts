@@ -18,7 +18,7 @@ import {
   ProjectTaskListEntityDTO,
 } from './dto';
 import { EmployeeEntity } from '../database/entity';
-import { ProjectParamDTO, ProjectTaskParamDTO } from '../shared/dto';
+import { ProjectTaskParamDTO, ProjectTaskListParamDTO } from '../shared/dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('project/:projectId/task')
@@ -29,7 +29,7 @@ export class ProjectTaskController {
   @Get('/')
   @Auth()
   async getAll(
-    @Param() param: ProjectParamDTO,
+    @Param() param: ProjectTaskListParamDTO,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<ProjectTaskListDTO> {
     return this.proTaskService.getAll(param, employee);
@@ -38,7 +38,7 @@ export class ProjectTaskController {
   @Post('/')
   @Auth(Role.MANAGER)
   async create(
-    @Param() param: ProjectParamDTO,
+    @Param() param: ProjectTaskListParamDTO,
     @Body() taskDto: CreateTaskDTO,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<ProjectTaskListEntityDTO> {

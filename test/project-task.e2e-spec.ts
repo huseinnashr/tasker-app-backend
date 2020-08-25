@@ -39,7 +39,7 @@ describe('ProjectTaskController (e2e)', () => {
     await app.close();
   });
 
-  it.only('test /project/:projectId/task (GET) specs', async () => {
+  it('test /project/:projectId/task (GET) specs', async () => {
     const [token, employee] = await auth.signUp({ role: Role.MANAGER });
 
     const project = await repo.createAProject(employee);
