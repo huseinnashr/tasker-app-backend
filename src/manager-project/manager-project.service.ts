@@ -8,6 +8,7 @@ import {
   ManagerProjectListEntityDTO,
   ManagerProjectListDTO,
   ManagerProjectEntityDTO,
+  ManagerProjectStatsEntityDTO,
 } from './dto';
 import { ProjectStatus, Role } from '../database/enum';
 import { EmployeeEntity, ProjectEntity } from '../database/entity';
@@ -66,6 +67,23 @@ export class ManagerProjectService extends AppService {
 
     return this.transform(ManagerProjectListEntityDTO, {
       data: project,
+    });
+  }
+
+  async stats(
+    param: ManagerParamDTO,
+    employee: EmployeeEntity,
+  ): Promise<ManagerProjectStatsEntityDTO> {
+    const managerWhere = { id: param.managerId, role: Role.MANAGER };
+    const manager = await this.empRepo.findOneOrException(managerWhere);
+
+    const can = this.projectPermission.readAll(manager, employee);
+    this.canView(can, "Manager's Project");
+
+    const stats = await this.proRepo.getStats(manager);
+
+    return this.transform(ManagerProjectStatsEntityDTO, {
+      data: stats,
     });
   }
 

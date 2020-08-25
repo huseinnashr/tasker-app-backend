@@ -10,6 +10,7 @@ import {
   ManagerProjectEntityDTO,
   ManagerProjectListEntityDTO,
   ManagerProjectListDTO,
+  ManagerProjectStatsEntityDTO,
 } from '../src/manager-project/dto';
 import { Role, ProjectStatus } from '../src/database/enum';
 import { AuthHelper, TestHelper, RepoHelper } from './helper';
@@ -68,6 +69,29 @@ describe('ProjectController (e2e)', () => {
         },
       ],
       permission: { create: true },
+    };
+    expect(res.body).toEqual(expected);
+  });
+
+  it('test /manager/:managerId/project/stats (GET) specs', async () => {
+    const [token, manager] = await auth.signUp({ role: Role.MANAGER });
+    const [, manager2] = await auth.signUp({ role: Role.MANAGER });
+
+    await repo.createAProject(manager);
+    await repo.createAProject(manager);
+    await repo.createAProject(manager2);
+
+    const endpoint = `/manager/${manager.id}/project/stats`;
+
+    await test.unauthorized('GET', endpoint);
+
+    const res = await request(app.getHttpServer())
+      .get(endpoint)
+      .set({ Authorization: token })
+      .expect(200);
+
+    const expected: ManagerProjectStatsEntityDTO = {
+      data: { total: 2, completed: 0 },
     };
     expect(res.body).toEqual(expected);
   });
