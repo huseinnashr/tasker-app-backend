@@ -16,7 +16,7 @@ import { Response } from 'express';
 import { ApiTags, ApiBody, ApiConsumes, ApiOkResponse } from '@nestjs/swagger';
 import { FileUploadDTO } from './dto/file-upload.dto';
 import { MimeType } from '../database/enum';
-import { FileEntityResponseDTO } from './dto';
+import { FileEntityDTO } from './dto';
 
 @Controller('file')
 @ApiTags('File Upload')
@@ -31,7 +31,7 @@ export class FileController {
   async create(
     @UploadedFile() uploadedFile: MulterFile,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<FileEntityResponseDTO> {
+  ): Promise<FileEntityDTO> {
     return this.fileService.create(uploadedFile, employee);
   }
 

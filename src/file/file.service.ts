@@ -7,7 +7,7 @@ import { FileEntity, EmployeeEntity } from '../database/entity';
 import { MimeType } from '../database/enum';
 import { promises as fs } from 'fs';
 import { Readable, Stream } from 'stream';
-import { FileEntityResponseDTO } from './dto';
+import { FileEntityDTO } from './dto';
 import { FilePermission } from '../shared/permission';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class FileService extends AppService {
   async create(
     uploadedFile: MulterFile,
     employee: EmployeeEntity,
-  ): Promise<FileEntityResponseDTO> {
+  ): Promise<FileEntityDTO> {
     if (!uploadedFile) throw new BadRequestException('File cannot be empty');
 
     const file = new FileEntity();
@@ -33,7 +33,7 @@ export class FileService extends AppService {
 
     await this.fileRepo.save(file);
 
-    return this.transform(FileEntityResponseDTO, { data: file });
+    return this.transform(FileEntityDTO, { data: file });
   }
 
   async get(

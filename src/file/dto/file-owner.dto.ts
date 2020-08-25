@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 
-export class FileOwnerResponseDTO {
+export class FileOwnerDTO {
   @Expose()
   id: number;
 

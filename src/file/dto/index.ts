@@ -1,2 +1,2 @@
-export * from './file-owner-response.dto';
-export * from './file-entity-response.dto';
+export * from './file-owner.dto';
+export * from './file-entity.dto';

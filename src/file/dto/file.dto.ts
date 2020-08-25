@@ -1,8 +1,8 @@
 import { Expose, Type } from 'class-transformer';
-import { FileOwnerResponseDTO } from '.';
+import { FileOwnerDTO } from '.';
 import { MimeType } from '../../database/enum';
 
-export class FileResponseDTO {
+export class FileDTO {
   @Expose()
   id: number;
 
@@ -13,6 +13,6 @@ export class FileResponseDTO {
   filename: string;
 
   @Expose()
-  @Type(() => FileOwnerResponseDTO)
-  owner: FileOwnerResponseDTO;
+  @Type(() => FileOwnerDTO)
+  owner: FileOwnerDTO;
 }

@@ -5,7 +5,7 @@ import { AppModule } from '../src/app.module';
 import { FileRepository } from '../src/database/repository';
 import { Role, MimeType } from '../src/database/enum';
 import { AuthHelper, TestHelper, FileHelper, RepoHelper } from './helper';
-import { FileEntityResponseDTO } from '../src/file/dto';
+import { FileEntityDTO } from '../src/file/dto';
 
 describe('FileController (e2e)', () => {
   let app: INestApplication;
@@ -53,7 +53,7 @@ describe('FileController (e2e)', () => {
     // A.1. Return 201 Created on correct create request as task staff
     expect(res.status).toEqual(201);
 
-    const expected: FileEntityResponseDTO = {
+    const expected: FileEntityDTO = {
       data: {
         id: res.body.data.id,
         mime: testFile.contentType as MimeType,
