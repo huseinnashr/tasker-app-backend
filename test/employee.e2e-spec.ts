@@ -143,7 +143,7 @@ describe('EmployeeController (e2e)', () => {
     expect(updatedEmployee).toMatchObject(updateDto);
   });
 
-  it('/employee/:id (DELETE)', async () => {
+  it('test /employee/:id (DELETE) specs', async () => {
     const [token] = await auth.signUp({ role: Role.ADMIN });
     const [, employee] = await auth.signUp({ role: Role.STAFF });
 
@@ -161,7 +161,7 @@ describe('EmployeeController (e2e)', () => {
     expect(deletedEmployee).toBeUndefined();
   });
 
-  it('test /employe/profile-picture (POST, GET)', async () => {
+  it('test /employee/profile-picture (POST, GET)', async () => {
     const [token] = await auth.signUp({ role: Role.ADMIN });
 
     const endpoint = '/employee/profile-picture';
