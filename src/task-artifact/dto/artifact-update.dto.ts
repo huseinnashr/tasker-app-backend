@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 
-export class ArtifactUpdateResponseDTO {
+export class ArtifactUpdateDTO {
   @Expose()
   id: number;
 

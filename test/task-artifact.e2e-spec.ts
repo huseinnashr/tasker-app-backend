@@ -9,9 +9,9 @@ import {
   CreateArtifactDTO,
   UpdateArtifactDTO,
   AssignUpdateDTO,
-  TaskArtifactListResponseDTO,
-  TaskArtifactListEntityResponseDTO,
-  ArtifactUpdateEntityResponseDTO,
+  TaskArtifactListDTO,
+  TaskArtifactListEntityDTO,
+  ArtifactUpdateEntityDTO,
 } from '../src/task-artifact/dto';
 
 describe('ProjectTaskController (e2e)', () => {
@@ -56,7 +56,7 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct getall artifacts request
     expect(res.status).toEqual(200);
 
-    const expected: TaskArtifactListResponseDTO = {
+    const expected: TaskArtifactListDTO = {
       permission: { create: true },
       data: [
         {
@@ -94,7 +94,7 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 201 Created on correct create an artifact request
     expect(res.status).toEqual(201);
 
-    const expected: TaskArtifactListEntityResponseDTO = {
+    const expected: TaskArtifactListEntityDTO = {
       data: {
         id: res.body.data.id,
         description: createDto.description,
@@ -134,7 +134,7 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct update an artifact request
     expect(res.status).toEqual(200);
 
-    const expected: TaskArtifactListEntityResponseDTO = {
+    const expected: TaskArtifactListEntityDTO = {
       data: {
         id: artifact.id,
         description: updateDto.description,
@@ -199,7 +199,7 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct assign update request
     expect(res.status).toEqual(200);
 
-    const expected: ArtifactUpdateEntityResponseDTO = {
+    const expected: ArtifactUpdateEntityDTO = {
       data: {
         id: artifact.id,
         title: update.title,
