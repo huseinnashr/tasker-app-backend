@@ -4,10 +4,10 @@ import { ProjectRepository, EmployeeRepository } from '../database/repository';
 import {
   CreateProjectDTO,
   UpdateProjectDTO,
-  ManagerProjectStatusDTO,
-  ManagerProjectListEntityResponseDTO,
-  ManagerProjectListResponseDTO,
-  ManagerProjectEntityResponseDTO,
+  UpdateProjectStatusDTO,
+  ManagerProjectListEntityDTO,
+  ManagerProjectListDTO,
+  ManagerProjectEntityDTO,
 } from './dto';
 import { ProjectStatus, Role } from '../database/enum';
 import { EmployeeEntity, ProjectEntity } from '../database/entity';
@@ -30,7 +30,7 @@ export class ManagerProjectService extends AppService {
   async getAll(
     param: ManagerParamDTO,
     employee: EmployeeEntity,
-  ): Promise<ManagerProjectListResponseDTO> {
+  ): Promise<ManagerProjectListDTO> {
     const managerWhere = { id: param.managerId, role: Role.MANAGER };
     const manager = await this.empRepo.findOneOrException(managerWhere);
 
@@ -39,7 +39,7 @@ export class ManagerProjectService extends AppService {
 
     const projects = await this.proRepo.find({ where: { manager } });
 
-    return this.transform(ManagerProjectListResponseDTO, {
+    return this.transform(ManagerProjectListDTO, {
       data: projects,
       permission: this.projectPermission.getList(manager, employee),
     });
@@ -49,7 +49,7 @@ export class ManagerProjectService extends AppService {
     param: ManagerParamDTO,
     createDto: CreateProjectDTO,
     employee: EmployeeEntity,
-  ): Promise<ManagerProjectListEntityResponseDTO> {
+  ): Promise<ManagerProjectListEntityDTO> {
     const managerWhere = { id: param.managerId, role: Role.MANAGER };
     const manager = await this.empRepo.findOneOrException(managerWhere);
 
@@ -64,7 +64,7 @@ export class ManagerProjectService extends AppService {
 
     await this.proRepo.save(project);
 
-    return this.transform(ManagerProjectListEntityResponseDTO, {
+    return this.transform(ManagerProjectListEntityDTO, {
       data: project,
     });
   }
@@ -72,11 +72,11 @@ export class ManagerProjectService extends AppService {
   async get(
     param: ProjectParamDTO,
     employee: EmployeeEntity,
-  ): Promise<ManagerProjectEntityResponseDTO> {
+  ): Promise<ManagerProjectEntityDTO> {
     const where = { id: param.projectId, manager: { id: param.managerId } };
     const project = await this.proRepo.findOneOrException(where);
 
-    return this.transform(ManagerProjectEntityResponseDTO, {
+    return this.transform(ManagerProjectEntityDTO, {
       data: project,
       permission: this.projectPermission.getEntity(project, employee),
     });
@@ -85,7 +85,7 @@ export class ManagerProjectService extends AppService {
   async update(
     param: ProjectParamDTO,
     updateDto: UpdateProjectDTO,
-  ): Promise<ManagerProjectListEntityResponseDTO> {
+  ): Promise<ManagerProjectListEntityDTO> {
     const where = { id: param.projectId, manager: { id: param.managerId } };
     const project = await this.proRepo.findOneOrException(where);
 
@@ -94,22 +94,22 @@ export class ManagerProjectService extends AppService {
 
     await this.proRepo.save(project);
 
-    return this.transform(ManagerProjectListEntityResponseDTO, {
+    return this.transform(ManagerProjectListEntityDTO, {
       data: project,
     });
   }
 
   async updateStatus(
     param: ProjectParamDTO,
-    statusDto: ManagerProjectStatusDTO,
-  ): Promise<ManagerProjectListEntityResponseDTO> {
+    statusDto: UpdateProjectStatusDTO,
+  ): Promise<ManagerProjectListEntityDTO> {
     const where = { id: param.projectId, manager: { id: param.managerId } };
     const project = await this.proRepo.findOneOrException(where);
     project.status = statusDto.status;
 
     await this.proRepo.save(project);
 
-    return this.transform(ManagerProjectListEntityResponseDTO, {
+    return this.transform(ManagerProjectListEntityDTO, {
       data: project,
     });
   }

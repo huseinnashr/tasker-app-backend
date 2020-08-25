@@ -1,8 +1,8 @@
 import { Expose, Type } from 'class-transformer';
 import { ProjectStatus } from '../../database/enum';
-import { ManagerProjectManagerResponseDTO } from './manager-project-manager-response.dto';
+import { ManagerProjectManagerDTO } from './manager-project-manager.dto';
 
-export class ManagerProjectResponseDTO {
+export class ManagerProjectDTO {
   @Expose()
   id: number;
 
@@ -16,6 +16,6 @@ export class ManagerProjectResponseDTO {
   status: ProjectStatus;
 
   @Expose()
-  @Type(() => ManagerProjectManagerResponseDTO)
-  manager: ManagerProjectManagerResponseDTO;
+  @Type(() => ManagerProjectManagerDTO)
+  manager: ManagerProjectManagerDTO;
 }

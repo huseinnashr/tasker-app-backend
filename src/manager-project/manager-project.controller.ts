@@ -14,10 +14,10 @@ import { Role } from '../database/enum';
 import {
   CreateProjectDTO,
   UpdateProjectDTO,
-  ManagerProjectStatusDTO,
-  ManagerProjectListResponseDTO,
-  ManagerProjectListEntityResponseDTO,
-  ManagerProjectEntityResponseDTO,
+  UpdateProjectStatusDTO,
+  ManagerProjectListDTO,
+  ManagerProjectListEntityDTO,
+  ManagerProjectEntityDTO,
 } from './dto';
 import { ProjectParamDTO, ManagerParamDTO } from '../shared/dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -32,7 +32,7 @@ export class ManagerProjectController {
   async getAll(
     @Param() param: ManagerParamDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<ManagerProjectListResponseDTO> {
+  ): Promise<ManagerProjectListDTO> {
     return this.projectService.getAll(param, employee);
   }
 
@@ -42,7 +42,7 @@ export class ManagerProjectController {
     @Param() param: ManagerParamDTO,
     @Body() createDto: CreateProjectDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<ManagerProjectListEntityResponseDTO> {
+  ): Promise<ManagerProjectListEntityDTO> {
     return this.projectService.create(param, createDto, employee);
   }
 
@@ -51,7 +51,7 @@ export class ManagerProjectController {
   async get(
     @Param() param: ProjectParamDTO,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<ManagerProjectEntityResponseDTO> {
+  ): Promise<ManagerProjectEntityDTO> {
     return this.projectService.get(param, employee);
   }
 
@@ -60,7 +60,7 @@ export class ManagerProjectController {
   async update(
     @Param() param: ProjectParamDTO,
     @Body() updateDto: UpdateProjectDTO,
-  ): Promise<ManagerProjectListEntityResponseDTO> {
+  ): Promise<ManagerProjectListEntityDTO> {
     return this.projectService.update(param, updateDto);
   }
 
@@ -68,8 +68,8 @@ export class ManagerProjectController {
   @Auth(Role.MANAGER)
   async updateStatus(
     @Param() param: ProjectParamDTO,
-    @Body() statusDto: ManagerProjectStatusDTO,
-  ): Promise<ManagerProjectListEntityResponseDTO> {
+    @Body() statusDto: UpdateProjectStatusDTO,
+  ): Promise<ManagerProjectListEntityDTO> {
     return this.projectService.updateStatus(param, statusDto);
   }
 
