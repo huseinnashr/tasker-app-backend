@@ -5,7 +5,7 @@ import { DoSignInDTO, CurrentUserEntityDTO } from '../src/auth/dto';
 import { AppModule } from '../src/app.module';
 import { Role } from '../src/database/enum';
 import { AuthHelper, convertTo } from './helper';
-import { CurrentUserDTO } from '../src/auth/dto/current-user.dto';
+import { CurrentUserDTO } from '../src/auth/dto/response/current-user.dto';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
