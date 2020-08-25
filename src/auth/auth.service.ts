@@ -2,10 +2,10 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmployeeRepository } from '../database/repository';
 import {
-  SignInDTO,
+  DoSignInDTO,
   JwtPayload,
-  CurrentUserEntityResponseDTO,
-  SignInEntityResponseDTO,
+  CurrentUserEntityDTO,
+  SignInEntityDTO,
 } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { AppService } from '../core/app.service';
@@ -21,7 +21,7 @@ export class AuthService extends AppService {
     super();
   }
 
-  async signIn(signInDto: SignInDTO): Promise<SignInEntityResponseDTO> {
+  async signIn(signInDto: DoSignInDTO): Promise<SignInEntityDTO> {
     const { username, password } = signInDto;
     const employee = await this.employeeRepository.findOne({ username });
 
@@ -32,7 +32,7 @@ export class AuthService extends AppService {
     const payload: JwtPayload = { username };
     const accessToken = this.jwtService.sign(payload);
 
-    return this.transform(SignInEntityResponseDTO, {
+    return this.transform(SignInEntityDTO, {
       data: {
         ...employee,
         accessToken,
@@ -40,7 +40,7 @@ export class AuthService extends AppService {
     });
   }
 
-  currentUser(employee: EmployeeEntity): CurrentUserEntityResponseDTO {
-    return this.transform(CurrentUserEntityResponseDTO, { data: employee });
+  currentUser(employee: EmployeeEntity): CurrentUserEntityDTO {
+    return this.transform(CurrentUserEntityDTO, { data: employee });
   }
 }

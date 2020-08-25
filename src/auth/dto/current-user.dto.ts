@@ -1,7 +1,7 @@
 import { Expose } from 'class-transformer';
 import { Role } from '../../database/enum';
 
-export class CurrentUserResponseDTO {
+export class CurrentUserDTO {
   @Expose()
   id: number;
 

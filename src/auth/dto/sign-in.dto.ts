@@ -1,9 +1,7 @@
-import { IsString } from 'class-validator';
+import { Expose } from 'class-transformer';
+import { CurrentUserDTO } from './current-user.dto';
 
-export class SignInDTO {
-  @IsString()
-  username: string;
-
-  @IsString()
-  password: string;
+export class SignInDTO extends CurrentUserDTO {
+  @Expose()
+  accessToken: string;
 }

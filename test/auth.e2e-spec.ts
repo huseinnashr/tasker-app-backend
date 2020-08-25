@@ -1,11 +1,11 @@
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SignInDTO, CurrentUserEntityResponseDTO } from '../src/auth/dto';
+import { DoSignInDTO, CurrentUserEntityDTO } from '../src/auth/dto';
 import { AppModule } from '../src/app.module';
 import { Role } from '../src/database/enum';
 import { AuthHelper, convertTo } from './helper';
-import { CurrentUserResponseDTO } from '../src/auth/dto/current-user-response.dto';
+import { CurrentUserDTO } from '../src/auth/dto/current-user.dto';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -32,7 +32,7 @@ describe('AuthController (e2e)', () => {
       const password = 'password';
       const [, admin] = await auth.signUp({ role: Role.ADMIN, password });
 
-      const signInDto: SignInDTO = {
+      const signInDto: DoSignInDTO = {
         username: admin.username,
         password: password,
       };
@@ -42,7 +42,7 @@ describe('AuthController (e2e)', () => {
         .send(signInDto)
         .expect(200);
 
-      const expected = convertTo(CurrentUserResponseDTO, admin);
+      const expected = convertTo(CurrentUserDTO, admin);
 
       const { accessToken, ...employee } = res.body.data;
       expect(accessToken).toBeDefined();
@@ -50,7 +50,7 @@ describe('AuthController (e2e)', () => {
     });
 
     it('returns 401 Unauthorized when account was not found / wrong password', async () => {
-      const unknownEmployeeDTO: SignInDTO = {
+      const unknownEmployeeDTO: DoSignInDTO = {
         username: 'test',
         password: 'Test1234',
       };
@@ -63,7 +63,7 @@ describe('AuthController (e2e)', () => {
       const password = 'password';
       const [, admin] = await auth.signUp({ role: Role.STAFF, password });
 
-      const wrongPasswordDTO: SignInDTO = {
+      const wrongPasswordDTO: DoSignInDTO = {
         username: admin.username,
         password: 'wrong_password',
       };
@@ -84,7 +84,7 @@ describe('AuthController (e2e)', () => {
         .set({ Authorization: token })
         .expect(200);
 
-      const expected = convertTo(CurrentUserEntityResponseDTO, {
+      const expected = convertTo(CurrentUserEntityDTO, {
         data: admin,
       });
 

@@ -1,9 +1,5 @@
 import { Controller, Post, Body, HttpCode, Get } from '@nestjs/common';
-import {
-  SignInDTO,
-  SignInEntityResponseDTO,
-  CurrentUserEntityResponseDTO,
-} from './dto';
+import { DoSignInDTO, SignInEntityDTO, CurrentUserEntityDTO } from './dto';
 import { AuthService } from './auth.service';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { EmployeeEntity } from '../database/entity';
@@ -16,7 +12,7 @@ export class AuthController {
   @Post('/signin')
   @HttpCode(200)
   @ApiTags('Authentication')
-  async signIn(@Body() signInDto: SignInDTO): Promise<SignInEntityResponseDTO> {
+  async signIn(@Body() signInDto: DoSignInDTO): Promise<SignInEntityDTO> {
     return this.authService.signIn(signInDto);
   }
 
@@ -25,7 +21,7 @@ export class AuthController {
   @ApiTags('Account')
   currentUser(
     @CurrentEmployee() employee: EmployeeEntity,
-  ): CurrentUserEntityResponseDTO {
+  ): CurrentUserEntityDTO {
     return this.authService.currentUser(employee);
   }
 }
