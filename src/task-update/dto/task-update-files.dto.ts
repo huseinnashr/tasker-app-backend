@@ -1,7 +1,7 @@
 import { Expose } from 'class-transformer';
 import { MimeType } from '../../database/enum';
 
-export class TaskUpdateFilesResponseDTO {
+export class TaskUpdateFilesDTO {
   @Expose()
   id: number;
 

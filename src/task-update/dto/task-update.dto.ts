@@ -1,8 +1,8 @@
 import { Expose, Type } from 'class-transformer';
 import { UpdateType } from '../../database/enum';
-import { TaskUpdateFilesResponseDTO } from '.';
+import { TaskUpdateFilesDTO } from '.';
 
-export class TaskUpdateResponseDTO {
+export class TaskUpdateDTO {
   @Expose()
   id: number;
 
@@ -16,6 +16,6 @@ export class TaskUpdateResponseDTO {
   type: UpdateType;
 
   @Expose()
-  @Type(() => TaskUpdateFilesResponseDTO)
-  files: TaskUpdateFilesResponseDTO[];
+  @Type(() => TaskUpdateFilesDTO)
+  files: TaskUpdateFilesDTO[];
 }

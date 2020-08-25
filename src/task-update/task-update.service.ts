@@ -10,9 +10,9 @@ import { UpdateEntity, EmployeeEntity } from '../database/entity';
 import {
   CreateUpdateDTO,
   UpdateUpdateDTO,
-  TaskUpdateListResponseDTO,
-  TaskUpdateListEntityResponseDTO,
-  TaskUpdateEntityResponseDTO,
+  TaskUpdateListDTO,
+  TaskUpdateListEntityDTO,
+  TaskUpdateEntityDTO,
 } from './dto';
 import { ProjectTaskParamDTO, TaskUpdateParamDTO } from '../shared/dto';
 import { UpdatePermission } from '../shared/permission';
@@ -31,11 +31,11 @@ export class TaskUpdateService extends AppService {
   async getAll(
     param: ProjectTaskParamDTO,
     employee: EmployeeEntity,
-  ): Promise<TaskUpdateListResponseDTO> {
+  ): Promise<TaskUpdateListDTO> {
     const task = await this.taskRepo.findOneOrException(param.taskId);
     const updates = await this.updateRepo.find({ where: { task } });
 
-    return this.transform(TaskUpdateListResponseDTO, {
+    return this.transform(TaskUpdateListDTO, {
       data: updates,
       permission: this.updatePermission.getList(task, employee),
     });
@@ -45,7 +45,7 @@ export class TaskUpdateService extends AppService {
     param: ProjectTaskParamDTO,
     createDto: CreateUpdateDTO,
     employee: EmployeeEntity,
-  ): Promise<TaskUpdateListEntityResponseDTO> {
+  ): Promise<TaskUpdateListEntityDTO> {
     const task = await this.taskRepo.findOneOrException(param.taskId);
 
     this.canManage(task.isStaff(employee), 'Task');
@@ -64,18 +64,18 @@ export class TaskUpdateService extends AppService {
 
     await this.updateRepo.save(update);
 
-    return this.transform(TaskUpdateListEntityResponseDTO, { data: update });
+    return this.transform(TaskUpdateListEntityDTO, { data: update });
   }
 
   async get(
     param: TaskUpdateParamDTO,
     employee: EmployeeEntity,
-  ): Promise<TaskUpdateEntityResponseDTO> {
+  ): Promise<TaskUpdateEntityDTO> {
     const where = { id: param.updateId, task: { id: param.taskId } };
     const option = { relations: ['task'] };
     const update = await this.updateRepo.findOneOrException(where, option);
 
-    return this.transform(TaskUpdateEntityResponseDTO, {
+    return this.transform(TaskUpdateEntityDTO, {
       data: update,
       permission: this.updatePermission.getEntity(update, employee),
     });
@@ -85,7 +85,7 @@ export class TaskUpdateService extends AppService {
     param: TaskUpdateParamDTO,
     updateDto: UpdateUpdateDTO,
     employee: EmployeeEntity,
-  ): Promise<TaskUpdateListEntityResponseDTO> {
+  ): Promise<TaskUpdateListEntityDTO> {
     const where = { id: param.updateId, task: { id: param.taskId } };
     const option = { relations: ['task'] };
     const update = await this.updateRepo.findOneOrException(where, option);
@@ -104,7 +104,7 @@ export class TaskUpdateService extends AppService {
 
     await this.updateRepo.save(update);
 
-    return this.transform(TaskUpdateListEntityResponseDTO, { data: update });
+    return this.transform(TaskUpdateListEntityDTO, { data: update });
   }
 
   async delete(

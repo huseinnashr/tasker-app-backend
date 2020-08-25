@@ -8,9 +8,9 @@ import { AuthHelper, TestHelper, RepoHelper } from './helper';
 import {
   CreateUpdateDTO,
   UpdateUpdateDTO,
-  TaskUpdateListResponseDTO,
-  TaskUpdateListEntityResponseDTO,
-  TaskUpdateEntityResponseDTO,
+  TaskUpdateListDTO,
+  TaskUpdateListEntityDTO,
+  TaskUpdateEntityDTO,
 } from '../src/task-update/dto';
 
 describe('ProjectTaskController (e2e)', () => {
@@ -54,7 +54,7 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct get updates request
     expect(res.status).toEqual(200);
 
-    const expected: TaskUpdateListResponseDTO = {
+    const expected: TaskUpdateListDTO = {
       permission: { create: true },
       data: [
         {
@@ -101,7 +101,7 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 201 Created on correct create an update request
     expect(res.status).toEqual(201);
 
-    const expected: TaskUpdateListEntityResponseDTO = {
+    const expected: TaskUpdateListEntityDTO = {
       data: {
         id: res.body.data.id,
         title: createDto.title,
@@ -140,7 +140,7 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct get an update request
     expect(res.status).toEqual(200);
 
-    const expected: TaskUpdateEntityResponseDTO = {
+    const expected: TaskUpdateEntityDTO = {
       permission: { update: true, delete: true },
       data: {
         id: update.id,
@@ -186,7 +186,7 @@ describe('ProjectTaskController (e2e)', () => {
     // A.1. Return 200 OK on correct update an update request
     expect(res.status).toEqual(200);
 
-    const expected: TaskUpdateListEntityResponseDTO = {
+    const expected: TaskUpdateListEntityDTO = {
       data: {
         id: res.body.data.id,
         title: updateDto.title,
