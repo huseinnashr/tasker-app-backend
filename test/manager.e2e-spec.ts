@@ -31,19 +31,24 @@ describe('ManagerController (e2e)', () => {
   });
 
   it('test /manager/:managerId (GET) specs', async () => {
-    const [token, admin] = await auth.signUp({ role: Role.ADMIN });
+    const [mgtok1, manager1] = await auth.signUp({ role: Role.MANAGER });
+    const [, manager2] = await auth.signUp({ role: Role.MANAGER });
 
-    const endpoint = '/manager/' + admin.id;
+    await repo.createAProject(manager1);
+    await repo.createAProject(manager1);
+    await repo.createAProject(manager2);
+
+    const endpoint = '/manager/' + manager1.id;
 
     await test.unauthorized('GET', endpoint);
 
     const res = await request(app.getHttpServer())
       .get(endpoint)
-      .set({ Authorization: token })
+      .set({ Authorization: mgtok1 })
       .expect(200);
 
     const expected = convertTo(ManagerEntityDTO, {
-      data: admin,
+      data: { ...manager1, projectStats: { total: 2, completed: 0 } },
     });
 
     expect(res.body).toEqual(expected);

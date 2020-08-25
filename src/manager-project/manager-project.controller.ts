@@ -18,7 +18,6 @@ import {
   ManagerProjectListDTO,
   ManagerProjectListEntityDTO,
   ManagerProjectEntityDTO,
-  ManagerProjectStatsEntityDTO,
 } from './dto';
 import { ProjectParamDTO, ManagerParamDTO } from '../shared/dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -45,15 +44,6 @@ export class ManagerProjectController {
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<ManagerProjectListEntityDTO> {
     return this.projectService.create(param, createDto, employee);
-  }
-
-  @Get('/stats')
-  @Auth(Role.MANAGER)
-  async stats(
-    @Param() param: ManagerParamDTO,
-    @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<ManagerProjectStatsEntityDTO> {
-    return this.projectService.stats(param, employee);
   }
 
   @Get('/:projectId')

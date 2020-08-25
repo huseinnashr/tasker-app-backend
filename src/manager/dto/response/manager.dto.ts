@@ -1,4 +1,5 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
+import { ManagerProjectStatsDTO } from './manager-project-stats.dto';
 
 export class ManagerDTO {
   @Expose()
@@ -18,4 +19,7 @@ export class ManagerDTO {
 
   @Expose()
   profilePicture: string;
+
+  @Type(() => ManagerProjectStatsDTO)
+  projectStats: ManagerProjectStatsDTO;
 }

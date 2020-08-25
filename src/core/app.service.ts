@@ -32,10 +32,9 @@ export abstract class AppService {
       );
     }
   }
-  protected transform<T>(cls: ClassType<T>, data: T[]): T[];
   protected transform<T>(cls: ClassType<T>, data: T): T;
 
-  protected transform<T>(cls: ClassType<T>, data: T | T[]): T | T[] {
+  protected transform<T>(cls: ClassType<T>, data: T): T {
     return plainToClass(cls, data, { excludeExtraneousValues: true });
   }
 }

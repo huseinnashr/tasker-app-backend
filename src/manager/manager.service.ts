@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { EmployeeRepository, ProjectRepository } from '../database/repository';
 import { AppService } from '../core/app.service';
 import { ManagerParamDTO, ManagerEntityDTO } from './dto';
-import { EmployeeEntity } from '../database/entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Role } from '../database/enum';
 
 @Injectable()
 export class ManagerService extends AppService {
@@ -16,16 +16,14 @@ export class ManagerService extends AppService {
     super();
   }
 
-  async get(
-    param: ManagerParamDTO,
-    emp: EmployeeEntity,
-  ): Promise<ManagerEntityDTO> {
-    const manager = await this.empRepo.findOneOrException({
-      id: param.managerId,
-    });
+  async get(param: ManagerParamDTO): Promise<ManagerEntityDTO> {
+    const managerWhere = { id: param.managerId, role: Role.MANAGER };
+    const manager = await this.empRepo.findOneOrException(managerWhere);
+
+    const stats = await this.proRepo.getStats(manager);
 
     return this.transform(ManagerEntityDTO, {
-      data: manager,
+      data: { ...manager, projectStats: stats },
     });
   }
 }
