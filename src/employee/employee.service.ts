@@ -5,10 +5,10 @@ import { EmployeeEntity } from '../database/entity';
 import {
   CreateEmployeeDTO,
   UpdateEmployeeDTO,
-  EmployeeListResponseDTO,
-  EmployeeListEntityResponseDTO,
-  EmployeeEntityResponseDTO,
-  ProfilePictureEntityResponseDTO,
+  EmployeeListDTO,
+  EmployeeListEntityDTO,
+  EmployeeEntityDTO,
+  ProfilePictureEntityDTO,
 } from './dto';
 import { AppService } from '../core/app.service';
 import { EmployeePermission } from '../shared/permission';
@@ -23,18 +23,16 @@ export class EmployeeService extends AppService {
     super();
   }
 
-  async getAll(emp: EmployeeEntity): Promise<EmployeeListResponseDTO> {
+  async getAll(emp: EmployeeEntity): Promise<EmployeeListDTO> {
     const employees = await this.empRepo.find();
 
-    return this.transform(EmployeeListResponseDTO, {
+    return this.transform(EmployeeListDTO, {
       data: employees,
       permission: this.employeePermission.getList(null, emp),
     });
   }
 
-  async create(
-    createDto: CreateEmployeeDTO,
-  ): Promise<EmployeeListEntityResponseDTO> {
+  async create(createDto: CreateEmployeeDTO): Promise<EmployeeListEntityDTO> {
     const employee = new EmployeeEntity();
     employee.username = createDto.username;
     employee.firstName = createDto.firstName;
@@ -45,16 +43,13 @@ export class EmployeeService extends AppService {
     employee.password = createDto.password;
     await this.empRepo.save(employee);
 
-    return this.transform(EmployeeListEntityResponseDTO, { data: employee });
+    return this.transform(EmployeeListEntityDTO, { data: employee });
   }
 
-  async get(
-    id: number,
-    emp: EmployeeEntity,
-  ): Promise<EmployeeEntityResponseDTO> {
+  async get(id: number, emp: EmployeeEntity): Promise<EmployeeEntityDTO> {
     const employee = await this.empRepo.findOneOrException(id);
 
-    return this.transform(EmployeeEntityResponseDTO, {
+    return this.transform(EmployeeEntityDTO, {
       data: employee,
       permission: this.employeePermission.getEntity(employee, emp),
     });
@@ -63,7 +58,7 @@ export class EmployeeService extends AppService {
   async update(
     id: number,
     updateDto: UpdateEmployeeDTO,
-  ): Promise<EmployeeListEntityResponseDTO> {
+  ): Promise<EmployeeListEntityDTO> {
     const employee = await this.empRepo.findOneOrException(id);
 
     employee.username = updateDto.username;
@@ -79,7 +74,7 @@ export class EmployeeService extends AppService {
 
     await this.empRepo.save(employee);
 
-    return this.transform(EmployeeListEntityResponseDTO, { data: employee });
+    return this.transform(EmployeeListEntityDTO, { data: employee });
   }
 
   async delete(id: number): Promise<void> {
@@ -88,13 +83,11 @@ export class EmployeeService extends AppService {
     await this.empRepo.remove(employee);
   }
 
-  uploadProfilePicture(
-    uploadedFile: MulterFile,
-  ): ProfilePictureEntityResponseDTO {
+  uploadProfilePicture(uploadedFile: MulterFile): ProfilePictureEntityDTO {
     if (!uploadedFile) throw new BadRequestException('File cannot be empty');
 
     const url = uploadedFile.filename;
 
-    return this.transform(ProfilePictureEntityResponseDTO, { data: { url } });
+    return this.transform(ProfilePictureEntityDTO, { data: { url } });
   }
 }

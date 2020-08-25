@@ -14,11 +14,11 @@ import { Role } from '../database/enum';
 import {
   CreateEmployeeDTO,
   UpdateEmployeeDTO,
-  EmployeeListResponseDTO,
-  EmployeeListEntityResponseDTO,
-  EmployeeEntityResponseDTO,
+  EmployeeListDTO,
+  EmployeeListEntityDTO,
+  EmployeeEntityDTO,
   ProfilePictureUploadDTO,
-  ProfilePictureEntityResponseDTO,
+  ProfilePictureEntityDTO,
 } from './dto';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
@@ -36,7 +36,7 @@ export class EmployeeController {
   @Auth(Role.ADMIN)
   async getAll(
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<EmployeeListResponseDTO> {
+  ): Promise<EmployeeListDTO> {
     return this.empService.getAll(employee);
   }
 
@@ -44,7 +44,7 @@ export class EmployeeController {
   @Auth(Role.ADMIN)
   async create(
     @Body() createDto: CreateEmployeeDTO,
-  ): Promise<EmployeeListEntityResponseDTO> {
+  ): Promise<EmployeeListEntityDTO> {
     return this.empService.create(createDto);
   }
 
@@ -53,7 +53,7 @@ export class EmployeeController {
   async get(
     @Param('id') id: number,
     @CurrentEmployee() employee: EmployeeEntity,
-  ): Promise<EmployeeEntityResponseDTO> {
+  ): Promise<EmployeeEntityDTO> {
     return this.empService.get(id, employee);
   }
 
@@ -62,7 +62,7 @@ export class EmployeeController {
   async update(
     @Param('id') id: number,
     @Body() employee: UpdateEmployeeDTO,
-  ): Promise<EmployeeListEntityResponseDTO> {
+  ): Promise<EmployeeListEntityDTO> {
     return this.empService.update(id, employee);
   }
 
@@ -79,7 +79,7 @@ export class EmployeeController {
   @ApiBody({ type: ProfilePictureUploadDTO })
   uploadProfilePicture(
     @UploadedFile() uploadedFile: MulterFile,
-  ): ProfilePictureEntityResponseDTO {
+  ): ProfilePictureEntityDTO {
     return this.empService.uploadProfilePicture(uploadedFile);
   }
 }

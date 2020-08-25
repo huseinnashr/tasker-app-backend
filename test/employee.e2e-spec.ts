@@ -7,9 +7,9 @@ import { Role } from '../src/database/enum';
 import {
   CreateEmployeeDTO,
   UpdateEmployeeDTO,
-  EmployeeListResponseDTO,
-  EmployeeListEntityResponseDTO,
-  EmployeeEntityResponseDTO,
+  EmployeeListDTO,
+  EmployeeListEntityDTO,
+  EmployeeEntityDTO,
 } from '../src/employee/dto';
 import { AuthHelper, TestHelper, FileHelper, convertTo } from './helper';
 
@@ -53,7 +53,7 @@ describe('EmployeeController (e2e)', () => {
       .set({ Authorization: token })
       .expect(200);
 
-    const expected = convertTo(EmployeeListResponseDTO, {
+    const expected = convertTo(EmployeeListDTO, {
       permission: { create: true },
       data: [admin, staff],
     });
@@ -84,7 +84,7 @@ describe('EmployeeController (e2e)', () => {
       .set({ Authorization: token })
       .expect(201);
 
-    const expected = convertTo(EmployeeListEntityResponseDTO, {
+    const expected = convertTo(EmployeeListEntityDTO, {
       data: {
         id: res.body.data.id,
         ...createDTO,
@@ -106,7 +106,7 @@ describe('EmployeeController (e2e)', () => {
       .set({ Authorization: token })
       .expect(200);
 
-    const expected = convertTo(EmployeeEntityResponseDTO, {
+    const expected = convertTo(EmployeeEntityDTO, {
       permission: { update: true, delete: true },
       data: admin,
     });

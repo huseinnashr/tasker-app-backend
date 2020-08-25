@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 
-export class ProfilePictureResponseDTO {
+export class ProfilePictureDTO {
   @Expose()
   url: string;
 }
