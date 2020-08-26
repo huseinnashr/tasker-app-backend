@@ -1,7 +1,7 @@
 import { EntityRepository } from 'typeorm';
 import { ProjectEntity, EmployeeEntity } from '../entity';
 import { AppRepository } from '../../core/app.repository';
-import { ManagerProjectStatsDTO } from '../../manager-project/dto';
+import { ManagerProjectStatsDTO } from '../../manager/dto';
 import { TaskStatus } from '../enum';
 
 @EntityRepository(ProjectEntity)
