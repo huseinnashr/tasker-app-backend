@@ -108,7 +108,8 @@ describe('ProjectTaskController (e2e)', () => {
       expected.data,
     );
 
-    await test.forbidden(mgtok2, 'POST', endpoint, createDto);
+    const message = "Forbidden when it's not the project manager";
+    await test.should(403, message, mgtok2, 'POST', endpoint, createDto);
   });
 
   it('test /project/:projectid/task/:taskId/artifact/:artifactId (PUT) specs', async () => {
@@ -148,7 +149,8 @@ describe('ProjectTaskController (e2e)', () => {
       expected.data,
     );
 
-    await test.forbidden(mgtok2, 'PUT', endpoint, updateDto);
+    const message = "Forbidden when it's not the project manager";
+    await test.should(403, message, mgtok2, 'PUT', endpoint, updateDto);
   });
 
   it('test /project/:projectid/task/:taskId/artifact/:artifactId (DELETE) specs', async () => {
@@ -162,7 +164,8 @@ describe('ProjectTaskController (e2e)', () => {
 
     const endpoint = `/project/${project.id}/task/${task.id}/artifact/${artifact.id}`;
 
-    await test.forbidden(mgtok2, 'DELETE', endpoint);
+    const message = "Forbidden when it's not the project manager";
+    await test.should(403, message, mgtok2, 'DELETE', endpoint);
 
     const res = await request(app.getHttpServer())
       .delete(endpoint)
@@ -189,7 +192,8 @@ describe('ProjectTaskController (e2e)', () => {
 
     const assignDto: AssignUpdateDTO = { updateId: update.id };
 
-    await test.forbidden(mgtok2, 'PUT', endpoint, assignDto);
+    const message = "Forbidden when it's not the project manager";
+    await test.should(403, message, mgtok2, 'PUT', endpoint, assignDto);
 
     const res = await request(app.getHttpServer())
       .put(endpoint)
@@ -226,7 +230,8 @@ describe('ProjectTaskController (e2e)', () => {
 
     const endpoint = `/project/${project.id}/task/${task.id}/artifact/${artifact.id}/update`;
 
-    await test.forbidden(mgtok2, 'DELETE', endpoint);
+    const message = "Forbidden when it's not the project manager";
+    await test.should(403, message, mgtok2, 'DELETE', endpoint);
 
     const res = await request(app.getHttpServer())
       .delete(endpoint)

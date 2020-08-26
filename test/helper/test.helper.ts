@@ -2,6 +2,7 @@ import { Role } from '../../src/database/enum';
 import { INestApplication } from '@nestjs/common';
 import { SupertestHelper, HTTPMethod } from './supertest.helper';
 import { AuthHelper } from './auth.helper';
+import { Response } from 'supertest';
 
 class TestHelper {
   private auth: AuthHelper;
@@ -12,80 +13,53 @@ class TestHelper {
     this.supertest = new SupertestHelper(app);
   }
 
-  unauthorized = async (method: HTTPMethod, url: string) => {
-    await this.supertest.request(method, url).expect(401);
+  unauthorized = async (method: HTTPMethod, url: string): Promise<void> => {
+    const message = 'Expect 401 Unauthorized when not logged in';
+    await this.should(401, message, '', method, url);
   };
 
   /** Create new employee with role R and test if endpoint forbid role R employee.*/
-  async forbidden(
-    role: Role,
-    method: HTTPMethod,
-    url: string,
-    data?: any,
-  ): Promise<void>;
+  async forbidden(role: Role, method: HTTPMethod, url: string): Promise<void> {
+    const message = 'Expect 403 Forbidden for role: ' + role;
 
-  /** Use token with role R to test if endpoint forbid role R employee.*/
-  async forbidden(
-    token: string,
-    method: HTTPMethod,
-    url: string,
-    data?: any,
-  ): Promise<void>;
+    const [token] = await this.auth.signUp({ role });
 
-  async forbidden(
-    arg1: Role | string,
-    method: HTTPMethod,
-    url: string,
-    data?: any,
-  ): Promise<void> {
-    let token: string;
-    if (Object.values(<any>Role).includes(arg1)) {
-      token = (await this.auth.signUp({ role: <Role>arg1 }))[0];
-    } else {
-      token = arg1;
-    }
-
-    await this.supertest
-      .request(method, url)
-      .set({ Authorization: token })
-      .send(data)
-      .expect(403);
+    await this.should(403, message, token, method, url);
   }
 
-  /** Create new employee with correct role and test if endpoint returns not found.*/
-  async notfound(
-    role: Role,
-    method: HTTPMethod,
-    url: string,
-    data?: any,
-  ): Promise<void>;
-
-  /** Use token  with correct role to test if endpoint returns not found.*/
+  /** Use token with correct role to test if endpoint returns not found.*/
   async notfound(
     token: string,
     method: HTTPMethod,
     url: string,
     data?: any,
-  ): Promise<void>;
+  ): Promise<void> {
+    const message = `Expect 404 Not Found on endpoint: ${url} (${method})`;
 
-  async notfound(
-    arg1: Role | string,
+    await this.should(404, message, token, method, url, data);
+  }
+
+  async should(
+    httpCode: number,
+    message: string,
+    token: string,
     method: HTTPMethod,
     url: string,
     data?: any,
-  ): Promise<void> {
-    let token: string;
-    if (Object.values(<any>Role).includes(arg1)) {
-      token = (await this.auth.signUp({ role: <Role>arg1 }))[0];
-    } else {
-      token = arg1;
-    }
-
-    await this.supertest
+  ): Promise<Response> {
+    const res = await this.supertest
       .request(method, url)
       .send(data)
-      .set({ Authorization: token })
-      .expect(404);
+      .set({ Authorization: token });
+
+    if (res.status != httpCode) {
+      const returned =
+        '. It returned ' +
+        (res.error ? `${res.body.statusCode} ${res.body.message}` : '200 OK');
+      fail(new Error(message + returned));
+    }
+
+    return res;
   }
 }
 

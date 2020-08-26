@@ -71,7 +71,7 @@ describe('ProjectTaskController (e2e)', () => {
 
     // B. Return 404 Not Found when update was not found
     const endpoint404 = `/project/${task.project.id}/task/${task.id}/update/9999/comment`;
-    await test.notfound(Role.STAFF, 'GET', endpoint404);
+    await test.notfound(token, 'GET', endpoint404);
 
     // C. Return 401 Unauthorized when not logged in
     await test.unauthorized('GET', endpoint);
@@ -124,7 +124,7 @@ describe('ProjectTaskController (e2e)', () => {
 
     // C. Return 404 Not Found when update was not found
     const endpoint404 = `/project/${task.project.id}/task/${task.id}/update/9999/comment`;
-    await test.notfound(Role.STAFF, 'POST', endpoint404, createDto);
+    await test.notfound(token, 'POST', endpoint404, createDto);
 
     // D. returns 401 Unauthorized when not logged in
     await test.unauthorized('POST', endpoint);
@@ -201,7 +201,8 @@ describe('ProjectTaskController (e2e)', () => {
     expect(res.body).toEqual(expected);
     expect(await commRepo.findOne(comment.id)).toMatchObject(expected.data);
 
-    await test.forbidden(token2, 'PUT', endpoint, updateDto);
+    const message = "Forbidden when it's not the comment's owner";
+    await test.should(403, message, token2, 'PUT', endpoint, updateDto);
 
     // C. Return 404 Not Found when comment was not found
     const endpoint404 = `/project/${project.id}/task/${task.id}/update/${update.id}/comment/9999`;
@@ -221,7 +222,8 @@ describe('ProjectTaskController (e2e)', () => {
 
     const endpoint = `/project/${task.project.id}/task/${task.id}/update/${update.id}/comment/${comment.id}`;
 
-    await test.forbidden(token2, 'DELETE', endpoint);
+    const message = "Forbidden when it's not the comment's owner";
+    await test.should(403, message, token2, 'DELETE', endpoint);
 
     const res = await request(app.getHttpServer())
       .delete(endpoint)

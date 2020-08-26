@@ -72,7 +72,7 @@ describe('ProjectTaskController (e2e)', () => {
 
     // B. Return 404 Not Found when task was not found
     const endpoint404 = `/project/${task.project.id}/task/99999/update`;
-    await test.notfound(Role.STAFF, 'GET', endpoint404);
+    await test.notfound(token, 'GET', endpoint404);
 
     // C. Return 401 Unauthorized when not logged in
     await test.unauthorized('GET', endpoint);
@@ -119,7 +119,7 @@ describe('ProjectTaskController (e2e)', () => {
 
     // B. Return 404 Not Found when task was not found
     const endpoint404 = `/project/${task.project.id}/task/99999/update`;
-    await test.notfound(Role.STAFF, 'POST', endpoint404, createDto);
+    await test.notfound(token, 'POST', endpoint404, createDto);
 
     // C. returns 401 Unauthorized when not logged in
     await test.unauthorized('POST', endpoint);
@@ -226,8 +226,8 @@ describe('ProjectTaskController (e2e)', () => {
 
     const endpoint = `/project/${task.project.id}/task/${task.id}/update/${update.id}`;
 
-    // B. Return 403 Forbidden when the authorized employee is not the task staff
-    await test.forbidden(sttok2, 'DELETE', endpoint);
+    const message = "Return 403 Forbidden when it is not the task's staff";
+    await test.should(403, message, sttok2, 'DELETE', endpoint);
 
     const res = await request(app.getHttpServer())
       .delete(endpoint)

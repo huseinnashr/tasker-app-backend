@@ -41,12 +41,10 @@ describe('EmployeeController (e2e)', () => {
 
   it('test /employee (GET) specs', async () => {
     const [token, admin] = await auth.signUp({ role: Role.ADMIN });
-    const [sttok, staff] = await auth.signUp({ role: Role.STAFF });
 
     const endpoint = '/employee';
 
     await test.unauthorized('GET', endpoint);
-    await test.forbidden(sttok, 'GET', endpoint);
 
     const res = await request(app.getHttpServer())
       .get(endpoint)
@@ -55,19 +53,20 @@ describe('EmployeeController (e2e)', () => {
 
     const expected = convertTo(EmployeeListDTO, {
       permission: { create: true },
-      data: [admin, staff],
+      data: [admin],
     });
 
     expect(res.body).toEqual(expected);
+
+    await test.forbidden(Role.STAFF, 'GET', endpoint);
   });
 
   it('test /employee (POST) specs', async () => {
     const [token] = await auth.signUp({ role: Role.ADMIN });
-    const [sttok] = await auth.signUp({ role: Role.STAFF });
 
     const endpoint = '/employee';
 
-    await test.forbidden(sttok, 'POST', endpoint);
+    await test.forbidden(Role.STAFF, 'POST', endpoint);
 
     const createDTO: CreateEmployeeDTO = {
       username: 'John',
