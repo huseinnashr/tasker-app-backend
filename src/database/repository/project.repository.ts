@@ -14,10 +14,10 @@ export class ProjectRepository extends AppRepository<ProjectEntity> {
     return this.createQueryBuilder('project')
       .select('COUNT(*)', 'total')
       .addSelect(
-        `SUM(CASE WHEN status = '${TaskStatus.DONE}' THEN 1 ELSE 0 END)`,
+        `SUM(CASE WHEN project.status = '${TaskStatus.DONE}' THEN 1 ELSE 0 END)`,
         'completed',
       )
-      .where('managerId = :managerId', { managerId: manager.id })
+      .where('"project"."managerId" = :managerId', { managerId: manager.id })
       .getRawOne<ManagerProjectStatsDTO>();
   }
 }

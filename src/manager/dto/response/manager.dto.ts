@@ -20,6 +20,7 @@ export class ManagerDTO {
   @Expose()
   profilePicture: string;
 
+  @Expose()
   @Type(() => ManagerProjectStatsDTO)
   projectStats: ManagerProjectStatsDTO;
 }
