@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EmployeeRepository } from '../database/repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmployeeEntity } from '../database/entity';
@@ -8,11 +8,9 @@ import {
   EmployeeListDTO,
   EmployeeListEntityDTO,
   EmployeeEntityDTO,
-  ProfilePictureEntityDTO,
 } from './dto';
 import { AppService } from '../core/app.service';
 import { EmployeePermission } from '../shared/permission';
-import { MulterFile } from '../core/interface';
 
 @Injectable()
 export class EmployeeService extends AppService {
@@ -81,13 +79,5 @@ export class EmployeeService extends AppService {
     const employee = await this.empRepo.findOneOrException(id);
 
     await this.empRepo.remove(employee);
-  }
-
-  uploadProfilePicture(uploadedFile: MulterFile): ProfilePictureEntityDTO {
-    if (!uploadedFile) throw new BadRequestException('File cannot be empty');
-
-    const url = uploadedFile.filename;
-
-    return this.transform(ProfilePictureEntityDTO, { data: { url } });
   }
 }

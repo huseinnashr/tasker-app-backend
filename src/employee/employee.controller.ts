@@ -6,8 +6,6 @@ import {
   Param,
   Put,
   Delete,
-  UseInterceptors,
-  UploadedFile,
 } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { Role } from '../database/enum';
@@ -17,15 +15,10 @@ import {
   EmployeeListDTO,
   EmployeeListEntityDTO,
   EmployeeEntityDTO,
-  ProfilePictureUploadDTO,
-  ProfilePictureEntityDTO,
 } from './dto';
 import { Auth, CurrentEmployee } from '../core/decorator';
-import { ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { EmployeeEntity } from '../database/entity';
-import { MulterFile } from '../core/interface';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ProfilePictureMulter } from './config';
 
 @Controller('employee')
 @ApiTags('Administration')
@@ -70,16 +63,5 @@ export class EmployeeController {
   @Auth(Role.ADMIN)
   async delete(@Param('id') id: number): Promise<void> {
     return this.empService.delete(id);
-  }
-
-  @Post('/profile-picture')
-  @Auth()
-  @UseInterceptors(FileInterceptor('profilePicture', ProfilePictureMulter))
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: ProfilePictureUploadDTO })
-  uploadProfilePicture(
-    @UploadedFile() uploadedFile: MulterFile,
-  ): ProfilePictureEntityDTO {
-    return this.empService.uploadProfilePicture(uploadedFile);
   }
 }

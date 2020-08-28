@@ -3,5 +3,3 @@ export * from './request/update-employee.dto';
 export * from './response/employee-list.dto';
 export * from './response/employee-list-entity.dto';
 export * from './response/employee-entity.dto';
-export * from './request/profile-picture-upload.dto';
-export * from './response/profile-picture-entity.dto';

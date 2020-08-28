@@ -14,6 +14,7 @@ import { ErrorsInterceptor } from './core/interceptor';
 import { ManagerModule } from './manager/manager.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ProfilePictureModule } from './profile-picture/profile-picture.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { join } from 'path';
     FileModule,
     TaskArtifactModule,
     ManagerModule,
+    ProfilePictureModule,
   ],
   providers: [
     {
