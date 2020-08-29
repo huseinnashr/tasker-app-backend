@@ -4,8 +4,9 @@ import * as mime from 'mime';
 import { Request } from 'express';
 import { MulterFile } from '../../core/interface';
 
+export const ProfilePictureDestination = 'upload/profile-picture';
 const ProfilePictureStorage: multer.StorageEngine = multer.diskStorage({
-  destination: 'upload/profile-picture',
+  destination: ProfilePictureDestination,
   filename: (
     _: Request,
     file: MulterFile,

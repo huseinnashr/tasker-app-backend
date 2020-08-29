@@ -12,17 +12,11 @@ import { FileModule } from './file/file.module';
 import { TaskArtifactModule } from './task-artifact/task-artifact.module';
 import { ErrorsInterceptor } from './core/interceptor';
 import { ManagerModule } from './manager/manager.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { ProfilePictureModule } from './profile-picture/profile-picture.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(TypeOrmConfig),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'upload', 'profile-picture'),
-      serveRoot: '/profile-picture',
-    }),
     AuthModule,
     EmployeeModule,
     ManagerProjectModule,
