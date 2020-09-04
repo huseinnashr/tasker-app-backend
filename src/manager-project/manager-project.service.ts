@@ -8,11 +8,12 @@ import {
   ManagerProjectListEntityDTO,
   ManagerProjectListDTO,
   ManagerProjectEntityDTO,
+  ManagerProjectRPar,
+  ManagerProjectEPar,
 } from './dto';
 import { ProjectStatus, Role } from '../database/enum';
 import { EmployeeEntity, ProjectEntity } from '../database/entity';
 import { AppService } from '../core/app.service';
-import { ProjectParamDTO, ManagerParamDTO } from '../shared/dto';
 import { ProjectPermission } from '../shared/permission';
 
 @Injectable()
@@ -28,7 +29,7 @@ export class ManagerProjectService extends AppService {
   }
 
   async getAll(
-    param: ManagerParamDTO,
+    param: ManagerProjectRPar,
     employee: EmployeeEntity,
   ): Promise<ManagerProjectListDTO> {
     const managerWhere = { id: param.managerId, role: Role.MANAGER };
@@ -46,7 +47,7 @@ export class ManagerProjectService extends AppService {
   }
 
   async create(
-    param: ManagerParamDTO,
+    param: ManagerProjectRPar,
     createDto: CreateProjectDTO,
     employee: EmployeeEntity,
   ): Promise<ManagerProjectListEntityDTO> {
@@ -70,7 +71,7 @@ export class ManagerProjectService extends AppService {
   }
 
   async get(
-    param: ProjectParamDTO,
+    param: ManagerProjectEPar,
     employee: EmployeeEntity,
   ): Promise<ManagerProjectEntityDTO> {
     const where = { id: param.projectId, manager: { id: param.managerId } };
@@ -83,7 +84,7 @@ export class ManagerProjectService extends AppService {
   }
 
   async update(
-    param: ProjectParamDTO,
+    param: ManagerProjectEPar,
     updateDto: UpdateProjectDTO,
   ): Promise<ManagerProjectListEntityDTO> {
     const where = { id: param.projectId, manager: { id: param.managerId } };
@@ -100,7 +101,7 @@ export class ManagerProjectService extends AppService {
   }
 
   async updateStatus(
-    param: ProjectParamDTO,
+    param: ManagerProjectEPar,
     statusDto: UpdateProjectStatusDTO,
   ): Promise<ManagerProjectListEntityDTO> {
     const where = { id: param.projectId, manager: { id: param.managerId } };
@@ -114,7 +115,7 @@ export class ManagerProjectService extends AppService {
     });
   }
 
-  async delete(param: ProjectParamDTO): Promise<void> {
+  async delete(param: ManagerProjectEPar): Promise<void> {
     const where = { id: param.projectId, manager: { id: param.managerId } };
     const project = await this.proRepo.findOneOrException(where);
 

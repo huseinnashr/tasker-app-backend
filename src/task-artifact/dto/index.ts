@@ -1,3 +1,6 @@
+export * from './param/task-artifact-r.par';
+export * from './param/task-artifact-e.par';
+
 export * from './request/create-artifact.dto';
 export * from './request/update-artifact.dto';
 export * from './request/assign-update.dto';

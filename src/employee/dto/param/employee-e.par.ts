@@ -1,6 +1,6 @@
 import { IsNumberString } from 'class-validator';
 
-export class ManagerEntityParDTO {
+export class EmployeeEPar {
   @IsNumberString()
-  managerId: number;
+  employeeId: number;
 }

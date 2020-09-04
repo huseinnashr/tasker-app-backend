@@ -6,6 +6,8 @@ import {
   ProjectTaskListDTO,
   ProjectTaskEntityDTO,
   ProjectTaskListEntityDTO,
+  ProjectTaskEPar,
+  ProjectTaskRPar,
 } from './dto';
 import { EmployeeEntity, TaskEntity } from '../database/entity';
 import {
@@ -15,7 +17,6 @@ import {
 } from '../database/repository';
 import { TaskStatus } from '../database/enum';
 import { AppService } from '../core/app.service';
-import { ProjectTaskParamDTO, ProjectTaskListParamDTO } from '../shared/dto';
 import { TaskPermission } from '../shared/permission';
 
 @Injectable()
@@ -30,7 +31,7 @@ export class ProjectTaskService extends AppService {
   }
 
   async getAll(
-    param: ProjectTaskListParamDTO,
+    param: ProjectTaskRPar,
     employee: EmployeeEntity,
   ): Promise<ProjectTaskListDTO> {
     const project = await this.proRepo.findOneOrException(param.projectId);
@@ -47,7 +48,7 @@ export class ProjectTaskService extends AppService {
   }
 
   async create(
-    param: ProjectTaskListParamDTO,
+    param: ProjectTaskRPar,
     createDto: CreateTaskDTO,
     employee: EmployeeEntity,
   ): Promise<ProjectTaskListEntityDTO> {
@@ -72,7 +73,7 @@ export class ProjectTaskService extends AppService {
   }
 
   async get(
-    param: ProjectTaskParamDTO,
+    param: ProjectTaskEPar,
     employee: EmployeeEntity,
   ): Promise<ProjectTaskEntityDTO> {
     const taskWhere = { id: param.taskId, project: { id: param.projectId } };
@@ -89,7 +90,7 @@ export class ProjectTaskService extends AppService {
   }
 
   async update(
-    param: ProjectTaskParamDTO,
+    param: ProjectTaskEPar,
     updateTask: UpdateTaskDTO,
     employee: EmployeeEntity,
   ): Promise<ProjectTaskListEntityDTO> {
@@ -115,7 +116,7 @@ export class ProjectTaskService extends AppService {
   }
 
   async delete(
-    param: ProjectTaskParamDTO,
+    param: ProjectTaskEPar,
     employee: EmployeeEntity,
   ): Promise<void> {
     const taskWhere = { id: param.taskId, project: { id: param.projectId } };

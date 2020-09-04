@@ -8,9 +8,10 @@ import {
   UpdateCommentListDTO,
   UpdateCommentListEntityDTO,
   UpdateCommentEntityDTO,
+  UpdateCommentRPar,
+  UpdateCommentEPar,
 } from './dto';
 import { UpdateRepository, CommentRepository } from '../database/repository';
-import { UpdateCommentParamDTO, TaskUpdateParamDTO } from '../shared/dto';
 import { CommentPermission } from '../shared/permission';
 
 @Injectable()
@@ -24,7 +25,7 @@ export class UpdateCommentService extends AppService {
   }
 
   async getAll(
-    param: TaskUpdateParamDTO,
+    param: UpdateCommentRPar,
     employee: EmployeeEntity,
   ): Promise<UpdateCommentListDTO> {
     const where = param.updateId;
@@ -40,7 +41,7 @@ export class UpdateCommentService extends AppService {
   }
 
   async create(
-    param: TaskUpdateParamDTO,
+    param: UpdateCommentRPar,
     createDto: CreateCommentDTO,
     employee: EmployeeEntity,
   ): Promise<UpdateCommentListEntityDTO> {
@@ -64,7 +65,7 @@ export class UpdateCommentService extends AppService {
   }
 
   async get(
-    param: UpdateCommentParamDTO,
+    param: UpdateCommentEPar,
     employee: EmployeeEntity,
   ): Promise<UpdateCommentEntityDTO> {
     const comment = await this.commentRepo.findOneOrException({
@@ -79,7 +80,7 @@ export class UpdateCommentService extends AppService {
   }
 
   async update(
-    param: UpdateCommentParamDTO,
+    param: UpdateCommentEPar,
     commentDto: PutCommentDTO,
     employee: EmployeeEntity,
   ): Promise<UpdateCommentListEntityDTO> {
@@ -98,7 +99,7 @@ export class UpdateCommentService extends AppService {
   }
 
   async delete(
-    param: UpdateCommentParamDTO,
+    param: UpdateCommentEPar,
     employee: EmployeeEntity,
   ): Promise<void> {
     const where = { id: param.commentId, update: { id: param.updateId } };

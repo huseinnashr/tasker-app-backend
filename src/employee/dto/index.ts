@@ -1,3 +1,5 @@
+export * from './param/employee-e.par';
+
 export * from './request/create-employee-dto';
 export * from './request/update-employee.dto';
 export * from './response/employee-list.dto';

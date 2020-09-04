@@ -15,6 +15,7 @@ import {
   EmployeeListDTO,
   EmployeeListEntityDTO,
   EmployeeEntityDTO,
+  EmployeeEPar,
 } from './dto';
 import { Auth, CurrentEmployee } from '../core/decorator';
 import { ApiTags } from '@nestjs/swagger';
@@ -44,24 +45,24 @@ export class EmployeeController {
   @Get('/:id')
   @Auth(Role.ADMIN)
   async get(
-    @Param('id') id: number,
+    @Param() param: EmployeeEPar,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<EmployeeEntityDTO> {
-    return this.empService.get(id, employee);
+    return this.empService.get(param, employee);
   }
 
   @Put('/:id')
   @Auth(Role.ADMIN)
   async update(
-    @Param('id') id: number,
+    @Param() param: EmployeeEPar,
     @Body() employee: UpdateEmployeeDTO,
   ): Promise<EmployeeListEntityDTO> {
-    return this.empService.update(id, employee);
+    return this.empService.update(param, employee);
   }
 
   @Delete('/:id')
   @Auth(Role.ADMIN)
-  async delete(@Param('id') id: number): Promise<void> {
-    return this.empService.delete(id);
+  async delete(@Param() param: EmployeeEPar): Promise<void> {
+    return this.empService.delete(param);
   }
 }

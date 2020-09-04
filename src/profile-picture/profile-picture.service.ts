@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { AppService } from '../core/app.service';
 import { MulterFile } from '../core/interface';
-import { ProfilePictureEntityDTO } from './dto';
+import { ProfilePictureEntityDTO, ProfilePictureEPar } from './dto';
 import { Stream, Readable } from 'stream';
 import { promises as fs } from 'fs';
 import { MimeType } from '../database/enum';
@@ -18,10 +18,10 @@ export class ProfilePictureService extends AppService {
   }
 
   async get(
-    profilePictureId: string,
+    param: ProfilePictureEPar,
   ): Promise<{ stream: Stream; length: number; mime: MimeType }> {
     const buffer = await fs.readFile(
-      `./${ProfilePictureDestination}/${profilePictureId}`,
+      `./${ProfilePictureDestination}/${param.profilePictureId}`,
     );
     const stream = new Readable();
     stream.push(buffer);

@@ -18,8 +18,9 @@ import {
   ManagerProjectListDTO,
   ManagerProjectListEntityDTO,
   ManagerProjectEntityDTO,
+  ManagerProjectRPar,
+  ManagerProjectEPar,
 } from './dto';
-import { ProjectParamDTO, ManagerParamDTO } from '../shared/dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('manager/:managerId/project')
@@ -30,7 +31,7 @@ export class ManagerProjectController {
   @Get('/')
   @Auth()
   async getAll(
-    @Param() param: ManagerParamDTO,
+    @Param() param: ManagerProjectRPar,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<ManagerProjectListDTO> {
     return this.projectService.getAll(param, employee);
@@ -39,7 +40,7 @@ export class ManagerProjectController {
   @Post('/')
   @Auth(Role.MANAGER)
   async create(
-    @Param() param: ManagerParamDTO,
+    @Param() param: ManagerProjectRPar,
     @Body() createDto: CreateProjectDTO,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<ManagerProjectListEntityDTO> {
@@ -49,7 +50,7 @@ export class ManagerProjectController {
   @Get('/:projectId')
   @Auth()
   async get(
-    @Param() param: ProjectParamDTO,
+    @Param() param: ManagerProjectEPar,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<ManagerProjectEntityDTO> {
     return this.projectService.get(param, employee);
@@ -58,7 +59,7 @@ export class ManagerProjectController {
   @Put('/:projectId')
   @Auth(Role.MANAGER)
   async update(
-    @Param() param: ProjectParamDTO,
+    @Param() param: ManagerProjectEPar,
     @Body() updateDto: UpdateProjectDTO,
   ): Promise<ManagerProjectListEntityDTO> {
     return this.projectService.update(param, updateDto);
@@ -67,7 +68,7 @@ export class ManagerProjectController {
   @Put('/:projectId/status')
   @Auth(Role.MANAGER)
   async updateStatus(
-    @Param() param: ProjectParamDTO,
+    @Param() param: ManagerProjectEPar,
     @Body() statusDto: UpdateProjectStatusDTO,
   ): Promise<ManagerProjectListEntityDTO> {
     return this.projectService.updateStatus(param, statusDto);
@@ -75,7 +76,7 @@ export class ManagerProjectController {
 
   @Delete('/:projectId')
   @Auth(Role.MANAGER)
-  async delete(@Param() param: ProjectParamDTO): Promise<void> {
+  async delete(@Param() param: ManagerProjectEPar): Promise<void> {
     return this.projectService.delete(param);
   }
 }

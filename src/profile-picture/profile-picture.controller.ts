@@ -11,7 +11,11 @@ import { ProfilePictureService } from './profile-picture.service';
 import { Auth } from '../core/decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfilePictureMulter } from './config';
-import { ProfilePictureUploadDTO, ProfilePictureEntityDTO } from './dto';
+import {
+  ProfilePictureUploadDTO,
+  ProfilePictureEntityDTO,
+  ProfilePictureEPar,
+} from './dto';
 import { ApiConsumes, ApiBody, ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import { MulterFile } from '../core/interface';
 import { MimeType } from '../database/enum';
@@ -40,10 +44,10 @@ export class ProfilePictureController {
     },
   })
   async get(
-    @Param('profilePictureId') profilePictureId: string,
+    @Param() param: ProfilePictureEPar,
     @Res() res: Response,
   ): Promise<void> {
-    const file = await this.ppService.get(profilePictureId);
+    const file = await this.ppService.get(param);
     res.setHeader('Content-Type', file.mime);
     res.setHeader('Content-Length', file.length);
 

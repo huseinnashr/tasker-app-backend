@@ -8,6 +8,7 @@ import {
   EmployeeListDTO,
   EmployeeListEntityDTO,
   EmployeeEntityDTO,
+  EmployeeEPar,
 } from './dto';
 import { AppService } from '../core/app.service';
 import { EmployeePermission } from '../shared/permission';
@@ -44,8 +45,11 @@ export class EmployeeService extends AppService {
     return this.transform(EmployeeListEntityDTO, { data: employee });
   }
 
-  async get(id: number, emp: EmployeeEntity): Promise<EmployeeEntityDTO> {
-    const employee = await this.empRepo.findOneOrException(id);
+  async get(
+    param: EmployeeEPar,
+    emp: EmployeeEntity,
+  ): Promise<EmployeeEntityDTO> {
+    const employee = await this.empRepo.findOneOrException(param.employeeId);
 
     return this.transform(EmployeeEntityDTO, {
       data: employee,
@@ -54,10 +58,10 @@ export class EmployeeService extends AppService {
   }
 
   async update(
-    id: number,
+    param: EmployeeEPar,
     updateDto: UpdateEmployeeDTO,
   ): Promise<EmployeeListEntityDTO> {
-    const employee = await this.empRepo.findOneOrException(id);
+    const employee = await this.empRepo.findOneOrException(param.employeeId);
 
     employee.username = updateDto.username;
     employee.firstName = updateDto.firstName;
@@ -75,8 +79,8 @@ export class EmployeeService extends AppService {
     return this.transform(EmployeeListEntityDTO, { data: employee });
   }
 
-  async delete(id: number): Promise<void> {
-    const employee = await this.empRepo.findOneOrException(id);
+  async delete(param: EmployeeEPar): Promise<void> {
+    const employee = await this.empRepo.findOneOrException(param.employeeId);
 
     await this.empRepo.remove(employee);
   }
