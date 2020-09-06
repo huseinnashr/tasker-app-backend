@@ -17,8 +17,9 @@ import {
   TaskUpdateListEntityDTO,
   TaskUpdateListDTO,
   TaskUpdateEntityDTO,
+  TaskUpdateRPar,
+  TaskUpdateEPar,
 } from './dto';
-import { TaskUpdateParamDTO, ProjectTaskParamDTO } from '../shared/dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('project/:projectId/task/:taskId/update')
@@ -29,7 +30,7 @@ export class TaskUpdateController {
   @Get('/')
   @Auth()
   async getAll(
-    @Param() param: ProjectTaskParamDTO,
+    @Param() param: TaskUpdateRPar,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<TaskUpdateListDTO> {
     return this.taskUpdService.getAll(param, employee);
@@ -38,7 +39,7 @@ export class TaskUpdateController {
   @Post('/')
   @Auth(Role.STAFF)
   async create(
-    @Param() param: ProjectTaskParamDTO,
+    @Param() param: TaskUpdateRPar,
     @Body() createDto: CreateUpdateDTO,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<TaskUpdateListEntityDTO> {
@@ -48,7 +49,7 @@ export class TaskUpdateController {
   @Get('/:updateId')
   @Auth()
   async get(
-    @Param() param: TaskUpdateParamDTO,
+    @Param() param: TaskUpdateEPar,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<TaskUpdateEntityDTO> {
     return this.taskUpdService.get(param, employee);
@@ -57,7 +58,7 @@ export class TaskUpdateController {
   @Put('/:updateId')
   @Auth(Role.STAFF)
   async update(
-    @Param() param: TaskUpdateParamDTO,
+    @Param() param: TaskUpdateEPar,
     @Body() updateDto: UpdateUpdateDTO,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<TaskUpdateListEntityDTO> {
@@ -67,7 +68,7 @@ export class TaskUpdateController {
   @Delete('/:updateId')
   @Auth(Role.STAFF)
   async delete(
-    @Param() param: TaskUpdateParamDTO,
+    @Param() param: TaskUpdateEPar,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<void> {
     return this.taskUpdService.delete(param, employee);

@@ -18,8 +18,9 @@ import {
   TaskArtifactListDTO,
   TaskArtifactListEntityDTO,
   ArtifactUpdateEntityDTO,
+  TaskArtifactRPar,
+  TaskArtifactEPar,
 } from './dto';
-import { TaskArtifactParamDTO, ProjectTaskParamDTO } from '../shared/dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('project/:projectId/task/:taskId/artifact')
@@ -30,7 +31,7 @@ export class TaskArtifactController {
   @Get('/')
   @Auth()
   async getAll(
-    @Param() param: ProjectTaskParamDTO,
+    @Param() param: TaskArtifactRPar,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<TaskArtifactListDTO> {
     return this.taskArtifactService.getAll(param, employee);
@@ -39,7 +40,7 @@ export class TaskArtifactController {
   @Post('/')
   @Auth(Role.MANAGER)
   async create(
-    @Param() param: ProjectTaskParamDTO,
+    @Param() param: TaskArtifactRPar,
     @Body() createDto: CreateArtifactDTO,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<TaskArtifactListEntityDTO> {
@@ -49,7 +50,7 @@ export class TaskArtifactController {
   @Put('/:artifactId')
   @Auth(Role.MANAGER)
   async update(
-    @Param() param: TaskArtifactParamDTO,
+    @Param() param: TaskArtifactEPar,
     @Body() updateDto: UpdateArtifactDTO,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<TaskArtifactListEntityDTO> {
@@ -59,7 +60,7 @@ export class TaskArtifactController {
   @Delete('/:artifactId')
   @Auth(Role.MANAGER)
   async delete(
-    @Param() param: TaskArtifactParamDTO,
+    @Param() param: TaskArtifactEPar,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<void> {
     return this.taskArtifactService.delete(param, employee);
@@ -68,7 +69,7 @@ export class TaskArtifactController {
   @Put('/:artifactId/update')
   @Auth(Role.MANAGER)
   async assignUpdate(
-    @Param() param: TaskArtifactParamDTO,
+    @Param() param: TaskArtifactEPar,
     @Body() assignDto: AssignUpdateDTO,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<ArtifactUpdateEntityDTO> {
@@ -78,7 +79,7 @@ export class TaskArtifactController {
   @Delete('/:artifactId/update')
   @Auth(Role.MANAGER)
   async removeUpdate(
-    @Param() param: TaskArtifactParamDTO,
+    @Param() param: TaskArtifactEPar,
     @CurrentEmployee() employee: EmployeeEntity,
   ): Promise<void> {
     return this.taskArtifactService.removeUpdate(param, employee);

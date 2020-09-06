@@ -13,8 +13,9 @@ import {
   TaskUpdateListDTO,
   TaskUpdateListEntityDTO,
   TaskUpdateEntityDTO,
+  TaskUpdateRPar,
+  TaskUpdateEPar,
 } from './dto';
-import { ProjectTaskParamDTO, TaskUpdateParamDTO } from '../shared/dto';
 import { UpdatePermission } from '../shared/permission';
 
 @Injectable()
@@ -29,7 +30,7 @@ export class TaskUpdateService extends AppService {
   }
 
   async getAll(
-    param: ProjectTaskParamDTO,
+    param: TaskUpdateRPar,
     employee: EmployeeEntity,
   ): Promise<TaskUpdateListDTO> {
     const task = await this.taskRepo.findOneOrException(param.taskId);
@@ -42,7 +43,7 @@ export class TaskUpdateService extends AppService {
   }
 
   async create(
-    param: ProjectTaskParamDTO,
+    param: TaskUpdateRPar,
     createDto: CreateUpdateDTO,
     employee: EmployeeEntity,
   ): Promise<TaskUpdateListEntityDTO> {
@@ -68,7 +69,7 @@ export class TaskUpdateService extends AppService {
   }
 
   async get(
-    param: TaskUpdateParamDTO,
+    param: TaskUpdateEPar,
     employee: EmployeeEntity,
   ): Promise<TaskUpdateEntityDTO> {
     const where = { id: param.updateId, task: { id: param.taskId } };
@@ -82,7 +83,7 @@ export class TaskUpdateService extends AppService {
   }
 
   async update(
-    param: TaskUpdateParamDTO,
+    param: TaskUpdateEPar,
     updateDto: UpdateUpdateDTO,
     employee: EmployeeEntity,
   ): Promise<TaskUpdateListEntityDTO> {
@@ -107,10 +108,7 @@ export class TaskUpdateService extends AppService {
     return this.transform(TaskUpdateListEntityDTO, { data: update });
   }
 
-  async delete(
-    param: TaskUpdateParamDTO,
-    employee: EmployeeEntity,
-  ): Promise<void> {
+  async delete(param: TaskUpdateEPar, employee: EmployeeEntity): Promise<void> {
     const where = { id: param.updateId, task: { id: param.taskId } };
     const option = { relations: ['task'] };
     const update = await this.updateRepo.findOneOrException(where, option);

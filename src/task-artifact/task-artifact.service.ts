@@ -14,8 +14,9 @@ import {
   TaskArtifactListDTO,
   TaskArtifactListEntityDTO,
   ArtifactUpdateEntityDTO,
+  TaskArtifactEPar,
+  TaskArtifactRPar,
 } from './dto';
-import { TaskArtifactParamDTO, ProjectTaskParamDTO } from '../shared/dto';
 import { ArtifactPermission } from '../shared/permission';
 
 @Injectable()
@@ -33,7 +34,7 @@ export class TaskArtifactService extends AppService {
   }
 
   async getAll(
-    param: ProjectTaskParamDTO,
+    param: TaskArtifactRPar,
     employee: EmployeeEntity,
   ): Promise<TaskArtifactListDTO> {
     const where = param.taskId;
@@ -49,7 +50,7 @@ export class TaskArtifactService extends AppService {
   }
 
   async create(
-    param: ProjectTaskParamDTO,
+    param: TaskArtifactRPar,
     createDto: CreateArtifactDTO,
     employee: EmployeeEntity,
   ): Promise<TaskArtifactListEntityDTO> {
@@ -76,7 +77,7 @@ export class TaskArtifactService extends AppService {
   }
 
   async update(
-    param: TaskArtifactParamDTO,
+    param: TaskArtifactEPar,
     updateDto: UpdateArtifactDTO,
     employee: EmployeeEntity,
   ): Promise<TaskArtifactListEntityDTO> {
@@ -99,7 +100,7 @@ export class TaskArtifactService extends AppService {
   }
 
   async delete(
-    param: TaskArtifactParamDTO,
+    param: TaskArtifactEPar,
     employee: EmployeeEntity,
   ): Promise<void> {
     const where = { id: param.artifactId, task: { id: param.taskId } };
@@ -115,7 +116,7 @@ export class TaskArtifactService extends AppService {
   }
 
   async assignUpdate(
-    param: TaskArtifactParamDTO,
+    param: TaskArtifactEPar,
     assignDto: AssignUpdateDTO,
     employee: EmployeeEntity,
   ): Promise<ArtifactUpdateEntityDTO> {
@@ -138,7 +139,7 @@ export class TaskArtifactService extends AppService {
   }
 
   async removeUpdate(
-    param: TaskArtifactParamDTO,
+    param: TaskArtifactEPar,
     employee: EmployeeEntity,
   ): Promise<void> {
     const where = { id: param.artifactId, task: { id: param.taskId } };
