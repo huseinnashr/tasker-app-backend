@@ -13,10 +13,16 @@ import { TaskArtifactModule } from './task-artifact/task-artifact.module';
 import { ErrorsInterceptor } from './core/interceptor';
 import { ManagerModule } from './manager/manager.module';
 import { ProfilePictureModule } from './profile-picture/profile-picture.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { RecipesModule } from './recipes/recipes.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(TypeOrmConfig),
+    GraphQLModule.forRoot({
+      autoSchemaFile: true,
+    }),
+    RecipesModule,
     AuthModule,
     EmployeeModule,
     ManagerProjectModule,
