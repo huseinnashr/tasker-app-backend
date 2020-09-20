@@ -2,7 +2,7 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class Recipe {
-  @Field(type => ID)
+  @Field(() => ID)
   id: string;
 
   @Field()
@@ -14,6 +14,6 @@ export class Recipe {
   @Field()
   creationDate: Date;
 
-  @Field(type => [String])
+  @Field(() => [String])
   ingredients: string[];
 }

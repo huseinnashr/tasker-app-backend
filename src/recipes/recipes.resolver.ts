@@ -8,11 +8,11 @@ import { RecipesService } from './recipes.service';
 
 const pubSub = new PubSub();
 
-@Resolver(of => Recipe)
+@Resolver(() => Recipe)
 export class RecipesResolver {
   constructor(private readonly recipesService: RecipesService) {}
 
-  @Query(returns => Recipe)
+  @Query(() => Recipe)
   async recipe(@Args('id') id: string): Promise<Recipe> {
     const recipe = await this.recipesService.findOneById(id);
     if (!recipe) {
@@ -21,12 +21,12 @@ export class RecipesResolver {
     return recipe;
   }
 
-  @Query(returns => [Recipe])
+  @Query(() => [Recipe])
   recipes(@Args() recipesArgs: RecipesArgs): Promise<Recipe[]> {
     return this.recipesService.findAll(recipesArgs);
   }
 
-  @Mutation(returns => Recipe)
+  @Mutation(() => Recipe)
   async addRecipe(
     @Args('newRecipeData') newRecipeData: NewRecipeInput,
   ): Promise<Recipe> {
@@ -35,13 +35,13 @@ export class RecipesResolver {
     return recipe;
   }
 
-  @Mutation(returns => Boolean)
-  async removeRecipe(@Args('id') id: string) {
+  @Mutation(() => Boolean)
+  async removeRecipe(@Args('id') id: string): Promise<boolean> {
     return this.recipesService.remove(id);
   }
 
-  @Subscription(returns => Recipe)
-  recipeAdded() {
+  @Subscription(() => Recipe)
+  recipeAdded(): AsyncIterator<Recipe> {
     return pubSub.asyncIterator('recipeAdded');
   }
 }

@@ -21,6 +21,7 @@ import { RecipesModule } from './recipes/recipes.module';
     TypeOrmModule.forRoot(TypeOrmConfig),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
+      installSubscriptionHandlers: true,
     }),
     RecipesModule,
     AuthModule,
